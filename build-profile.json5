@@ -1,0 +1,41 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\27501\\.ohos\\config\\auto_debug_harmony-arkTs-movie-ui_com.huawei.movie_260086000305875881.cer",
+          "storePassword": "0000001A119E7688DB45E59D025F9B433D521A49F957129EC43AF8585AE044A28C0CC2574092B6E61B7D",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001A1DA0F9B8A61D3F59E42F1F51256FAB2B3E325B18EC6188F77687B58A2628DBE883FD9EEED946",
+          "profile": "C:\\Users\\27501\\.ohos\\config\\auto_debug_harmony-arkTs-movie-ui_com.huawei.movie_260086000305875881.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\27501\\.ohos\\config\\auto_debug_harmony-arkTs-movie-ui_com.huawei.movie_260086000305875881.p12"
+        }
+      }
+    ],
+    "compileSdkVersion": 8,
+    "compatibleSdkVersion": 8,
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}
