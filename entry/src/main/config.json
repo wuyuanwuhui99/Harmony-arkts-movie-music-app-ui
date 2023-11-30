@@ -9,6 +9,14 @@
   },
   "deviceConfig": {},
   "module": {
+    "reqPermissions":[
+      {
+        "name": "ohos.permission.INTERNET",
+        "usedScene": {
+          "when": "always"
+        }
+      }
+    ],
     "package": "com.huawei.movie",
     "name": ".entry",
     "mainAbility": ".MainAbility",
