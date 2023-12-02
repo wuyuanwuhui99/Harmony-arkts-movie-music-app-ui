@@ -1,17 +1,10 @@
 import http from '@ohos.net.http';
-import {HOST} from '../common/constant';
-
+import {HOST} from '../config/constant';
+import {MyAwesomeData} from '../movie/interface/index'
 
 /**
  * @description: 声明业务数据类型
  */
-export interface MyAwesomeData<T> {
-  data: T,
-  token: string,
-  status:string,
-  msg:string,
-  total:number
-}
 
 class HttpRequest {
   private static instance: HttpRequest;
@@ -50,14 +43,19 @@ class HttpRequest {
       }
       Object.assign(header, options?.header)
       options.header = header;
+      options.readTimeout = 15;
+      options.connectTimeout = 15;
       let httpRequest = http.createHttp();
       return new Promise((resolve, reject) => {
-        httpRequest.request(HOST + url,options).then((response:http.HttpResponse)=>{
+        // httpRequest.request(HOST + url,options).then((response:http.HttpResponse)=>{
+        httpRequest.request('https://c.y.qq.com/tips/fcgi-bin/fcg_music_red_dota.fcg?_=1701444963930&cv=4747474&ct=24&format=json&inCharset=utf-8&outCharset=utf-8&notice=0&platform=yqq.json&needNewCode=1&uin=0&g_tk_new_20200303=5381&g_tk=5381&cid=205360410&qq=0&reqtype=1&from=2',options).then((response:http.HttpResponse)=>{
           if(response.responseCode === http.ResponseCode.OK){
             resolve(response.result as MyAwesomeData<T>)
           }else{
             reject(response.result as MyAwesomeData<T>)
           }
+        }).catch((err:Error)=>{
+          console.info('error1:' + JSON.stringify(err));
         }).finally(()=>{
           // 当该请求使用完毕时，调用destroy方法主动销毁。
           httpRequest.destroy();
@@ -73,7 +71,8 @@ class HttpRequest {
    * @param {RequestConfig} OtherConfig request其他配置
    * @return {*}
    */
-  public get<T>(url: string, data?: Object) {
+  public get<T>(url: string, data?: Object):Promise<MyAwesomeData<T>> {
+    console.info(url)
     return this.request<T>(url,{ method: http.RequestMethod.GET,extraData: data})
   }
 
@@ -84,7 +83,7 @@ class HttpRequest {
    * @param {RequestConfig} OtherConfig request其他配置
    * @return {*}
    */
-  public post<T>(url: string, data?: Object) {
+  public post<T>(url: string, data?: Object): Promise<MyAwesomeData<T>> {
     return this.request<T>(url,{ method: http.RequestMethod.POST,extraData: data})
   }
 
@@ -95,7 +94,7 @@ class HttpRequest {
    * @param {RequestConfig} OtherConfig request其他配置
    * @return {*}
    */
-  public delete<T>(url: string, data?: Object) {
+  public delete<T>(url: string, data?: Object): Promise<MyAwesomeData<T>> {
     return this.request<T>(url,{ method: http.RequestMethod.DELETE,extraData: data})
   }
 
@@ -106,10 +105,10 @@ class HttpRequest {
    * @param {RequestConfig} OtherConfig request其他配置
    * @return {*}
    */
-  public put<T>(url: string, data?: Object) {
+  public put<T>(url: string, data?: Object): Promise<MyAwesomeData<T>> {
     return this.request<T>(url,{ method: http.RequestMethod.PUT,extraData: data})
   }
 
 }
 
-export const httpRequest = HttpRequest.getInstance()
+export default HttpRequest.getInstance()

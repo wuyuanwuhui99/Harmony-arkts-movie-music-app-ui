@@ -4,6 +4,9 @@ import Home from './home'
 import Movie from './movie'
 import My from './my'
 import TV from './tv'
+import httpRequest from '../../utils/HttpUtil';
+import {UserDataInterface} from '../interface/index'
+import api from '../api/index';
 
 @Entry
 @Component
@@ -80,5 +83,13 @@ struct Index{
     .width(50)
     .height('100%')
     .justifyContent(FlexAlign.Center)
+  }
+
+  aboutToAppear(){
+    httpRequest.get<UserDataInterface>(api.getUserData).then((res)=>{
+      console.info(JSON.stringify(res))
+    }).catch((err)=>{
+      console.info(err)
+    })
   }
 }

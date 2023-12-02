@@ -7,14 +7,17 @@
       "name": "1.0.0"
     }
   },
-  "deviceConfig": {},
+  "deviceConfig": {
+    "default": {
+      "network": {
+        "cleartextTraffic": true
+      }
+    }
+  },
   "module": {
     "reqPermissions":[
       {
-        "name": "ohos.permission.INTERNET",
-        "usedScene": {
-          "when": "always"
-        }
+        "name": "ohos.permission.INTERNET"
       }
     ],
     "package": "com.huawei.movie",
