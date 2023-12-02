@@ -1,11 +1,10 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import {UserDataInterface,Movieinterface} from '../interface/Index'
+import {UserDataInterface} from '../interface/Index'
 import {HOST} from '../../config/constant';
-import httpRequest from '../../utils/HttpUtil';
-import api from '../api/index';
 import {USER_DATA} from '../../config/constant';
 import SwiperComponent from './SwiperComponent';
+import {getSearchKeyWordService} from '../service/Index';
 
 @Entry
 @Component
@@ -32,7 +31,7 @@ export default struct HomeComponent{
 
 
   useSearchKeyWord(){
-    httpRequest.get<Movieinterface>(api.getKeyWord,{classify:"电影"}).then((res)=>{
+    getSearchKeyWordService('电影').then((res)=>{
       this.searchKeyWord = res.data.movieName;
     })
   }

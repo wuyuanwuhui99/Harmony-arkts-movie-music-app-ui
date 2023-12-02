@@ -25,7 +25,7 @@ export interface UserDataInterface {
   permission: number;
 }
 
-export interface Movieinterface {
+export interface MovieInterface {
   classify: string;
   isRecommend: string;
   img: string;

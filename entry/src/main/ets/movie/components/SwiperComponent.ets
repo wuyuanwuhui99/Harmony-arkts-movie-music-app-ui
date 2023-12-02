@@ -1,13 +1,12 @@
-import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import { Movieinterface } from '../interface/Index';
+import { MovieInterface } from '../interface/Index';
 import {getCategoryListService} from '../service/Index';
 import {HOST} from  '../../config/constant';
 
 @Component
 export default struct SwiperComponent{
   @Prop classify:string;
-  @State movieList:Array<Movieinterface> = []
+  @State movieList:Array<MovieInterface> = []
 
   private swiperController: SwiperController = new SwiperController()
   aboutToAppear(){
@@ -21,7 +20,7 @@ export default struct SwiperComponent{
 
   build() {
     Swiper(this.swiperController) {
-      ForEach(this.movieList,(movieItem:Movieinterface)=>{
+      ForEach(this.movieList,(movieItem:MovieInterface)=>{
         Image(HOST + movieItem.localImg)
           .height(size.swiperHeight)
           .width('100%')
