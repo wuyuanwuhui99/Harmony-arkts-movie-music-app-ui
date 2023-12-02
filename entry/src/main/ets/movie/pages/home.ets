@@ -4,12 +4,12 @@ import {UserDataInterface,Movieinterface} from '../interface/index'
 import {HOST} from '../../config/constant';
 import httpRequest from '../../utils/HttpUtil';
 import api from '../api/index';
-
+import {USER_DATA} from '../../config/constant';
 @Entry
 @Component
 export default struct Home{
-  @State userData:UserDataInterface = null;
   @State searchKeyWord:string = '';
+  @StorageLink(USER_DATA) userData:UserDataInterface = null;
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -25,13 +25,13 @@ export default struct Home{
   }
 
   aboutToAppear(){
-    this.userData = AppStorage.Get<UserDataInterface>('userData')
     this.useSearchKeyWord()
   }
 
+
   useSearchKeyWord(){
     httpRequest.get<Movieinterface>(api.getKeyWord,{classify:"电影"}).then((res)=>{
-      this.searchKeyWord = res.data.movieName
+      this.searchKeyWord = res.data.movieName;
     })
   }
 

@@ -5,11 +5,11 @@
       "value": "module description"
     },
     {
-      "name": "MainAbility_desc",
+      "name": "EntryAbility_desc",
       "value": "description"
     },
     {
-      "name": "MainAbility_label",
+      "name": "EntryAbility_label",
       "value": "label"
     }
   ]

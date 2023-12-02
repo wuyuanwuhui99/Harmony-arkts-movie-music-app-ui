@@ -7,6 +7,8 @@ import TV from './tv'
 import httpRequest from '../../utils/HttpUtil';
 import {UserDataInterface} from '../interface/index'
 import api from '../api/index';
+import preference from '../../utils/PreferenceModel';
+import {USER_DATA} from '../../config/constant';
 
 @Entry
 @Component
@@ -88,12 +90,13 @@ struct Index{
     .justifyContent(FlexAlign.Center)
   }
 
-  aboutToAppear(){
-    const token:string = AppStorage.Get<string>('token');
+  async aboutToAppear(){
+    const token:string = <string> await preference.getToken();
     httpRequest.setToken(token);
     httpRequest.get<UserDataInterface>(api.getUserData).then((res)=>{
-      AppStorage.Set('token', res.token)
-      AppStorage.Set<UserDataInterface>('userData',res.data);
+      preference.setToke(res.token);
+      httpRequest.setToken(res.token);
+      AppStorage.SetOrCreate<UserDataInterface>(USER_DATA,res.data)
       this.isInitIndex = true;
     })
   }

@@ -5,11 +5,11 @@
       "value": "模块描述"
     },
     {
-      "name": "MainAbility_desc",
+      "name": "EntryAbility_desc",
       "value": "description"
     },
     {
-      "name": "MainAbility_label",
+      "name": "EntryAbility_label",
       "value": "label"
     }
   ]
