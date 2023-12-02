@@ -6,6 +6,11 @@ import {MyAwesomeData} from '../movie/interface/index'
  * @description: 声明业务数据类型
  */
 
+enum STATUS {
+  SUCCESS = 'SUCCESS',
+  FAIL = 'FAIL',
+}
+
 class HttpRequest {
   private static instance: HttpRequest;
   private token: string;
@@ -36,28 +41,47 @@ class HttpRequest {
 
   // 服务器接口请求
   public request<T>(url:string,options: http.HttpRequestOptions): Promise<MyAwesomeData<T>> {
-      // 默认header
-      const header = {
-        "content-type": "application/json",
-        "Authorization": this.token
+
+      const defaultOptions:http.HttpRequestOptions = {
+        extraData: null,
+        method: http.RequestMethod.GET,
+        connectTimeout: 10000,
+        readTimeout: 10000,
+        header:  {
+          "content-type": "application/json",
+          "Authorization": this.token
+        }
       }
-      Object.assign(header, options?.header)
-      options.header = header;
-      options.readTimeout = 15;
-      options.connectTimeout = 15;
+
+      options = {...defaultOptions,...options}
+
       let httpRequest = http.createHttp();
       return new Promise((resolve, reject) => {
         // httpRequest.request(HOST + url,options).then((response:http.HttpResponse)=>{
-        httpRequest.request('https://c.y.qq.com/tips/fcgi-bin/fcg_music_red_dota.fcg?_=1701444963930&cv=4747474&ct=24&format=json&inCharset=utf-8&outCharset=utf-8&notice=0&platform=yqq.json&needNewCode=1&uin=0&g_tk_new_20200303=5381&g_tk=5381&cid=205360410&qq=0&reqtype=1&from=2',options).then((response:http.HttpResponse)=>{
-          if(response.responseCode === http.ResponseCode.OK){
-            resolve(response.result as MyAwesomeData<T>)
-          }else{
-            reject(response.result as MyAwesomeData<T>)
+        //   const result:MyAwesomeData<T> = JSON.parse(response.result.toString()) as MyAwesomeData<T>
+        //   if(result.status == 'SUCCESS'){
+        //     return resolve(result)
+        //   }else{
+        //     return reject(result)
+        //   }
+        // }).catch((err:Error)=>{
+        //   console.info(`请求错误，地址：${HOST + url}${options.extraData &&'，请求参数：'+ options.extraData},错误信息： ${JSON.stringify(err)}`)
+        // }).finally(()=>{
+        //   // 当该请求使用完毕时，调用destroy方法主动销毁。
+        //   httpRequest.destroy();
+        // });
+        // then回调函数有问题，在api8中无法调用到
+        httpRequest.request(HOST + url,options,(err,response)=>{
+          if (!err) {
+            const result:MyAwesomeData<T> = JSON.parse(response.result.toString()) as MyAwesomeData<T>
+            if(result.status == STATUS.SUCCESS){
+              resolve(result)
+            }else{
+              reject(result)
+            }
+          } else {
+            console.info(`请求错误，地址：${HOST + url}${options.extraData &&'，请求参数：'+ options.extraData},错误信息： ${JSON.stringify(err)}`)
           }
-        }).catch((err:Error)=>{
-          console.info('error1:' + JSON.stringify(err));
-        }).finally(()=>{
-          // 当该请求使用完毕时，调用destroy方法主动销毁。
           httpRequest.destroy();
         });
       })
@@ -72,10 +96,8 @@ class HttpRequest {
    * @return {*}
    */
   public get<T>(url: string, data?: Object):Promise<MyAwesomeData<T>> {
-    console.info(url)
-    return this.request<T>(url,{ method: http.RequestMethod.GET,extraData: data})
+     return this.request<T>(url, { method: http.RequestMethod.GET, extraData: data })
   }
-
   /**
    * @description: post请求函数
    * @param {string} url 请求地址

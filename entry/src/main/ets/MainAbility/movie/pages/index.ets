@@ -5,64 +5,70 @@ import Movie from './movie'
 import My from './my'
 import TV from './tv'
 import httpRequest from '../../utils/HttpUtil';
-import {UserDataInterface} from '../interface/index'
+import {MyAwesomeData, UserDataInterface} from '../interface/index'
 import api from '../api/index';
+import http from '@ohos.net.http';
+import {HOST} from '../../config/constant'
 
 @Entry
 @Component
 struct Index{
   @State activeIndex:number = 0;
   @State isInitPage:Array<boolean> = [true,false,false,false];
+  @State isInitIndex:boolean = false;
 
   build() {
     Column() {
-      Tabs({
-        index: this.activeIndex,
-        barPosition: BarPosition.End
-      }){
-        //微信
-        TabContent() {
-          Home()
-        }
-        .tabBar(this.tabBuilder(0, '首页', $r('app.media.icon_home_active'), $r('app.media.icon_home')))
-
-        //通讯录
-        TabContent() {
-          if(this.isInitPage[1]){
-             Movie()
-          }else{
-            Column()
+      if(this.isInitIndex){
+        Tabs({
+          index: this.activeIndex,
+          barPosition: BarPosition.End
+        }){
+          //微信
+          TabContent() {
+            Home()
           }
-        }
-        .tabBar(this.tabBuilder(1, '电影', $r('app.media.icon_movie_active'), $r('app.media.icon_movie')))
+          .tabBar(this.tabBuilder(0, '首页', $r('app.media.icon_home_active'), $r('app.media.icon_home')))
 
-        //发现
-        TabContent() {
-          if(this.isInitPage[2]){
-            TV()
-          }else{
-            Column()
+          //通讯录
+          TabContent() {
+            if(this.isInitPage[1]){
+              Movie()
+            }else{
+              Column()
+            }
           }
-        }
-        .tabBar(this.tabBuilder(2, '电视剧', $r('app.media.icon_tv_active'), $r('app.media.icon_tv')))
+          .tabBar(this.tabBuilder(1, '电影', $r('app.media.icon_movie_active'), $r('app.media.icon_movie')))
 
-        //我
-        TabContent() {
-          if(this.isInitPage[3]){
-            My()
-          }else{
-            Column()
+          //发现
+          TabContent() {
+            if(this.isInitPage[2]){
+              TV()
+            }else{
+              Column()
+            }
           }
-        }
-        .tabBar(this.tabBuilder(3, '我得', $r('app.media.icon_user_active'), $r('app.media.icon_user')))
+          .tabBar(this.tabBuilder(2, '电视剧', $r('app.media.icon_tv_active'), $r('app.media.icon_tv')))
 
+          //我
+          TabContent() {
+            if(this.isInitPage[3]){
+              My()
+            }else{
+              Column()
+            }
+          }
+          .tabBar(this.tabBuilder(3, '我得', $r('app.media.icon_user_active'), $r('app.media.icon_user')))
+
+        }
+        .barHeight(70)
+        .barMode(BarMode.Fixed)
+        .onChange((index) => {
+          this.isInitPage[index] = true;
+          this.activeIndex = index
+        })
       }
-      .barHeight(70)
-      .barMode(BarMode.Fixed)
-      .onChange((index) => {
-        this.isInitPage[index] = true;
-        this.activeIndex = index
-      })
+
     }
     .width('100%')
     .height('100%')
@@ -86,10 +92,11 @@ struct Index{
   }
 
   aboutToAppear(){
+    const token:string = AppStorage.Get<string>('token');
+    httpRequest.setToken(token);
     httpRequest.get<UserDataInterface>(api.getUserData).then((res)=>{
-      console.info(JSON.stringify(res))
-    }).catch((err)=>{
-      console.info(err)
+      this.isInitIndex = true;
+      AppStorage.Set('token', res.token)
     })
   }
 }

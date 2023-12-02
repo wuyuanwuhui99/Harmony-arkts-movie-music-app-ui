@@ -6,9 +6,9 @@
         "type": "HarmonyOS",
         "material": {
           "certpath": "C:\\Users\\27501\\.ohos\\config\\auto_debug_harmony-arkTs-movie-ui_com.huawei.movie_260086000305875881.cer",
-          "storePassword": "0000001BE75CC07F52E14C7291B70AEDED33E67424606C5D30F360BC8F84E175A9977AF55310AE6BB9DAA6",
+          "storePassword": "0000001B410627F17A6326DDBDC6FF6ACE955B29991352C5AE5F4099DF9E4DE51B2A771627A95FAE14F121",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001BC5E6615FC1BE8215003FB659317B46F04E197FC4039CDCD7F58EC7A7DB3B7855DDDD79519C0EC7",
+          "keyPassword": "0000001B5FBA5CA621A34A06461735AF9A1604BD8E4ED59F818D018BF4DE759F936245580A2C24703D9CE1",
           "profile": "C:\\Users\\27501\\.ohos\\config\\auto_debug_harmony-arkTs-movie-ui_com.huawei.movie_260086000305875881.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:\\Users\\27501\\.ohos\\config\\auto_debug_harmony-arkTs-movie-ui_com.huawei.movie_260086000305875881.p12"
