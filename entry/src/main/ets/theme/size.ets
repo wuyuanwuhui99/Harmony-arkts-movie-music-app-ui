@@ -6,3 +6,4 @@ export const normalFontSize:number = 15
 export const bigFontSize:number = 25
 export const blockBorderRaduis = 15
 export const middleavaterSize = 40
+export const swiperHeight = 200

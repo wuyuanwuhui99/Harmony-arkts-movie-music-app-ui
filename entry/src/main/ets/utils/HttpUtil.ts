@@ -1,6 +1,6 @@
 import http from '@ohos.net.http';
 import {HOST} from '../config/constant';
-import {MyAwesomeData} from '../movie/interface/index'
+import {MyAwesomeData} from '../movie/interface/Index'
 
 /**
  * @description: 声明业务数据类型

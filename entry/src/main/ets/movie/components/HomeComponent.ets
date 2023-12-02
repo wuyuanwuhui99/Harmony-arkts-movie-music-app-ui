@@ -1,13 +1,15 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import {UserDataInterface,Movieinterface} from '../interface/index'
+import {UserDataInterface,Movieinterface} from '../interface/Index'
 import {HOST} from '../../config/constant';
 import httpRequest from '../../utils/HttpUtil';
 import api from '../api/index';
 import {USER_DATA} from '../../config/constant';
+import SwiperComponent from './SwiperComponent';
+
 @Entry
 @Component
-export default struct Home{
+export default struct HomeComponent{
   @State searchKeyWord:string = '';
   @StorageLink(USER_DATA) userData:UserDataInterface = null;
 
@@ -56,6 +58,7 @@ export default struct Home{
             .padding({left: size.pagePadding})
             .flexGrow(1)
           }.blockStyle()
+          SwiperComponent({classify:'电影'}).margin({top: size.pagePadding})
           Row(){
             Column(){
               Image($r('app.media.icon_hot')).classifyItemStyle()

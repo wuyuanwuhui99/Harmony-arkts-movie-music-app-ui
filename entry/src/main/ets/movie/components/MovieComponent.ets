@@ -3,12 +3,12 @@ import * as size from '../../theme/size';
 
 @Entry
 @Component
-export default struct TV{
+export default struct MovieComponent{
 
   build() {
     Column() {
       Flex({ direction: FlexDirection.Column}){
-        Text('电视剧').fontSize(15)
+        Text('电影').fontSize(15)
       }.width('100%')
       .height('100%')
     }

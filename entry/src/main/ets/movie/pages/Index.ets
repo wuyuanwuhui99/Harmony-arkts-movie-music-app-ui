@@ -1,14 +1,14 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import Home from './home'
-import Movie from './movie'
-import My from './my'
-import TV from './tv'
+import HomeComponent from '../components/HomeComponent'
+import MovieComponent from '../components/MovieComponent'
+import MyComponent from '../components/MyComponent'
+import TVComponent from '../components/TVComponent'
 import httpRequest from '../../utils/HttpUtil';
-import {UserDataInterface} from '../interface/index'
-import api from '../api/index';
+import {UserDataInterface} from '../interface/Index'
 import preference from '../../utils/PreferenceModel';
 import {USER_DATA} from '../../config/constant';
+import {getUserDataService} from '../service/Index';
 
 @Entry
 @Component
@@ -24,36 +24,32 @@ struct Index{
           index: this.activeIndex,
           barPosition: BarPosition.End
         }){
-          //微信
           TabContent() {
-            Home()
+            HomeComponent()
           }
           .tabBar(this.tabBuilder(0, '首页', $r('app.media.icon_home_active'), $r('app.media.icon_home')))
 
-          //通讯录
           TabContent() {
             if(this.isInitPage[1]){
-              Movie()
+              MovieComponent()
             }else{
               Column()
             }
           }
           .tabBar(this.tabBuilder(1, '电影', $r('app.media.icon_movie_active'), $r('app.media.icon_movie')))
 
-          //发现
           TabContent() {
             if(this.isInitPage[2]){
-              TV()
+              TVComponent()
             }else{
               Column()
             }
           }
           .tabBar(this.tabBuilder(2, '电视剧', $r('app.media.icon_tv_active'), $r('app.media.icon_tv')))
 
-          //我
           TabContent() {
             if(this.isInitPage[3]){
-              My()
+              MyComponent()
             }else{
               Column()
             }
@@ -92,8 +88,7 @@ struct Index{
 
   async aboutToAppear(){
     const token:string = <string> await preference.getToken();
-    httpRequest.setToken(token);
-    httpRequest.get<UserDataInterface>(api.getUserData).then((res)=>{
+    getUserDataService(token).then((res)=>{
       preference.setToke(res.token);
       httpRequest.setToken(res.token);
       AppStorage.SetOrCreate<UserDataInterface>(USER_DATA,res.data)
