@@ -33,7 +33,9 @@
 
 =============================界面预览（如果无法预览，请查看项目根目录png文件）==========================
 
-基于harmony API8搭建的电影音乐项目，有flutter、react-native、java、微信小程序、uniapp多个版本
+使用openharmony arkts搭建的电影音乐项目，有flutter、react-native、java、微信小程序、uniapp多个版本
+
+由于api9的模拟器很少而且不可用状态，暂时使用api8，等待api9模拟器增加之后再切换到api9
 
 电影和音乐数据来自于python爬虫程序，爬取第三方电影和音乐网站数据
 

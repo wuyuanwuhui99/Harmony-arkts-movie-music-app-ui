@@ -5,10 +5,8 @@ import Movie from './movie'
 import My from './my'
 import TV from './tv'
 import httpRequest from '../../utils/HttpUtil';
-import {MyAwesomeData, UserDataInterface} from '../interface/index'
+import {UserDataInterface} from '../interface/index'
 import api from '../api/index';
-import http from '@ohos.net.http';
-import {HOST} from '../../config/constant'
 
 @Entry
 @Component
@@ -78,16 +76,15 @@ struct Index{
   @Builder tabBuilder(index: number, title: string, selectedImage: Resource, normalImage: Resource) {
     Column() {
       Image(this.activeIndex == index ? selectedImage : normalImage)
-        .width(30)
-        .height(30)
-        .margin({bottom:size.smallPadding})
+        .width(size.middlIconSize)
+        .height(size.middlIconSize)
+        .margin({top:size.smallPadding,bottom:size.smallPadding})
       Text(title)
         .fontColor(this.activeIndex == index ? colors.tabSelectedColor : colors.tabNormalColor)
         .fontSize(size.normalFontSize)
         .padding({bottom:size.pagePadding})
     }
-    .width(50)
-    .height('100%')
+    .width('100%')
     .justifyContent(FlexAlign.Center)
   }
 
@@ -95,8 +92,9 @@ struct Index{
     const token:string = AppStorage.Get<string>('token');
     httpRequest.setToken(token);
     httpRequest.get<UserDataInterface>(api.getUserData).then((res)=>{
-      this.isInitIndex = true;
       AppStorage.Set('token', res.token)
+      AppStorage.Set<UserDataInterface>('userData',res.data);
+      this.isInitIndex = true;
     })
   }
 }

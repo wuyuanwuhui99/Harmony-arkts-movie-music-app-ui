@@ -70,8 +70,9 @@ class HttpRequest {
         //   // 当该请求使用完毕时，调用destroy方法主动销毁。
         //   httpRequest.destroy();
         // });
+
         // then回调函数有问题，在api8中无法调用到
-        httpRequest.request(HOST + url,options,(err,response)=>{
+        httpRequest.request(HOST + url,options,(err:Error,response:http.HttpResponse)=>{
           if (!err) {
             const result:MyAwesomeData<T> = JSON.parse(response.result.toString()) as MyAwesomeData<T>
             if(result.status == STATUS.SUCCESS){
@@ -85,7 +86,6 @@ class HttpRequest {
           httpRequest.destroy();
         });
       })
-
   }
 
   /**
