@@ -1,16 +1,18 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import {UserDataInterface} from '../interface/Index'
+import {UserDataInterface,ClassifyInterface} from '../interface/Index'
 import {HOST} from '../../config/constant';
 import {USER_DATA} from '../../config/constant';
 import SwiperComponent from './SwiperComponent';
-import {getSearchKeyWordService} from '../service/Index';
+import {getSearchKeyWordService,getAllCategoryListByPageNameService} from '../service/Index';
+import CategoryComponent from './CategoryComponent';
 
 @Entry
 @Component
 export default struct HomeComponent{
   @State searchKeyWord:string = '';
   @StorageLink(USER_DATA) userData:UserDataInterface = null;
+  @State allCategoryList:Array<ClassifyInterface> = [];
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -27,6 +29,13 @@ export default struct HomeComponent{
 
   aboutToAppear(){
     this.useSearchKeyWord()
+    this.useAllCategoryListByPageName()
+  }
+
+  useAllCategoryListByPageName(){
+    getAllCategoryListByPageNameService('首页').then((res)=>{
+      this.allCategoryList = res.data;
+    })
   }
 
 
@@ -91,6 +100,9 @@ export default struct HomeComponent{
             .justifyContent(FlexAlign.Center)
             .alignItems(HorizontalAlign.Center)
           }.blockStyle()
+          ForEach(this.allCategoryList,(item:ClassifyInterface)=>{
+            CategoryComponent({classifyItemStr:JSON.stringify(item)})
+          })
         }
       }
       .scrollable(ScrollDirection.Vertical)  // 滚动方向纵向
@@ -100,4 +112,5 @@ export default struct HomeComponent{
     .backgroundColor(colors.pageBackgroundColor)
     .padding({left:size.pagePadding,right:size.pagePadding,bottom:size.pagePadding})
   }
+
 }

@@ -13,7 +13,7 @@ export default struct SwiperComponent{
     this.useCategoryList()
   }
   useCategoryList(){
-    getCategoryListService(this.classify,'轮播').then((res)=>{
+    getCategoryListService({classify:this.classify,category:'轮播'}).then((res)=>{
       this.movieList = res.data.slice(0,5);
     })
   }

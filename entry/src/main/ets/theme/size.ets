@@ -7,3 +7,7 @@ export const bigFontSize:number = 25
 export const blockBorderRaduis = 15
 export const middleavaterSize = 40
 export const swiperHeight = 200
+export const lineHeight = 20
+export const lineWidth = 5
+export const movieWidth = 150
+export const movieHeight = 200

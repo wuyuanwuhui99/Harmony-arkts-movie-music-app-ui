@@ -1,6 +1,6 @@
 import api from '../api/index';
 import httpRequest from '../../utils/HttpUtil';
-import {UserDataInterface,MovieInterface} from '../interface/Index'
+import {UserDataInterface,MovieInterface,ClassifyInterface} from '../interface/Index'
 import { MyAwesomeData } from '../interface';
 
 /**
@@ -27,6 +27,15 @@ export const getSearchKeyWordService = (classify:string):Promise<MyAwesomeData<M
  * @date: 2023-12-1 23:09
  * @author wuwenqiang
  */
-export const getCategoryListService = (classify:string,category:string):Promise<MyAwesomeData<Array<MovieInterface>>>=> {
-  return httpRequest.get<Array<MovieInterface>>(api.getCategoryList,{category,classify})
+export const getCategoryListService = (classifyItem:ClassifyInterface):Promise<MyAwesomeData<Array<MovieInterface>>>=> {
+  return httpRequest.get<Array<MovieInterface>>(api.getCategoryList,classifyItem)
+}
+
+/**
+ * @description: 根据大分类和小分类获取电影列表数据
+ * @date: 2023-12-1 23:09
+ * @author wuwenqiang
+ */
+export const getAllCategoryListByPageNameService = (pageName:string):Promise<MyAwesomeData<Array<ClassifyInterface>>>=> {
+  return httpRequest.get<Array<ClassifyInterface>>(api.getAllCategoryListByPageName,{pageName})
 }

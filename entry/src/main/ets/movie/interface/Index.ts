@@ -47,3 +47,8 @@ export interface GlobalDataInterface{
   userData: UserDataInterface,
   token: string
 }
+
+export interface ClassifyInterface{
+  classify: string,
+  category: string
+}
