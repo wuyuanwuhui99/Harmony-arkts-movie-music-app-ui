@@ -57,32 +57,17 @@ class HttpRequest {
 
       let httpRequest = http.createHttp();
       return new Promise((resolve, reject) => {
-        // httpRequest.request(HOST + url,options).then((response:http.HttpResponse)=>{
-        //   const result:MyAwesomeData<T> = JSON.parse(response.result.toString()) as MyAwesomeData<T>
-        //   if(result.status == 'SUCCESS'){
-        //     return resolve(result)
-        //   }else{
-        //     return reject(result)
-        //   }
-        // }).catch((err:Error)=>{
-        //   console.info(`请求错误，地址：${HOST + url}${options.extraData &&'，请求参数：'+ options.extraData},错误信息： ${JSON.stringify(err)}`)
-        // }).finally(()=>{
-        //   // 当该请求使用完毕时，调用destroy方法主动销毁。
-        //   httpRequest.destroy();
-        // });
-
-        // then回调函数有问题，在api8中无法调用到
-        httpRequest.request(HOST + url,options,(err:Error,response:http.HttpResponse)=>{
-          if (!err) {
-            const result:MyAwesomeData<T> = JSON.parse(response.result.toString()) as MyAwesomeData<T>
-            if(result.status == STATUS.SUCCESS){
-              resolve(result)
-            }else{
-              reject(result)
-            }
-          } else {
-            console.info(`请求错误，地址：${HOST + url}${options.extraData &&'，请求参数：'+ options.extraData},错误信息： ${JSON.stringify(err)}`)
+        httpRequest.request(HOST + url,options).then((response:http.HttpResponse)=>{
+          const result:MyAwesomeData<T> = JSON.parse(response.result.toString()) as MyAwesomeData<T>
+          if(result.status == STATUS.SUCCESS){
+            resolve(result)
+          }else{
+            reject(result)
           }
+        }).catch((err:Error)=>{
+          console.info(`请求错误，地址：${HOST + url}${options.extraData &&'，请求参数：'+ options.extraData},错误信息： ${JSON.stringify(err)}`)
+        }).finally(()=>{
+          // 当该请求使用完毕时，调用destroy方法主动销毁。
           httpRequest.destroy();
         });
       })

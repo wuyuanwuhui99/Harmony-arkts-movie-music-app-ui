@@ -13,6 +13,9 @@ export default struct HomeComponent{
   @State searchKeyWord:string = '';
   @StorageLink(USER_DATA) userData:UserDataInterface = null;
   @State allCategoryList:Array<ClassifyInterface> = [];
+  @State currentCategoryList:Array<ClassifyInterface> = [];
+  @State isScrollEnd:boolean = false;
+  scroller: Scroller = new Scroller()
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -35,6 +38,7 @@ export default struct HomeComponent{
   useAllCategoryListByPageName(){
     getAllCategoryListByPageNameService('首页').then((res)=>{
       this.allCategoryList = res.data;
+      this.currentCategoryList = this.allCategoryList.slice(0,2)
     })
   }
 
@@ -47,7 +51,7 @@ export default struct HomeComponent{
 
   build() {
     Column() {
-      Scroll(){
+      Scroll(this.scroller){
         Column(){
           Row(){
             Image(this.userData ? HOST + this.userData.avater : '')
@@ -100,17 +104,28 @@ export default struct HomeComponent{
             .justifyContent(FlexAlign.Center)
             .alignItems(HorizontalAlign.Center)
           }.blockStyle()
-          ForEach(this.allCategoryList,(item:ClassifyInterface)=>{
+          ForEach(this.currentCategoryList,(item:ClassifyInterface)=>{
             CategoryComponent({classifyItemStr:JSON.stringify(item)})
           })
+          Row(){
+            Text(this.isScrollEnd ? '已经到底了...' : '正在加载更多...')
+          }.padding({top:size.pagePadding})
         }
       }
-      .scrollable(ScrollDirection.Vertical)  // 滚动方向纵向
+      .scrollable(ScrollDirection.Vertical)
+      .onScrollEdge((side: Edge)=>{
+        if(!this.isScrollEnd){
+          const length:number = this.currentCategoryList.length
+          this.currentCategoryList.push(...this.allCategoryList.slice(length, length + 2))
+          if(this.currentCategoryList.length === this.allCategoryList.length){
+            this.isScrollEnd = true
+          }
+        }
+      })  // 滚动方向纵向
     }
     .width('100%')
     .height('100%')
     .backgroundColor(colors.pageBackgroundColor)
     .padding({left:size.pagePadding,right:size.pagePadding,bottom:size.pagePadding})
   }
-
 }

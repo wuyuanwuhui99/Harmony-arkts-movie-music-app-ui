@@ -6,11 +6,8 @@ import * as size from '../../theme/size';
 export default struct MovieComponent{
 
   build() {
-    Column() {
-      Flex({ direction: FlexDirection.Column}){
-        Text('电影').fontSize(15)
-      }.width('100%')
-      .height('100%')
+    Row() {
+      Text('电影').fontSize(15)
     }
     .width('100%')
     .height('100%')

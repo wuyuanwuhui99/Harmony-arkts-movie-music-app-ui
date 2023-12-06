@@ -40,9 +40,17 @@
 
 后端接口项目和sql语句：https://github.com/wuyuanwuhui99/springboot-app-service
 
+flutter版本参见: https://github.com/wuyuanwuhui99/react-native-app-ui
+
 react native版本参见: https://github.com/wuyuanwuhui99/react-native-app-ui
 
-harmony鸿蒙版本参见: https://github.com/wuyuanwuhui99/Harmony_movie_app_ui
+java鸿蒙版本参见: https://github.com/wuyuanwuhui99/Harmony_movie_app_ui
+
+java安卓原生版本参见: https://github.com/wuyuanwuhui99/Harmony_movie_app_ui
+
+微信小程序版本参见：https://github.com/wuyuanwuhui99/android-java-movie-app-ui
+
+uniapp版本参见：https://github.com/wuyuanwuhui99/uniapp-vite-vue3-ts-movie-app-ui
 
 vue在线音乐项目：https://github.com/wuyuanwuhui99/vue-music-app-ui
 

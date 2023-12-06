@@ -7,7 +7,7 @@ import {HOST} from '../../config/constant';
 
 @Component
 export default struct CategoryComponent{
-  @Prop classifyItemStr:string;// Prop不能传递object对象莫斯
+  @Prop classifyItemStr:string;// Prop不能传递object对象
   @State classifyItem:ClassifyInterface = null;
   @State movieList:Array<MovieInterface> = [];
 
