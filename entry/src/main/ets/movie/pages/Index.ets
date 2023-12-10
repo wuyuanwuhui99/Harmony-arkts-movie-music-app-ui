@@ -54,7 +54,7 @@ struct Index{
               Column()
             }
           }
-          .tabBar(this.tabBuilder(3, '我得', $r('app.media.icon_user_active'), $r('app.media.icon_user')))
+          .tabBar(this.tabBuilder(3, '我的', $r('app.media.icon_user_active'), $r('app.media.icon_user')))
 
         }
         .barHeight(70)

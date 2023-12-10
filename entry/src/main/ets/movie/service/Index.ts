@@ -1,6 +1,6 @@
 import api from '../api/index';
 import httpRequest from '../../utils/HttpUtil';
-import {UserDataInterface,MovieInterface,ClassifyInterface} from '../interface/Index'
+import {UserDataInterface,MovieInterface,ClassifyInterface,UserMsgInterface} from '../interface/Index'
 import { MyAwesomeData } from '../interface';
 
 /**
@@ -38,4 +38,13 @@ export const getCategoryListService = (classifyItem:ClassifyInterface):Promise<M
  */
 export const getAllCategoryListByPageNameService = (pageName:string):Promise<MyAwesomeData<Array<ClassifyInterface>>>=> {
   return httpRequest.get<Array<ClassifyInterface>>(api.getAllCategoryListByPageName,{pageName})
+}
+
+/**
+ * @description: 获取用户使用天数、访问记录数量等
+ * @date: 2023-12-10 10:15
+ * @author wuwenqiang
+ */
+export const getUserMsgService = ():Promise<MyAwesomeData<UserMsgInterface>>=> {
+  return httpRequest.get<UserMsgInterface>(api.getUserMsg)
 }

@@ -23,8 +23,8 @@ export default struct HomeComponent {
   }
 
   @Styles classifyItemStyle(){
-    .width(size.largeIconSize)
-    .height(size.largeIconSize)
+    .width(size.bigIconSize)
+    .height(size.bigIconSize)
     .margin({ bottom: size.smallPadding })
   }
 

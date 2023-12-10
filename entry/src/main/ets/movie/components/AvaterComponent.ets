@@ -1,4 +1,3 @@
-import * as size from '../../theme/size';
 import {UserDataInterface} from '../interface/Index'
 import {HOST} from '../../config/constant';
 import {USER_DATA} from '../../config/constant';
@@ -12,7 +11,7 @@ export default struct AvaterComponent{
   build(){
     Image(this.userData ? HOST + this.userData.avater : '')
       .height(this.dimensions)
-      .width(size.middleavaterSize)
+      .width(this.dimensions)
       .borderRadius(this.dimensions)
   }
 }

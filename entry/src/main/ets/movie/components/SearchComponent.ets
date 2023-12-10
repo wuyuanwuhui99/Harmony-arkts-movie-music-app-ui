@@ -15,7 +15,7 @@ export default struct SearchComponent{
 
   @Prop classify:string;
   @State searchKeyWord:string = '';
-  @State dimensions:number = size.middleavaterSize;// 导入的值不能直接传给组件
+  @State dimensions:number = size.middleAvaterSize;// 导入的值不能直接传给组件
 
   aboutToAppear(){
     this.useSearchKeyWord()
@@ -35,8 +35,8 @@ export default struct SearchComponent{
           .fontSize(size.normalFontSize)
           .fontColor(colors.disableTextColor)
       }
-      .height(size.middleavaterSize)
-      .borderRadius(size.middleavaterSize)
+      .height(size.middleAvaterSize)
+      .borderRadius(size.middleAvaterSize)
       .backgroundColor(colors.pageBackgroundColor)
       .margin({left: size.pagePadding})
       .padding({left: size.pagePadding})
