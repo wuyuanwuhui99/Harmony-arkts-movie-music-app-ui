@@ -5,52 +5,52 @@ import MovieComponent from '../components/MovieComponent'
 import MyComponent from '../components/MyComponent'
 import TVComponent from '../components/TVComponent'
 import httpRequest from '../../utils/HttpUtil';
-import {UserDataInterface} from '../interface/Index'
+import { UserDataInterface } from '../interface/Index'
 import preference from '../../utils/PreferenceModel';
-import {USER_DATA} from '../../config/constant';
-import {getUserDataService} from '../service/Index';
+import { USER_DATA } from '../../config/constant';
+import { getUserDataService } from '../service/Index';
 
 @Entry
 @Component
-struct Index{
-  @State activeIndex:number = 0;
-  @State isInitPage:Array<boolean> = [true,false,false,false];
-  @State isInitIndex:boolean = false;
+struct Index {
+  @State activeIndex: number = 0;
+  @State isInitPage: Array<boolean> = [true, false, false, false];
+  @State isInitIndex: boolean = false;
 
   build() {
     Column() {
-      if(this.isInitIndex){
+      if (this.isInitIndex) {
         Tabs({
           index: this.activeIndex,
           barPosition: BarPosition.End
-        }){
+        }) {
           TabContent() {
             HomeComponent()
           }
           .tabBar(this.tabBuilder(0, '首页', $r('app.media.icon_home_active'), $r('app.media.icon_home')))
 
           TabContent() {
-            if(this.isInitPage[1]){
+            if (this.isInitPage[1]) {
               MovieComponent()
-            }else{
+            } else {
               Column()
             }
           }
           .tabBar(this.tabBuilder(1, '电影', $r('app.media.icon_movie_active'), $r('app.media.icon_movie')))
 
           TabContent() {
-            if(this.isInitPage[2]){
+            if (this.isInitPage[2]) {
               TVComponent()
-            }else{
+            } else {
               Column()
             }
           }
           .tabBar(this.tabBuilder(2, '电视剧', $r('app.media.icon_tv_active'), $r('app.media.icon_tv')))
 
           TabContent() {
-            if(this.isInitPage[3]){
+            if (this.isInitPage[3]) {
               MyComponent()
-            }else{
+            } else {
               Column()
             }
           }
@@ -76,22 +76,27 @@ struct Index{
       Image(this.activeIndex == index ? selectedImage : normalImage)
         .width(size.middlIconSize)
         .height(size.middlIconSize)
-        .margin({top:size.smallPadding,bottom:size.smallPadding})
+        .margin({ top: size.smallPadding, bottom: size.smallPadding })
       Text(title)
         .fontColor(this.activeIndex == index ? colors.tabSelectedColor : colors.tabNormalColor)
         .fontSize(size.normalFontSize)
-        .padding({bottom:size.pagePadding})
+        .padding({ bottom: size.pagePadding })
     }
     .width('100%')
     .justifyContent(FlexAlign.Center)
+    .border({
+      width: { top: 1 },
+      color: { top: colors.disableTextColor },
+      style: { top: BorderStyle.Solid }
+    })
   }
 
-  async aboutToAppear(){
-    const token:string = <string> await preference.getToken();
-    getUserDataService(token).then((res)=>{
+  async aboutToAppear() {
+    const token: string = <string> await preference.getToken();
+    getUserDataService(token).then((res) => {
       preference.setToke(res.token);
       httpRequest.setToken(res.token);
-      AppStorage.SetOrCreate<UserDataInterface>(USER_DATA,res.data)
+      AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
       this.isInitIndex = true;
     })
   }

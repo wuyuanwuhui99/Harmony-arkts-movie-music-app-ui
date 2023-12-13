@@ -4,13 +4,13 @@ import AvaterComponent from './AvaterComponent';
 import { UserDataInterface, UserMsgInterface, MovieInterface } from '../interface/Index';
 import { USER_DATA } from '../../config/constant';
 import { getUserMsgService, getPlayRecordService } from '../service/Index'
-import {HOST} from '../../config/constant';
+import { HOST } from '../../config/constant';
 import { bigIconSize } from '../../theme/size';
 
-@Extend(Image) function classifyIconStyle(iconSize:number){
+@Extend(Image) function classifyIconStyle(iconSize: number) {
   .width(iconSize)
   .height(iconSize)
-  .margin({right:size.pagePadding})
+  .margin({ right: size.pagePadding })
 }
 
 @Entry
@@ -20,17 +20,16 @@ export default struct MyComponent {
   @State bigAvaterSize: number = size.bigAvaterSize;
   @State userMsg: UserMsgInterface = null;
   @StorageLink(USER_DATA) userData: UserDataInterface = null;
+  @State showPlayRecordMovieList: boolean = true; // 展示我的观看记录
+  @State playRecordMovieList: Array<MovieInterface> = []; // 观看记录列表
 
-  @State showPlayRecordMovieList: boolean = true;// 展示我的观看记录
-  @State playRecordMovieList: Array<MovieInterface> = [];// 观看记录列表
+  @State showMyFavoriteList: boolean = false; // 显示我的收藏列表
+  @State myFavoriteList: Array<MovieInterface> = []; // 我的收藏列表
 
-  @State showMyFavoriteList:boolean = false;// 显示我的收藏列表
-  @State myFavoriteList:Array<MovieInterface> = [];// 我的收藏列表
+  @State showMyViewList: boolean = false; // 显示我浏览过的电影
+  @State myViewList: Array<MovieInterface> = []; // 显示我浏览过的电影
 
-  @State showMyViewList:boolean = false;// 显示我浏览过的电影
-  @State myViewList:Array<MovieInterface> = [];// 显示我浏览过的电影
-
-  @State loading:boolean = false;
+  @State loading: boolean = false;
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -114,13 +113,17 @@ export default struct MyComponent {
               Text('观看记录').padding({ left: size.smallPadding }).flexGrow(1)
               Image($r('app.media.icon_arrow'))
                 .classifyIconStyle(size.smallIconSize)
-                .rotate({angle: this.showPlayRecordMovieList ? 90 : 0})
-            }.margin({bottom:this.showPlayRecordMovieList && this.playRecordMovieList.length > 0 ? size.pagePadding : 0})
+                .rotate({ angle: this.showPlayRecordMovieList ? 90 : 0 })
+            }
+            .margin({
+              bottom: this.showPlayRecordMovieList && this.playRecordMovieList.length > 0 ? size.pagePadding : 0
+            })
             .width('100%')
-            .onClick(()=>{
+            .onClick(() => {
               this.showPlayRecordMovieList = !this.showPlayRecordMovieList
             })
-            if(this.showPlayRecordMovieList && this.playRecordMovieList.length > 0){
+
+            if (this.showPlayRecordMovieList && this.playRecordMovieList.length > 0) {
               Scroll() {
                 Row() {
                   ForEach(this.playRecordMovieList, (item: MovieInterface) => {
@@ -141,19 +144,20 @@ export default struct MyComponent {
             }
           }.blockStyle().alignItems(HorizontalAlign.Start)
 
-          Column(){
-            Column(){
-              Row(){
+          Column() {
+            Column() {
+              Row() {
                 Image($r('app.media.icon_collection')).classifyIconStyle(size.middlIconSize)
                 Text('我的收藏').flexGrow(1)
                 Image($r('app.media.icon_arrow'))
                   .classifyIconStyle(size.smallIconSize)
-                  .rotate({angle: this.showMyFavoriteList ? 90 : 0})
+                  .rotate({ angle: this.showMyFavoriteList ? 90 : 0 })
               }.width('100%')
-              .onClick(()=>{
+              .onClick(() => {
                 this.showMyFavoriteList = !this.showMyFavoriteList
               })
-              if(this.showMyFavoriteList && !this.loading && this.myFavoriteList.length > 0){
+
+              if (this.showMyFavoriteList && !this.loading && this.myFavoriteList.length > 0) {
                 Scroll() {
                   Row() {
                     ForEach(this.myFavoriteList, (item: MovieInterface) => {
@@ -174,22 +178,23 @@ export default struct MyComponent {
               }
             }.border({
               width: { bottom: 1 },
-              color: {bottom: colors.pageBackgroundColor },
-              style:BorderStyle.Solid
-            }).padding({bottom:size.pagePadding})
+              color: { bottom: colors.pageBackgroundColor },
+              style: { bottom: BorderStyle.Solid }
+            }).padding({ bottom: size.pagePadding })
 
-            Column(){
-              Row(){
+            Column() {
+              Row() {
                 Image($r('app.media.icon_record')).classifyIconStyle(size.middlIconSize)
                 Text('我浏览过的电影').flexGrow(1)
                 Image($r('app.media.icon_arrow')).classifyIconStyle(size.smallIconSize).rotate({
                   angle: this.showMyViewList ? 90 : 0
                 })
               }.width('100%')
-              .onClick(()=>{
+              .onClick(() => {
                 this.showMyViewList = !this.showMyViewList
               })
-              if(this.showMyViewList && !this.loading && this.myViewList.length > 0){
+
+              if (this.showMyViewList && !this.loading && this.myViewList.length > 0) {
                 Scroll() {
                   Row() {
                     ForEach(this.myViewList, (item: MovieInterface) => {
@@ -210,17 +215,17 @@ export default struct MyComponent {
               }
             }.border({
               width: { bottom: 1 },
-              color: {bottom: colors.pageBackgroundColor },
-              style:BorderStyle.Solid
-            }).margin({top:size.pagePadding}).padding({bottom:size.pagePadding})
+              color: { bottom: colors.pageBackgroundColor },
+              style: { bottom: BorderStyle.Solid }
+            }).margin({ top: size.pagePadding }).padding({ bottom: size.pagePadding })
 
-            Column(){
-              Row(){
+            Column() {
+              Row() {
                 Image($r('app.media.icon_music_circle')).classifyIconStyle(size.middlIconSize)
                 Text('电影圈').flexGrow(1)
                 Image($r('app.media.icon_arrow')).classifyIconStyle(size.smallIconSize)
               }.width('100%')
-            }.margin({top:size.pagePadding})
+            }.margin({ top: size.pagePadding })
           }.blockStyle().alignItems(HorizontalAlign.Start)
         }
       }.scrollable(ScrollDirection.Vertical)
@@ -228,6 +233,6 @@ export default struct MyComponent {
     .width('100%')
     .height('100%')
     .backgroundColor(colors.pageBackgroundColor)
-    .padding({ left: size.pagePadding, right: size.pagePadding})
+    .padding({ left: size.pagePadding, right: size.pagePadding })
   }
 }
