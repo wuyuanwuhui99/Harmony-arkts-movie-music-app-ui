@@ -48,3 +48,12 @@ export const getAllCategoryListByPageNameService = (pageName:string):Promise<MyA
 export const getUserMsgService = ():Promise<MyAwesomeData<UserMsgInterface>>=> {
   return httpRequest.get<UserMsgInterface>(api.getUserMsg)
 }
+
+/**
+ * @description: 获取用户观看记录
+ * @date: 2023-12-13 21:45
+ * @author wuwenqiang
+ */
+export const getPlayRecordService = ():Promise<MyAwesomeData<Array<MovieInterface>>>=> {
+  return httpRequest.get<Array<MovieInterface>>(api.getPlayRecord)
+}
