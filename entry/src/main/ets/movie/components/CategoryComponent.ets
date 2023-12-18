@@ -4,7 +4,7 @@ import * as size from '../../theme/size';
 import { ClassifyInterface,MovieInterface } from '../interface/Index';
 import {getCategoryListService} from '../service/Index';
 import {HOST} from '../../config/constant';
-
+import MovieListComponent from './MovieListComponent';
 @Component
 export default struct CategoryComponent{
   @Prop classifyItemStr:string;// Prop不能传递object对象
@@ -26,23 +26,9 @@ export default struct CategoryComponent{
   build(){
     Column(){
       TitleComponent({title:this.classifyItem.category})
-      Scroll(){
-        Row(){
-          ForEach(this.movieList,(item:MovieInterface)=>{
-            Column(){
-              Image(HOST + item.localImg)
-                .width(size.movieWidth)
-                .height(size.movieHeight)
-                .borderRadius(size.blockBorderRaduis)
-                .margin({bottom:size.smallPadding})
-              Text(item.movieName).fontSize(size.normalFontSize)
-            }
-            .margin({right:size.smallPadding})
-            .alignItems(HorizontalAlign.Center)
-            .width(size.movieWidth)
-          })
-        }
-      }.width('100%').scrollable(ScrollDirection.Horizontal)
+      if(this.movieList.length > 0){// 必须加判断，否则后更新的数据不会触发MovieListComponent组件重新渲染
+        MovieListComponent({movieListStr:JSON.stringify(this.movieList)})
+      }
     }.backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
     .padding(size.pagePadding)

@@ -1,5 +1,6 @@
 {
   "src": [
-    "movie/pages/Index"
+    "movie/pages/Index",
+    "movie/pages/MovieDetailPage"
   ]
 }
