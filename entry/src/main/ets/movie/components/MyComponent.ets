@@ -3,9 +3,8 @@ import * as size from '../../theme/size';
 import AvaterComponent from './AvaterComponent';
 import { UserDataInterface, UserMsgInterface, MovieInterface } from '../interface/Index';
 import { USER_DATA } from '../../config/constant';
-import { getUserMsgService, getPlayRecordService } from '../service/Index'
+import { getUserMsgService, getPlayRecordMovieListService,getMyViewsMovieListService,getMyFavoriteMovieListService } from '../service/Index'
 import { HOST } from '../../config/constant';
-import { bigIconSize } from '../../theme/size';
 
 @Extend(Image) function classifyIconStyle(iconSize: number) {
   .width(iconSize)
@@ -61,7 +60,7 @@ export default struct MyComponent {
    * @author wuwenqiang
    */
   usePlayRecord() {
-    getPlayRecordService().then(res => {
+    getPlayRecordMovieListService().then(res => {
       this.playRecordMovieList = res.data;
     })
   }
@@ -120,7 +119,10 @@ export default struct MyComponent {
             })
             .width('100%')
             .onClick(() => {
-              this.showPlayRecordMovieList = !this.showPlayRecordMovieList
+              this.showPlayRecordMovieList = !this.showPlayRecordMovieList;
+              if(this.showPlayRecordMovieList){
+                getMyViewsMovieListService(1,20).then(res => this.playRecordMovieList = res.data)
+              }
             })
 
             if (this.showPlayRecordMovieList && this.playRecordMovieList.length > 0) {
@@ -145,84 +147,95 @@ export default struct MyComponent {
           }.blockStyle().alignItems(HorizontalAlign.Start)
 
           Column() {
+            Row() {
+              Image($r('app.media.icon_collection')).classifyIconStyle(size.middlIconSize)
+              Text('我的收藏').flexGrow(1)
+              Image($r('app.media.icon_arrow'))
+                .classifyIconStyle(size.smallIconSize)
+                .rotate({ angle: this.showMyFavoriteList ? 90 : 0 })
+            }.width('100%')
+            .onClick(() => {
+              this.showMyFavoriteList = !this.showMyFavoriteList;
+              if(this.showMyFavoriteList){
+                getMyFavoriteMovieListService(1,20).then(res => this.myFavoriteList = res.data)
+              }
+            })
+
+            if (this.showMyFavoriteList && !this.loading && this.myFavoriteList.length > 0) {
+              Scroll() {
+                Row() {
+                  ForEach(this.myFavoriteList, (item: MovieInterface) => {
+                    Column() {
+                      Image(HOST + item.localImg)
+                        .width(size.movieWidth)
+                        .height(size.movieHeight)
+                        .borderRadius(size.blockBorderRaduis)
+                        .margin({ bottom: size.smallPadding })
+                      Text(item.movieName).fontSize(size.normalFontSize)
+                    }
+                    .margin({ right: size.smallPadding })
+                    .alignItems(HorizontalAlign.Center)
+                    .width(size.movieWidth)
+                  })
+                }
+              }.width('100%').scrollable(ScrollDirection.Horizontal)
+            }
+          }.blockStyle().alignItems(HorizontalAlign.Start)
+
+          Column() {
+            Row() {
+              Image($r('app.media.icon_record')).classifyIconStyle(size.middlIconSize)
+              Text('我浏览过的电影').flexGrow(1)
+              Image($r('app.media.icon_arrow')).classifyIconStyle(size.smallIconSize).rotate({
+                angle: this.showMyViewList ? 90 : 0
+              })
+            }.width('100%')
+            .onClick(() => {
+              this.showMyViewList = !this.showMyViewList;
+              if(this.showMyViewList){
+                getMyViewsMovieListService(1,20).then(res => this.myViewList = res.data)
+              }
+            })
+            if (this.showMyViewList && !this.loading && this.myViewList.length > 0) {
+              Scroll() {
+                Row() {
+                  ForEach(this.myViewList, (item: MovieInterface) => {
+                    Column() {
+                      Image(HOST + item.localImg)
+                        .width(size.movieWidth)
+                        .height(size.movieHeight)
+                        .borderRadius(size.blockBorderRaduis)
+                        .margin({ bottom: size.smallPadding })
+                      Text(item.movieName).fontSize(size.normalFontSize)
+                    }
+                    .margin({ right: size.smallPadding })
+                    .alignItems(HorizontalAlign.Center)
+                    .width(size.movieWidth)
+                  })
+                }
+              }.width('100%').scrollable(ScrollDirection.Horizontal)
+            }
+          }.blockStyle().alignItems(HorizontalAlign.Start)
+
+          Column() {
             Column() {
               Row() {
-                Image($r('app.media.icon_collection')).classifyIconStyle(size.middlIconSize)
-                Text('我的收藏').flexGrow(1)
-                Image($r('app.media.icon_arrow'))
-                  .classifyIconStyle(size.smallIconSize)
-                  .rotate({ angle: this.showMyFavoriteList ? 90 : 0 })
+                Image($r('app.media.icon_music')).classifyIconStyle(size.middlIconSize)
+                Text('音乐').flexGrow(1)
+                Image($r('app.media.icon_arrow')).classifyIconStyle(size.smallIconSize)
               }.width('100%')
-              .onClick(() => {
-                this.showMyFavoriteList = !this.showMyFavoriteList
-              })
-
-              if (this.showMyFavoriteList && !this.loading && this.myFavoriteList.length > 0) {
-                Scroll() {
-                  Row() {
-                    ForEach(this.myFavoriteList, (item: MovieInterface) => {
-                      Column() {
-                        Image(HOST + item.localImg)
-                          .width(size.movieWidth)
-                          .height(size.movieHeight)
-                          .borderRadius(size.blockBorderRaduis)
-                          .margin({ bottom: size.smallPadding })
-                        Text(item.movieName).fontSize(size.normalFontSize)
-                      }
-                      .margin({ right: size.smallPadding })
-                      .alignItems(HorizontalAlign.Center)
-                      .width(size.movieWidth)
-                    })
-                  }
-                }.width('100%').scrollable(ScrollDirection.Horizontal)
-              }
-            }.border({
-              width: { bottom: 1 },
-              color: { bottom: colors.pageBackgroundColor },
-              style: { bottom: BorderStyle.Solid }
-            }).padding({ bottom: size.pagePadding })
-
-            Column() {
-              Row() {
-                Image($r('app.media.icon_record')).classifyIconStyle(size.middlIconSize)
-                Text('我浏览过的电影').flexGrow(1)
-                Image($r('app.media.icon_arrow')).classifyIconStyle(size.smallIconSize).rotate({
-                  angle: this.showMyViewList ? 90 : 0
-                })
-              }.width('100%')
-              .onClick(() => {
-                this.showMyViewList = !this.showMyViewList
-              })
-
-              if (this.showMyViewList && !this.loading && this.myViewList.length > 0) {
-                Scroll() {
-                  Row() {
-                    ForEach(this.myViewList, (item: MovieInterface) => {
-                      Column() {
-                        Image(HOST + item.localImg)
-                          .width(size.movieWidth)
-                          .height(size.movieHeight)
-                          .borderRadius(size.blockBorderRaduis)
-                          .margin({ bottom: size.smallPadding })
-                        Text(item.movieName).fontSize(size.normalFontSize)
-                      }
-                      .margin({ right: size.smallPadding })
-                      .alignItems(HorizontalAlign.Center)
-                      .width(size.movieWidth)
-                    })
-                  }
-                }.width('100%').scrollable(ScrollDirection.Horizontal)
-              }
-            }.border({
-              width: { bottom: 1 },
-              color: { bottom: colors.pageBackgroundColor },
-              style: { bottom: BorderStyle.Solid }
-            }).margin({ top: size.pagePadding }).padding({ bottom: size.pagePadding })
-
+            }.margin({ top: size.pagePadding })
             Column() {
               Row() {
                 Image($r('app.media.icon_music_circle')).classifyIconStyle(size.middlIconSize)
                 Text('电影圈').flexGrow(1)
+                Image($r('app.media.icon_arrow')).classifyIconStyle(size.smallIconSize)
+              }.width('100%')
+            }.margin({ top: size.pagePadding })
+            Column() {
+              Row() {
+                Image($r('app.media.icon_app')).classifyIconStyle(size.middlIconSize)
+                Text('小程序').flexGrow(1)
                 Image($r('app.media.icon_arrow')).classifyIconStyle(size.smallIconSize)
               }.width('100%')
             }.margin({ top: size.pagePadding })
@@ -233,6 +246,6 @@ export default struct MyComponent {
     .width('100%')
     .height('100%')
     .backgroundColor(colors.pageBackgroundColor)
-    .padding({ left: size.pagePadding, right: size.pagePadding })
+    .padding({ left: size.pagePadding, right: size.pagePadding,bottom:size.pagePadding  })
   }
 }

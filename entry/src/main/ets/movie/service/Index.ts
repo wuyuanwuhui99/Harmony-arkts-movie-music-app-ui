@@ -1,6 +1,6 @@
 import api from '../api/index';
 import httpRequest from '../../utils/HttpUtil';
-import {UserDataInterface,MovieInterface,ClassifyInterface,UserMsgInterface} from '../interface/Index'
+import {UserDataInterface,MovieInterface,ClassifyInterface,UserMsgInterface, StarInterface} from '../interface/Index'
 import { MyAwesomeData } from '../interface';
 
 /**
@@ -54,6 +54,51 @@ export const getUserMsgService = ():Promise<MyAwesomeData<UserMsgInterface>>=> {
  * @date: 2023-12-13 21:45
  * @author wuwenqiang
  */
-export const getPlayRecordService = ():Promise<MyAwesomeData<Array<MovieInterface>>>=> {
+export const getPlayRecordMovieListService = ():Promise<MyAwesomeData<Array<MovieInterface>>>=> {
   return httpRequest.get<Array<MovieInterface>>(api.getPlayRecord)
+}
+
+/**
+ * @description: 获取用户收藏的电影
+ * @date: 2023-12-15 22:26
+ * @author wuwenqiang
+ */
+export const getMyFavoriteMovieListService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<MovieInterface>>>=> {
+  return httpRequest.get<Array<MovieInterface>>(`${api.getFavorite}?pageNum=${pageNum}&pageSize=${pageSize}`)
+}
+
+/**
+ * @description: 获取用户浏览过的电影
+ * @date: 2023-12-15 23:28
+ * @author wuwenqiang
+ */
+export const getMyViewsMovieListService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<MovieInterface>>>=> {
+  return httpRequest.get<Array<MovieInterface>>(`${api.getViewRecord}?pageNum=${pageNum}&pageSize=${pageSize}`)
+}
+
+/**
+ * @description: 获取演员信息
+ * @date: 2023-12-16 18:26
+ * @author wuwenqiang
+ */
+export const getMovieStartListService = (movieId:number):Promise<MyAwesomeData<Array<StarInterface>>>=> {
+  return httpRequest.get<Array<StarInterface>>(`${api.getStar}/${movieId}`)
+}
+
+/**
+ * @description: 获取推荐的电影
+ * @date: 2023-12-16 18:28
+ * @author wuwenqiang
+ */
+export const getRecommentListService = (classify:string):Promise<MyAwesomeData<Array<MovieInterface>>>=> {
+  return httpRequest.get<Array<MovieInterface>>(`${api.getRecommend}?classify=${classify}`)
+}
+
+/**
+ * @description: 插入浏览记录
+ * @date: 2023-12-23 22:12
+ * @author wuwenqiang
+ */
+export const saveViewRecordService = (movieItem:MovieInterface):Promise<MyAwesomeData<number>>=> {
+  return httpRequest.post<number>(api.saveViewRecord,movieItem)
 }

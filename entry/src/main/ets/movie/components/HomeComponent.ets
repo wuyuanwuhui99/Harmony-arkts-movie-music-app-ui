@@ -101,6 +101,6 @@ export default struct HomeComponent {
     .width('100%')
     .height('100%')
     .backgroundColor(colors.pageBackgroundColor)
-    .padding({ left: size.pagePadding, right: size.pagePadding })
+    .padding({ left: size.pagePadding, right: size.pagePadding,bottom:size.pagePadding  })
   }
 }

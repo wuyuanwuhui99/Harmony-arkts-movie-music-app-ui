@@ -3,7 +3,6 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { ClassifyInterface,MovieInterface } from '../interface/Index';
 import {getCategoryListService} from '../service/Index';
-import {HOST} from '../../config/constant';
 import MovieListComponent from './MovieListComponent';
 @Component
 export default struct CategoryComponent{
