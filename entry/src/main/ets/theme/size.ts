@@ -13,3 +13,4 @@ export const lineHeight = 20
 export const lineWidth = 5
 export const movieWidth = 150
 export const movieHeight = 200
+export const webviewHeight = 300

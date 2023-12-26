@@ -1,6 +1,13 @@
 import api from '../api/index';
 import httpRequest from '../../utils/HttpUtil';
-import {UserDataInterface,MovieInterface,ClassifyInterface,UserMsgInterface, StarInterface} from '../interface/Index'
+import {
+  UserDataInterface,
+  MovieInterface,
+  ClassifyInterface,
+  UserMsgInterface,
+  StarInterface,
+  MovieUrlInterface
+} from '../interface/Index'
 import { MyAwesomeData } from '../interface';
 
 /**
@@ -82,7 +89,7 @@ export const getMyViewsMovieListService = (pageNum:number,pageSize:number):Promi
  * @author wuwenqiang
  */
 export const getMovieStartListService = (movieId:number):Promise<MyAwesomeData<Array<StarInterface>>>=> {
-  return httpRequest.get<Array<StarInterface>>(`${api.getStar}/${movieId}`)
+  return httpRequest.get<Array<StarInterface>>(`${api.getStar}${movieId}`)
 }
 
 /**
@@ -101,4 +108,13 @@ export const getRecommentListService = (classify:string):Promise<MyAwesomeData<A
  */
 export const saveViewRecordService = (movieItem:MovieInterface):Promise<MyAwesomeData<number>>=> {
   return httpRequest.post<number>(api.saveViewRecord,movieItem)
+}
+
+/**
+ * @description: 获取电影地址分株
+ * @date: 2023-12-26 22:45
+ * @author wuwenqiang
+ */
+export const getMovieUrlService = (movieId:number):Promise<MyAwesomeData<Array<MovieUrlInterface>>>=> {
+  return httpRequest.get<Array<MovieUrlInterface>>(`${api.getMovieUrl}?movieId=${movieId}`)
 }

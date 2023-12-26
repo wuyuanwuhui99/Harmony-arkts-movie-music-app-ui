@@ -24,7 +24,7 @@ struct MovieDetailPage {
     const params = router.getParams(); // 获取传递过来的参数对象
     this.movieItem = params['movieItem'] as MovieInterface; // 获取info属性的值
     getMovieStartListService(this.movieItem.id).then(res => this.starList = res.data);// 获取主演
-    getRecommentListService(this.movieItem.classify).then(res => this.recommendMovieList = res.data);// 获取推荐的电影
+    getRecommentListService(encodeURIComponent(this.movieItem.classify)).then(res => this.recommendMovieList = res.data);// 获取推荐的电影
     saveViewRecordService(this.movieItem);// 插入浏览记录
   }
 
@@ -45,6 +45,18 @@ struct MovieDetailPage {
             .height(size.movieHeight)
             .backgroundImage(HOST + this.movieItem.localImg,ImageRepeat.NoRepeat)
             .backgroundImageSize(ImageSize.Cover)
+            .onClick((event:ClickEvent)=>{
+              router.pushUrl({
+                url: 'movie/pages/MoviePlayPage', // 目标url
+                params: {
+                  movieItem: this.movieItem
+                }
+              }, router.RouterMode.Standard, (err) => {
+                if(err){
+                  console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
+                }
+              });
+            })
             Column(){
               Text(this.movieItem.movieName)
                 .padding({bottom:size.smallPadding})

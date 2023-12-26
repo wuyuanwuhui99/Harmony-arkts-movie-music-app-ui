@@ -75,3 +75,15 @@ export interface StarInterface {
   href: string;//演员的豆瓣链接地址
   works: string ;//代表作
 }
+
+export interface MovieUrlInterface {
+  id:number;//主键
+  movieName:string;//电影名称
+  movieId:number;//对应的电影的id
+  href:string;//源地址
+  label:string;//集数
+  createTime:string;//创建时间
+  updateTime:string;//更新时间
+  url:string;//播放地址
+  playGroup:string;//播放分组，1, 2
+}
