@@ -1,13 +1,6 @@
 import api from '../api/index';
 import httpRequest from '../../utils/HttpUtil';
-import {
-  UserDataInterface,
-  MovieInterface,
-  ClassifyInterface,
-  UserMsgInterface,
-  StarInterface,
-  MovieUrlInterface
-} from '../interface/Index'
+import * as types from '../interface/Index'
 import { MyAwesomeData } from '../interface';
 
 /**
@@ -15,9 +8,9 @@ import { MyAwesomeData } from '../interface';
  * @date: 2023-12-1 23:39
  * @author wuwenqiang
  */
-export const getUserDataService = (token:string):Promise<MyAwesomeData<UserDataInterface>>=> {
+export const getUserDataService = (token:string):Promise<MyAwesomeData<types.UserDataInterface>>=> {
   httpRequest.setToken(token);
-  return httpRequest.get<UserDataInterface>(api.getUserData);
+  return httpRequest.get<types.UserDataInterface>(api.getUserData);
 }
 
 /**
@@ -25,8 +18,8 @@ export const getUserDataService = (token:string):Promise<MyAwesomeData<UserDataI
  * @date: 2023-12-1 23:50
  * @author wuwenqiang
  */
-export const getSearchKeyWordService = (classify:string):Promise<MyAwesomeData<MovieInterface>>=> {
-  return httpRequest.get<MovieInterface>(api.getKeyWord,{classify});
+export const getSearchKeyWordService = (classify:string):Promise<MyAwesomeData<types.MovieInterface>>=> {
+  return httpRequest.get<types.MovieInterface>(api.getKeyWord,{classify});
 }
 
 /**
@@ -34,8 +27,8 @@ export const getSearchKeyWordService = (classify:string):Promise<MyAwesomeData<M
  * @date: 2023-12-1 23:09
  * @author wuwenqiang
  */
-export const getCategoryListService = (classifyItem:ClassifyInterface):Promise<MyAwesomeData<Array<MovieInterface>>>=> {
-  return httpRequest.get<Array<MovieInterface>>(api.getCategoryList,classifyItem)
+export const getCategoryListService = (classifyItem:types.ClassifyInterface):Promise<MyAwesomeData<Array<types.MovieInterface>>>=> {
+  return httpRequest.get<Array<types.MovieInterface>>(api.getCategoryList,classifyItem)
 }
 
 /**
@@ -43,8 +36,8 @@ export const getCategoryListService = (classifyItem:ClassifyInterface):Promise<M
  * @date: 2023-12-1 23:09
  * @author wuwenqiang
  */
-export const getAllCategoryListByPageNameService = (pageName:string):Promise<MyAwesomeData<Array<ClassifyInterface>>>=> {
-  return httpRequest.get<Array<ClassifyInterface>>(api.getAllCategoryListByPageName,{pageName})
+export const getAllCategoryListByPageNameService = (pageName:string):Promise<MyAwesomeData<Array<types.ClassifyInterface>>>=> {
+  return httpRequest.get<Array<types.ClassifyInterface>>(api.getAllCategoryListByPageName,{pageName})
 }
 
 /**
@@ -52,8 +45,8 @@ export const getAllCategoryListByPageNameService = (pageName:string):Promise<MyA
  * @date: 2023-12-10 10:15
  * @author wuwenqiang
  */
-export const getUserMsgService = ():Promise<MyAwesomeData<UserMsgInterface>>=> {
-  return httpRequest.get<UserMsgInterface>(api.getUserMsg)
+export const getUserMsgService = ():Promise<MyAwesomeData<types.UserMsgInterface>>=> {
+  return httpRequest.get<types.UserMsgInterface>(api.getUserMsg)
 }
 
 /**
@@ -61,8 +54,8 @@ export const getUserMsgService = ():Promise<MyAwesomeData<UserMsgInterface>>=> {
  * @date: 2023-12-13 21:45
  * @author wuwenqiang
  */
-export const getPlayRecordMovieListService = ():Promise<MyAwesomeData<Array<MovieInterface>>>=> {
-  return httpRequest.get<Array<MovieInterface>>(api.getPlayRecord)
+export const getPlayRecordMovieListService = ():Promise<MyAwesomeData<Array<types.MovieInterface>>>=> {
+  return httpRequest.get<Array<types.MovieInterface>>(api.getPlayRecord)
 }
 
 /**
@@ -70,8 +63,8 @@ export const getPlayRecordMovieListService = ():Promise<MyAwesomeData<Array<Movi
  * @date: 2023-12-15 22:26
  * @author wuwenqiang
  */
-export const getMyFavoriteMovieListService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<MovieInterface>>>=> {
-  return httpRequest.get<Array<MovieInterface>>(`${api.getFavorite}?pageNum=${pageNum}&pageSize=${pageSize}`)
+export const getMyFavoriteMovieListService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MovieInterface>>>=> {
+  return httpRequest.get<Array<types.MovieInterface>>(`${api.getFavorite}?pageNum=${pageNum}&pageSize=${pageSize}`)
 }
 
 /**
@@ -79,8 +72,8 @@ export const getMyFavoriteMovieListService = (pageNum:number,pageSize:number):Pr
  * @date: 2023-12-15 23:28
  * @author wuwenqiang
  */
-export const getMyViewsMovieListService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<MovieInterface>>>=> {
-  return httpRequest.get<Array<MovieInterface>>(`${api.getViewRecord}?pageNum=${pageNum}&pageSize=${pageSize}`)
+export const getMyViewsMovieListService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MovieInterface>>>=> {
+  return httpRequest.get<Array<types.MovieInterface>>(`${api.getViewRecord}?pageNum=${pageNum}&pageSize=${pageSize}`)
 }
 
 /**
@@ -88,8 +81,8 @@ export const getMyViewsMovieListService = (pageNum:number,pageSize:number):Promi
  * @date: 2023-12-16 18:26
  * @author wuwenqiang
  */
-export const getMovieStartListService = (movieId:number):Promise<MyAwesomeData<Array<StarInterface>>>=> {
-  return httpRequest.get<Array<StarInterface>>(`${api.getStar}${movieId}`)
+export const getMovieStartListService = (movieId:number):Promise<MyAwesomeData<Array<types.StarInterface>>>=> {
+  return httpRequest.get<Array<types.StarInterface>>(`${api.getStar}${movieId}`)
 }
 
 /**
@@ -97,8 +90,8 @@ export const getMovieStartListService = (movieId:number):Promise<MyAwesomeData<A
  * @date: 2023-12-16 18:28
  * @author wuwenqiang
  */
-export const getRecommentListService = (classify:string):Promise<MyAwesomeData<Array<MovieInterface>>>=> {
-  return httpRequest.get<Array<MovieInterface>>(`${api.getRecommend}?classify=${classify}`)
+export const getRecommentListService = (classify:string):Promise<MyAwesomeData<Array<types.MovieInterface>>>=> {
+  return httpRequest.get<Array<types.MovieInterface>>(`${api.getRecommend}?classify=${classify}`)
 }
 
 /**
@@ -106,7 +99,7 @@ export const getRecommentListService = (classify:string):Promise<MyAwesomeData<A
  * @date: 2023-12-23 22:12
  * @author wuwenqiang
  */
-export const saveViewRecordService = (movieItem:MovieInterface):Promise<MyAwesomeData<number>>=> {
+export const saveViewRecordService = (movieItem:types.MovieInterface):Promise<MyAwesomeData<number>>=> {
   return httpRequest.post<number>(api.saveViewRecord,movieItem)
 }
 
@@ -115,6 +108,15 @@ export const saveViewRecordService = (movieItem:MovieInterface):Promise<MyAwesom
  * @date: 2023-12-26 22:45
  * @author wuwenqiang
  */
-export const getMovieUrlService = (movieId:number):Promise<MyAwesomeData<Array<MovieUrlInterface>>>=> {
-  return httpRequest.get<Array<MovieUrlInterface>>(`${api.getMovieUrl}?movieId=${movieId}`)
+export const getMovieUrlService = (movieId:number):Promise<MyAwesomeData<Array<types.MovieUrlInterface>>>=> {
+  return httpRequest.get<Array<types.MovieUrlInterface>>(`${api.getMovieUrl}?movieId=${movieId}`)
 }
+
+/**
+ * @description: 修改用户信息
+ * @date: 2024-01-10 23:01
+ * @author wuwenqiang
+ */
+export const updateUserDataService = (userData:types.UserDataInterface):Promise<MyAwesomeData<number>>=>{
+  return httpRequest.put<number>(api.updateUser,userData)
+};
