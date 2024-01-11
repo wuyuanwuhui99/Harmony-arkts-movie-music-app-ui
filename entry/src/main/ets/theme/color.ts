@@ -6,3 +6,4 @@ export const blockColor:string = '#fff'
 export const disableTextColor:string = '#999999'
 export const lineBackgroundColor:string = '#2196f3'
 export const warnColor:string = '#f7453b';
+export const trans = Color
