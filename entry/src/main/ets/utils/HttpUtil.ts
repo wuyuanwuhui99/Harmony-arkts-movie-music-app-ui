@@ -65,7 +65,7 @@ class HttpRequest {
             reject(result)
           }
         }).catch((err:Error)=>{
-          console.info(`请求错误，地址：${HOST + url}${options.extraData &&'，请求参数：'+ options.extraData},错误信息： ${JSON.stringify(err)}`)
+          console.info(`请求错误，地址：${HOST + url}${options.extraData &&'，请求参数：'+ JSON.stringify(options.extraData)},错误信息： ${JSON.stringify(err)}`)
         }).finally(()=>{
           // 当该请求使用完毕时，调用destroy方法主动销毁。
           httpRequest.destroy();

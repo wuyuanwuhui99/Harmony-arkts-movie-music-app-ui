@@ -39,30 +39,32 @@ struct MovieUserPage {
   useShowDialog(title: string, field: string) {
     this.title = title;
     this.field = field;
+    if(field === 'sex'){
+      this.dialogController =  new CustomDialogController({
+        customStyle: true,
+        builder: OptionDialogComponent({
+          cancel: ()=>this.onCancel(),
+          confirm: (value)=>this.onConfirm(value),
+          options: ['男', '女'],
+        }),
+        alignment: DialogAlignment.Bottom,
+      })
+    }else{
+      this.dialogController = new CustomDialogController({
+        customStyle: true,
+        builder: CustomDialogComponent({
+          cancel: ()=>this.onCancel(),
+          confirm: (value)=>this.onConfirm(value),
+          title: this.title,
+          text: this.userData[this.field]
+        }),
+        alignment: DialogAlignment.Center,
+      })
+    }
     this.dialogController.open()
   }
 
-  dialogController: CustomDialogController = new CustomDialogController({
-    customStyle: true,
-    builder: OptionDialogComponent({
-      cancel: this.onCancel,
-      confirm: this.onConfirm,
-      options: ['男', '女'],
-    }),
-    //   this.field == 'sex' ?
-    // OptionDialogComponent({
-    //   cancel: this.onCancel,
-    //   confirm: this.onConfirm,
-    //   options:['男','女'],
-    // })
-    // : CustomDialogComponent({
-    //   cancel: this.onCancel,
-    //   confirm: this.onConfirm,
-    //   title: this.title,
-    //   text: this.userData[this.field]
-    // }),
-    alignment: DialogAlignment.Bottom,
-  })
+  dialogController: CustomDialogController  = null
 
   onCancel() {
     this.dialogController.close()
@@ -208,9 +210,12 @@ struct CustomDialogComponent {
 
   build() {
     Column() {
-      Text("请输入").margin({ top: size.pagePadding, bottom: size.pagePadding })
-      Row() {
-        Text(this.title).margin({ right: size.smallIconSize })
+      Text("请输入")
+        .margin({ top: size.pagePadding, bottom: size.pagePadding })
+      Flex({alignItems:ItemAlign.Center}) {
+        Text(this.title)
+          .flexShrink(0)
+          .margin({ right: size.smallIconSize })
         TextInput({ placeholder: '请输入', text: this.text })
           .flexGrow(1)
           .backgroundColor(colors.pageBackgroundColor)
@@ -218,18 +223,23 @@ struct CustomDialogComponent {
           .onChange((value: string) => {
             this.value = value
           })
-      }.margin({ left: size.pagePadding, right: size.pagePadding })
+      }.margin(size.pagePadding)
 
       Flex({ justifyContent: FlexAlign.SpaceAround }) {
-        Button('取消')
+        Text('取消')
           .onClick(() => {
             this.controller.close()
             this.cancel()
-          }).backgroundColor(colors.blockColor).fontColor(Color.Black)
-        Button('确定')
+          }).flexGrow(1)
+          .textAlign(TextAlign.Center)
+          .backgroundColor(colors.blockColor)
+          .fontColor(Color.Black)
+        Text('确定')
           .onClick(() => {
             this.confirm(this.value)
           })
+          .flexGrow(1)
+          .textAlign(TextAlign.Center)
           .border({
             width: {
               left: 1,
@@ -240,7 +250,9 @@ struct CustomDialogComponent {
             style: {
               top: BorderStyle.Solid
             }
-          }).backgroundColor(colors.blockColor).fontColor(Color.Red)
+          })
+          .backgroundColor(colors.blockColor)
+          .fontColor(Color.Red)
       }.border({
         width: {
           top: 1,
@@ -251,8 +263,11 @@ struct CustomDialogComponent {
         style: {
           top: BorderStyle.Solid
         }
-      }).padding({ top: size.pagePadding, bottom: size.pagePadding })
-    }.borderRadius(size.blockBorderRaduis)
+      }).padding({ top: size.pagePadding * 2, bottom: size.pagePadding * 2 })
+    }
+    .backgroundColor(colors.blockColor)
+    .borderRadius(size.blockBorderRaduis)
+    .margin({ left: size.pagePadding, right: size.pagePadding })
   }
 }
 
