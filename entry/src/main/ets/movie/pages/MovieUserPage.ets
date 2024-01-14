@@ -1,3 +1,4 @@
+import router from '@ohos.router';
 import { UserDataInterface } from "../interface";
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
@@ -49,6 +50,15 @@ struct MovieUserPage {
         }),
         alignment: DialogAlignment.Bottom,
       })
+    }else if(title === 'logout'){
+      this.dialogController =  new CustomDialogController({
+        customStyle: false,
+        builder: LogoutDialogComponent({
+          cancel: ()=>this.onCancel(),
+          confirm: ()=>this.onLogout(),
+        }),
+        alignment: DialogAlignment.Center,
+      })
     }else{
       this.dialogController = new CustomDialogController({
         customStyle: true,
@@ -82,6 +92,16 @@ struct MovieUserPage {
       this.userData[this.field] = value;
       this.dialogController.close()
     })
+  }
+
+  onLogout(){
+    router.replaceUrl({
+      url: 'movie/pages/MovieLoginPage', // 目标url
+    }, router.RouterMode.Single, (err) => {
+      if(err){
+        console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
+      }
+    });
   }
 
   build() {
@@ -185,16 +205,23 @@ struct MovieUserPage {
         .backgroundColor(colors.warnColor)
         .margin({ top: size.pagePadding })
         .fontColor(Color.White)
-        .borderRadius(size.blockBorderRaduis)
+        .borderRadius(size.blockBorderRaduis * 2).onClick(()=>{
+          this.useShowDialog('logout','');
+        })
     }
     .width('100%')
-    .padding({ left: size.pagePadding, right: size.pagePadding })
+    .padding({ left: size.pagePadding, right: size.pagePadding,bottom:size.pagePadding })
     .height('100%')
     .justifyContent(FlexAlign.Start)
     .backgroundColor(colors.pageBackgroundColor)
   }
 }
 
+/**
+ * @description: 修改用户信息弹窗
+ * @date: 2024-01-14 21:47
+ * @author wuwenqiang
+ */
 @CustomDialog
 struct CustomDialogComponent {
   controller: CustomDialogController
@@ -225,7 +252,7 @@ struct CustomDialogComponent {
           })
       }.margin(size.pagePadding)
 
-      Flex({ justifyContent: FlexAlign.SpaceAround }) {
+      Row(){
         Text('取消')
           .onClick(() => {
             this.controller.close()
@@ -234,36 +261,16 @@ struct CustomDialogComponent {
           .textAlign(TextAlign.Center)
           .backgroundColor(colors.blockColor)
           .fontColor(Color.Black)
+        Divider().width(1).height('100%').backgroundColor(colors.pageBackgroundColor)
         Text('确定')
           .onClick(() => {
             this.confirm(this.value)
           })
           .flexGrow(1)
           .textAlign(TextAlign.Center)
-          .border({
-            width: {
-              left: 1,
-            },
-            color: {
-              top: colors.pageBackgroundColor
-            },
-            style: {
-              top: BorderStyle.Solid
-            }
-          })
           .backgroundColor(colors.blockColor)
           .fontColor(Color.Red)
-      }.border({
-        width: {
-          top: 1,
-        },
-        color: {
-          top: colors.pageBackgroundColor
-        },
-        style: {
-          top: BorderStyle.Solid
-        }
-      }).padding({ top: size.pagePadding * 2, bottom: size.pagePadding * 2 })
+      }.alignItems(VerticalAlign.Center).height(size.dialogBtnHeight)
     }
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
@@ -271,7 +278,11 @@ struct CustomDialogComponent {
   }
 }
 
-
+/**
+ * @description: 修改新别弹窗
+ * @date: 2024-01-14 21:47
+ * @author wuwenqiang
+ */
 @CustomDialog
 struct OptionDialogComponent {
   controller: CustomDialogController
@@ -321,5 +332,65 @@ struct OptionDialogComponent {
         .height(size.pagePadding)
         .backgroundColor(Color.Transparent)
     }.width('100%').backgroundColor(Color.Transparent).padding({ left: size.pagePadding, right: size.pagePadding })
+  }
+}
+
+/**
+ * @description: 退出登录弹窗
+ * @date: 2024-01-14 21:47
+ * @author wuwenqiang
+ */
+@CustomDialog
+struct LogoutDialogComponent {
+  controller: CustomDialogController
+  cancel: () => void
+  confirm: () => void
+  title: string
+
+  build() {
+    Column() {
+      Text("是否退出登录？")
+        .padding(size.pagePadding * 2)
+      Row(){
+        Text('取消')
+          .onClick(() => {
+            this.controller.close()
+            this.cancel()
+          })
+          .flexGrow(1)
+          .textAlign(TextAlign.Center)
+          .backgroundColor(colors.blockColor)
+          .fontColor(Color.Black)
+          .onClick(() => {
+            this.cancel()
+          })
+        Divider().height('100%').width(1).backgroundColor(colors.pageBackgroundColor)
+        Text('确定')
+          .onClick(() => {
+            this.confirm()
+          })
+          .flexGrow(1)
+          .textAlign(TextAlign.Center)
+          .backgroundColor(colors.blockColor)
+          .fontColor(Color.Red)
+          .onClick(() => {
+            this.confirm()
+          })
+      }.border({
+        width: {
+          top: 1,
+        },
+        color: {
+          top: colors.pageBackgroundColor
+        },
+        style: {
+          top: BorderStyle.Solid
+        }
+      }).alignItems(VerticalAlign.Center).width('100%').height(size.dialogBtnHeight)
+    }
+    .width('100%')
+    .backgroundColor(colors.blockColor)
+    .borderRadius(size.blockBorderRaduis)
+    .margin({ left: size.pagePadding, right: size.pagePadding })
   }
 }
