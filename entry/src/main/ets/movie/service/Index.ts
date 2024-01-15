@@ -2,6 +2,7 @@ import api from '../api/index';
 import httpRequest from '../../utils/HttpUtil';
 import * as types from '../interface/Index'
 import { MyAwesomeData } from '../interface';
+import CryptoJS from '@ohos/crypto-js';
 
 /**
  * @description: 根据token获取用户信息
@@ -119,4 +120,14 @@ export const getMovieUrlService = (movieId:number):Promise<MyAwesomeData<Array<t
  */
 export const updateUserDataService = (userData:types.UserDataInterface):Promise<MyAwesomeData<number>>=>{
   return httpRequest.put<number>(api.updateUser,userData)
+};
+
+/**
+ * @description: 登录
+ * @date: 2024-01-15 21:32
+ * @author wuwenqiang
+ */
+export const loginService = (userId:string,password:string):Promise<MyAwesomeData<number>>=>{
+  password = CryptoJS.MD5(password).toString();// 使用md5加密
+  return httpRequest.post<number>(api.login,{userId,password})
 };

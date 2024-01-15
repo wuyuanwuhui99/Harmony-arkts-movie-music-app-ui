@@ -1,9 +1,20 @@
+import router from '@ohos.router';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
+import { loginService } from '../service';
+import { UserDataInterface } from '../interface';
+import { USER_DATA } from '../../config/constant';
+import promptAction from '@ohos.promptAction'
+import display from '@ohos.display';
+import preference from '../../utils/PreferenceModel';
 
 @Entry
 @Component
 struct MovieLoginPage {
+  @StorageLink(USER_DATA) userData: UserDataInterface = null;
+  userId: string = '';
+  password: string = '123456';
+  loading: boolean = false;
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -35,35 +46,42 @@ struct MovieLoginPage {
         Image($r("app.media.icon_logo"))
           .width(size.bigIconSize * 3)
           .height(size.bigIconSize * 3)
-          .margin({top:size.pagePadding * 2 ,bottom:size.pagePadding * 2 })
-        Flex({direction:FlexDirection.Row,alignItems:ItemAlign.Center}){
+          .margin({ top: size.pagePadding * 2, bottom: size.pagePadding * 2 })
+        Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
           Image($r('app.media.icon_user_active'))
             .width(size.smallIconSize)
             .height(size.smallIconSize)
-            .margin({left:size.smallPadding,right:size.smallPadding})
-          TextInput({placeholder:"请输入账号"})
+            .margin({ left: size.smallPadding, right: size.smallPadding })
+          TextInput({ placeholder: "请输入账号", text: this.userData.userId })
             .flexGrow(1)
             .backgroundColor(Color.Transparent)
+            .onChange((value) => {
+              this.userId = value;
+            })
         }.padding(size.smallPadding).border({
-          width:1,
-          color:colors.pageBackgroundColor,
-          style:BorderStyle.Solid
+          width: 1,
+          color: colors.pageBackgroundColor,
+          style: BorderStyle.Solid
         }).borderRadius(size.blockBorderRaduis * 2)
 
-        Flex({direction:FlexDirection.Row,alignItems:ItemAlign.Center}){
+        Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
           Image($r('app.media.icon_password'))
             .width(size.smallIconSize)
             .height(size.smallIconSize)
-            .margin({left:size.smallPadding,right:size.smallPadding})
-          TextInput({placeholder:"请输入密码"})
+            .margin({ left: size.smallPadding, right: size.smallPadding })
+          TextInput({ placeholder: "请输入密码", text: '123456' })
+            .type(InputType.Password)
             .flexGrow(1)
             .backgroundColor(Color.Transparent)
-        }.margin({top:size.pagePadding})
+            .onChange((value) => {
+              this.password = value;
+            })
+        }.margin({ top: size.pagePadding })
         .padding(size.smallPadding)
         .border({
-          width:1,
-          color:colors.pageBackgroundColor,
-          style:BorderStyle.Solid
+          width: 1,
+          color: colors.pageBackgroundColor,
+          style: BorderStyle.Solid
         })
         .borderRadius(size.blockBorderRaduis * 2)
 
@@ -75,23 +93,59 @@ struct MovieLoginPage {
           .margin({ top: size.pagePadding })
           .fontColor(Color.White)
           .borderRadius(size.blockBorderRaduis * 2)
-          .onClick(()=>{
-
+          .onClick(() => {
+            if (!this.userId) {
+              return promptAction.showToast({
+                message: "账号不能为空",
+                duration: 2000,
+                bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+              })
+            } else if (!this.password) {
+              return promptAction.showToast({
+                message: "密码不能为空",
+                duration: 2000,
+                bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+              })
+            }
+            this.loading = true;
+            loginService(this.userId, this.password).then(async res => {
+              await preference.setToke(res.token);
+              promptAction.showToast({
+                message: "登录成功",
+                duration: 2000,
+                bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+              })
+              router.replaceUrl({
+                url: 'movie/pages/Index', // 目标url
+              }, router.RouterMode.Single, (err) => {
+                if (err) {
+                  console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
+                }
+              });
+            }).catch((e) => {
+              promptAction.showToast({
+                message: "账号或密码错误，请重登录",
+                duration: 2000,
+                bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+              })
+            }).finally(() => {
+              this.loading = false;
+            })
           })
 
         Text('注册')
           .padding(size.smallPadding)
           .border({
-            width:1,
-            color:colors.pageBackgroundColor,
-            style:BorderStyle.Solid
+            width: 1,
+            color: colors.pageBackgroundColor,
+            style: BorderStyle.Solid
           })
           .borderRadius(size.blockBorderRaduis * 2)
           .width('100%')
           .padding(size.pagePadding)
           .textAlign(TextAlign.Center)
           .margin({ top: size.pagePadding })
-          .onClick(()=>{
+          .onClick(() => {
 
           })
       }
@@ -99,11 +153,12 @@ struct MovieLoginPage {
       .blockStyle()
       .padding({ top: 0, left: size.pagePadding, right: size.pagePadding })
       .flexGrow(1)
+
       Divider().height(size.pagePadding).color(Color.Transparent)
     }
     .width('100%')
     .height('100%')
-    .padding({ left: size.pagePadding,right:size.pagePadding })
+    .padding({ left: size.pagePadding, right: size.pagePadding })
     .backgroundColor(colors.pageBackgroundColor)
   }
 }

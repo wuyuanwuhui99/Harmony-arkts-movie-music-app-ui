@@ -15,7 +15,7 @@ export default struct AvaterComponent{
       .width(this.dimensions)
       .borderRadius(this.dimensions).onClick(()=>{
         router.pushUrl({
-          url: 'movie/pages/MovieUserPage', // 目标url
+          url: 'movie/pages/MovieLoginPage', // 目标url
         }, router.RouterMode.Standard, (err) => {
           if(err){
             console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);

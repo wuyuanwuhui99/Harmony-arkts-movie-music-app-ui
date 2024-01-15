@@ -5,6 +5,7 @@ import * as size from '../../theme/size';
 import { HOST } from '../../config/constant';
 import { USER_DATA } from '../../config/constant';
 import { updateUserDataService } from '../service';
+import preference from '../../utils/PreferenceModel';
 
 @Entry
 @Component
@@ -95,6 +96,7 @@ struct MovieUserPage {
   }
 
   onLogout(){
+    preference.setToke(null);
     router.replaceUrl({
       url: 'movie/pages/MovieLoginPage', // 目标url
     }, router.RouterMode.Single, (err) => {
