@@ -13,8 +13,13 @@ import preference from '../../utils/PreferenceModel';
 struct MovieLoginPage {
   @StorageLink(USER_DATA) userData: UserDataInterface = null;
   userId: string = '';
-  password: string = '123456';
+  password: string = '';
   loading: boolean = false;
+
+  async aboutToAppear(){
+    this.userId = this.userData.userId;
+    this.password = <string> await preference.getPassword(this.userData.userId);
+  }
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -137,7 +142,7 @@ struct MovieLoginPage {
           .padding(size.smallPadding)
           .border({
             width: 1,
-            color: colors.pageBackgroundColor,
+            color: colors.tabBarborderColor,
             style: BorderStyle.Solid
           })
           .borderRadius(size.blockBorderRaduis * 2)
@@ -146,7 +151,14 @@ struct MovieLoginPage {
           .textAlign(TextAlign.Center)
           .margin({ top: size.pagePadding })
           .onClick(() => {
-
+            router.replaceUrl({
+              url: 'movie/pages/MovieRegisterPage', // 目标url
+            }, router.RouterMode.Single, (err) => {
+              if (err) {
+                console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
+              }
+            });
+            router.clear();// 清除历史页面
           })
       }
       .alignItems(HorizontalAlign.Center)

@@ -36,7 +36,7 @@ export default struct MovieComponent{
           })
           Row() {
             Text(this.isScrollEnd ? '已经到底了...' : '正在加载更多...')
-          }.padding({ top: size.pagePadding })
+          }.padding({ top: size.pagePadding,bottom:size.pagePadding })
         }
       }.scrollable(ScrollDirection.Vertical)
       .onScrollEdge((side: Edge) => {
@@ -52,6 +52,6 @@ export default struct MovieComponent{
     .width('100%')
     .height('100%')
     .backgroundColor(colors.pageBackgroundColor)
-    .padding({ left: size.pagePadding, right: size.pagePadding, bottom: size.pagePadding })
+    .padding({ left: size.pagePadding, right: size.pagePadding,})
   }
 }

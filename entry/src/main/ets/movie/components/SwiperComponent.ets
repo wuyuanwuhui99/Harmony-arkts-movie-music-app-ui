@@ -19,16 +19,19 @@ export default struct SwiperComponent{
   }
 
   build() {
-    Swiper(this.swiperController) {
-      ForEach(this.movieList,(movieItem:MovieInterface)=>{
-        Image(HOST + movieItem.localImg)
-          .height(size.swiperHeight)
-          .width('100%')
-          .borderRadius(size.blockBorderRaduis)
-      })
+    if(this.movieList.length > 0){
+      Swiper(this.swiperController) {
+        ForEach(this.movieList,(movieItem:MovieInterface)=>{
+          Image(HOST + movieItem.localImg)
+            .height(size.swiperHeight)
+            .width('100%')
+            .borderRadius(size.blockBorderRaduis)
+        })
+      }
+      .loop(true)
+      .autoPlay(true)
+      .interval(5000)
     }
-    .loop(true)
-    .autoPlay(true)
-    .interval(5000)
+
   }
 }

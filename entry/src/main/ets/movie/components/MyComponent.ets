@@ -3,14 +3,13 @@ import * as size from '../../theme/size';
 import AvaterComponent from './AvaterComponent';
 import { UserDataInterface, UserMsgInterface, MovieInterface } from '../interface/Index';
 import { USER_DATA } from '../../config/constant';
-import { getUserMsgService, getPlayRecordMovieListService,getMyViewsMovieListService,getMyFavoriteMovieListService } from '../service/Index'
+import {
+  getUserMsgService,
+  getPlayRecordMovieListService,
+  getMyViewsMovieListService,
+  getMyFavoriteMovieListService
+} from '../service/Index'
 import { HOST } from '../../config/constant';
-
-@Extend(Image) function classifyIconStyle(iconSize: number) {
-  .width(iconSize)
-  .height(iconSize)
-  .margin({ right: size.pagePadding })
-}
 
 @Entry
 @Component
@@ -36,6 +35,18 @@ export default struct MyComponent {
     .padding(size.pagePadding)
     .width('100%')
     .margin({ top: size.pagePadding })
+  }
+
+  @Styles classifyIconStyle(){
+    .width(size.middlIconSize)
+    .height(size.middlIconSize)
+    .margin({ right: size.smallPadding })
+  }
+
+  @Styles arrowIconStyle(){
+    .width(size.smallIconSize)
+    .height(size.smallIconSize)
+    .opacity(size.opacity)
   }
 
   aboutToAppear() {
@@ -108,10 +119,10 @@ export default struct MyComponent {
 
           Column() {
             Row() {
-              Image($r('app.media.icon_play_record')).height(size.middlIconSize).width(size.middlIconSize)
-              Text('观看记录').padding({ left: size.smallPadding }).flexGrow(1)
+              Image($r('app.media.icon_play_record')).classifyIconStyle()
+              Text('观看记录').flexGrow(1)
               Image($r('app.media.icon_arrow'))
-                .classifyIconStyle(size.smallIconSize)
+                .arrowIconStyle()
                 .rotate({ angle: this.showPlayRecordMovieList ? 90 : 0 })
             }
             .margin({
@@ -120,8 +131,8 @@ export default struct MyComponent {
             .width('100%')
             .onClick(() => {
               this.showPlayRecordMovieList = !this.showPlayRecordMovieList;
-              if(this.showPlayRecordMovieList){
-                getMyViewsMovieListService(1,20).then(res => this.playRecordMovieList = res.data)
+              if (this.showPlayRecordMovieList) {
+                getMyViewsMovieListService(1, 20).then(res => this.playRecordMovieList = res.data)
               }
             })
 
@@ -148,16 +159,16 @@ export default struct MyComponent {
 
           Column() {
             Row() {
-              Image($r('app.media.icon_collection')).classifyIconStyle(size.middlIconSize)
+              Image($r('app.media.icon_collection')).classifyIconStyle()
               Text('我的收藏').flexGrow(1)
               Image($r('app.media.icon_arrow'))
-                .classifyIconStyle(size.smallIconSize)
+                .arrowIconStyle()
                 .rotate({ angle: this.showMyFavoriteList ? 90 : 0 })
             }.width('100%')
             .onClick(() => {
               this.showMyFavoriteList = !this.showMyFavoriteList;
-              if(this.showMyFavoriteList){
-                getMyFavoriteMovieListService(1,20).then(res => this.myFavoriteList = res.data)
+              if (this.showMyFavoriteList) {
+                getMyFavoriteMovieListService(1, 20).then(res => this.myFavoriteList = res.data)
               }
             })
 
@@ -184,18 +195,19 @@ export default struct MyComponent {
 
           Column() {
             Row() {
-              Image($r('app.media.icon_record')).classifyIconStyle(size.middlIconSize)
+              Image($r('app.media.icon_record')).classifyIconStyle()
               Text('我浏览过的电影').flexGrow(1)
-              Image($r('app.media.icon_arrow')).classifyIconStyle(size.smallIconSize).rotate({
+              Image($r('app.media.icon_arrow')).arrowIconStyle().rotate({
                 angle: this.showMyViewList ? 90 : 0
               })
             }.width('100%')
             .onClick(() => {
               this.showMyViewList = !this.showMyViewList;
-              if(this.showMyViewList){
-                getMyViewsMovieListService(1,20).then(res => this.myViewList = res.data)
+              if (this.showMyViewList) {
+                getMyViewsMovieListService(1, 20).then(res => this.myViewList = res.data)
               }
             })
+
             if (this.showMyViewList && !this.loading && this.myViewList.length > 0) {
               Scroll() {
                 Row() {
@@ -220,32 +232,54 @@ export default struct MyComponent {
           Column() {
             Column() {
               Row() {
-                Image($r('app.media.icon_music')).classifyIconStyle(size.middlIconSize)
+                Image($r('app.media.icon_music')).classifyIconStyle()
                 Text('音乐').flexGrow(1)
-                Image($r('app.media.icon_arrow')).classifyIconStyle(size.smallIconSize)
+                Image($r('app.media.icon_arrow')).arrowIconStyle()
               }.width('100%')
-            }.margin({ top: size.pagePadding })
+            }
+
             Column() {
               Row() {
-                Image($r('app.media.icon_music_circle')).classifyIconStyle(size.middlIconSize)
+                Image($r('app.media.icon_music_circle')).classifyIconStyle()
                 Text('电影圈').flexGrow(1)
-                Image($r('app.media.icon_arrow')).classifyIconStyle(size.smallIconSize)
+                Image($r('app.media.icon_arrow')).arrowIconStyle()
               }.width('100%')
-            }.margin({ top: size.pagePadding })
+            }.margin({ top: size.pagePadding }).padding({ top: size.pagePadding }).border({
+              width: {
+                top: 1
+              },
+              color: {
+                top: colors.tabBarborderColor
+              },
+              style: {
+                top: BorderStyle.Solid
+              }
+            })
+
             Column() {
               Row() {
-                Image($r('app.media.icon_app')).classifyIconStyle(size.middlIconSize)
+                Image($r('app.media.icon_app')).classifyIconStyle()
                 Text('小程序').flexGrow(1)
-                Image($r('app.media.icon_arrow')).classifyIconStyle(size.smallIconSize)
+                Image($r('app.media.icon_arrow')).arrowIconStyle()
               }.width('100%')
-            }.margin({ top: size.pagePadding })
-          }.blockStyle().alignItems(HorizontalAlign.Start)
+            }.margin({ top: size.pagePadding }).padding({ top: size.pagePadding }).border({
+              width: {
+                top: 1
+              },
+              color: {
+                top: colors.tabBarborderColor
+              },
+              style: {
+                top: BorderStyle.Solid
+              }
+            })
+          }.blockStyle().margin({bottom:size.pagePadding}).alignItems(HorizontalAlign.Start)
         }
       }.scrollable(ScrollDirection.Vertical)
     }
     .width('100%')
     .height('100%')
     .backgroundColor(colors.pageBackgroundColor)
-    .padding({ left: size.pagePadding, right: size.pagePadding,bottom:size.pagePadding  })
+    .padding({ left: size.pagePadding, right: size.pagePadding,})
   }
 }

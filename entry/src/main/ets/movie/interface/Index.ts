@@ -9,8 +9,8 @@ export interface MyAwesomeData<T> {
 
 export interface UserDataInterface {
   userId:     string;
-  createDate: string;
-  updateDate: string;
+  createDate?: string;
+  updateDate?: string;
   username:   string;
   telephone:  string;
   email:      string;
@@ -21,8 +21,8 @@ export interface UserDataInterface {
   password:   string;
   sign:       string;
   region:     string;
-  disabled:   number;
-  permission: number;
+  disabled?:   number;
+  permission?: number;
 }
 
 export interface MovieInterface {

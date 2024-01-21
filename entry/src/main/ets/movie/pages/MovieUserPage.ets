@@ -6,6 +6,7 @@ import { HOST } from '../../config/constant';
 import { USER_DATA } from '../../config/constant';
 import { updateUserDataService } from '../service';
 import preference from '../../utils/PreferenceModel';
+import OptionDialogComponent from '../components/OptionDialogComponent';
 
 @Entry
 @Component
@@ -20,6 +21,12 @@ struct MovieUserPage {
     .padding(size.pagePadding)
     .width('100%')
     .margin({ top: size.pagePadding })
+  }
+
+  @Styles arrowStyle(){
+    .margin({ left: size.smallPadding })
+    .height(size.smallIconSize)
+    .width(size.smallIconSize).opacity(size.opacity)
   }
 
   @Styles rowStyle(){
@@ -41,31 +48,31 @@ struct MovieUserPage {
   useShowDialog(title: string, field: string) {
     this.title = title;
     this.field = field;
-    if(field === 'sex'){
-      this.dialogController =  new CustomDialogController({
+    if (field === 'sex') {
+      this.dialogController = new CustomDialogController({
         customStyle: true,
         builder: OptionDialogComponent({
-          cancel: ()=>this.onCancel(),
-          confirm: (value)=>this.onConfirm(value),
+          cancel: () => this.onCancel(),
+          confirm: (value) => this.onConfirm(value),
           options: ['男', '女'],
         }),
         alignment: DialogAlignment.Bottom,
       })
-    }else if(title === 'logout'){
-      this.dialogController =  new CustomDialogController({
+    } else if (title === 'logout') {
+      this.dialogController = new CustomDialogController({
         customStyle: false,
         builder: LogoutDialogComponent({
-          cancel: ()=>this.onCancel(),
-          confirm: ()=>this.onLogout(),
+          cancel: () => this.onCancel(),
+          confirm: () => this.onLogout(),
         }),
         alignment: DialogAlignment.Center,
       })
-    }else{
+    } else {
       this.dialogController = new CustomDialogController({
         customStyle: true,
         builder: CustomDialogComponent({
-          cancel: ()=>this.onCancel(),
-          confirm: (value)=>this.onConfirm(value),
+          cancel: () => this.onCancel(),
+          confirm: (value) => this.onConfirm(value),
           title: this.title,
           text: this.userData[this.field]
         }),
@@ -75,7 +82,7 @@ struct MovieUserPage {
     this.dialogController.open()
   }
 
-  dialogController: CustomDialogController  = null
+  dialogController: CustomDialogController = null
 
   onCancel() {
     this.dialogController.close()
@@ -95,15 +102,16 @@ struct MovieUserPage {
     })
   }
 
-  onLogout(){
+  onLogout() {
     preference.setToke(null);
     router.replaceUrl({
       url: 'movie/pages/MovieLoginPage', // 目标url
     }, router.RouterMode.Single, (err) => {
-      if(err){
+      if (err) {
         console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
       }
     });
+    router.clear(); // 清除历史页面
   }
 
   build() {
@@ -111,23 +119,17 @@ struct MovieUserPage {
       Column() {
         Row() {
           Text('头像').flexGrow(1)
-          Image(this.userData ? HOST + this.userData.avater : '')
+          Image(this.userData && this.userData.avater ? HOST + this.userData.avater : $r('app.media.default_avater'))
             .height(size.bigAvaterSize)
             .width(size.bigAvaterSize)
             .borderRadius(size.bigAvaterSize)
-          Image($r('app.media.icon_arrow'))
-            .margin({ left: size.smallPadding })
-            .height(size.smallIconSize)
-            .width(size.smallIconSize)
+          Image($r('app.media.icon_arrow')).arrowStyle()
         }.rowStyle().justifyContent(FlexAlign.Center)
 
         Row() {
           Text('昵称').flexGrow(1)
           Text(this.userData.username)
-          Image($r('app.media.icon_arrow'))
-            .margin({ left: size.smallPadding })
-            .height(size.smallIconSize)
-            .width(size.smallIconSize)
+          Image($r('app.media.icon_arrow')).arrowStyle()
         }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
           this.useShowDialog('昵称', 'username')
         })
@@ -135,10 +137,7 @@ struct MovieUserPage {
         Row() {
           Text('性别').flexGrow(1)
           Text(this.userData.sex)
-          Image($r('app.media.icon_arrow'))
-            .margin({ left: size.smallPadding })
-            .height(size.smallIconSize)
-            .width(size.smallIconSize)
+          Image($r('app.media.icon_arrow')).arrowStyle()
         }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
           this.useShowDialog('性别', 'sex')
         })
@@ -146,10 +145,7 @@ struct MovieUserPage {
         Row() {
           Text('电话').flexGrow(1)
           Text(this.userData.telephone)
-          Image($r('app.media.icon_arrow'))
-            .margin({ left: size.smallPadding })
-            .height(size.smallIconSize)
-            .width(size.smallIconSize)
+          Image($r('app.media.icon_arrow')).arrowStyle()
         }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
           this.useShowDialog('电话', 'telephone')
         })
@@ -157,10 +153,7 @@ struct MovieUserPage {
         Row() {
           Text('邮箱').flexGrow(1)
           Text(this.userData.email)
-          Image($r('app.media.icon_arrow'))
-            .margin({ left: size.smallPadding })
-            .height(size.smallIconSize)
-            .width(size.smallIconSize)
+          Image($r('app.media.icon_arrow')).arrowStyle()
         }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
           this.useShowDialog('邮箱', 'email')
         })
@@ -168,21 +161,22 @@ struct MovieUserPage {
         Row() {
           Text('生日').flexGrow(1)
           Text(this.userData.birthday)
-          Image($r('app.media.icon_arrow'))
-            .margin({ left: size.smallPadding })
-            .height(size.smallIconSize)
-            .width(size.smallIconSize)
+          Image($r('app.media.icon_arrow')).arrowStyle()
         }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
-          this.useShowDialog('生日', 'birthday')
+          DatePickerDialog.show({
+            start: new Date("1970-1-1"),
+            end: new Date("2100-12-31"),
+            selected: new Date(this.userData.birthday),
+            onChange: (value: DatePickerResult) => {
+              this.userData.birthday = `${value.year}-${value.month}-${value.day}`;
+            }
+          })
         })
 
         Row() {
           Text('个性签名').flexGrow(1)
           Text(this.userData.sign)
-          Image($r('app.media.icon_arrow'))
-            .margin({ left: size.smallPadding })
-            .height(size.smallIconSize)
-            .width(size.smallIconSize)
+          Image($r('app.media.icon_arrow')).arrowStyle()
         }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
           this.useShowDialog('个性签名', 'sign')
         })
@@ -190,10 +184,7 @@ struct MovieUserPage {
         Row() {
           Text('区域').flexGrow(1)
           Text(this.userData.region)
-          Image($r('app.media.icon_arrow'))
-            .margin({ left: size.smallPadding })
-            .height(size.smallIconSize)
-            .width(size.smallIconSize)
+          Image($r('app.media.icon_arrow')).arrowStyle()
         }.rowStyle().border({ width: 0 }).justifyContent(FlexAlign.Center).onClick(() => {
           this.useShowDialog('区域', 'region')
         })
@@ -207,12 +198,13 @@ struct MovieUserPage {
         .backgroundColor(colors.warnColor)
         .margin({ top: size.pagePadding })
         .fontColor(Color.White)
-        .borderRadius(size.blockBorderRaduis * 2).onClick(()=>{
-          this.useShowDialog('logout','');
+        .borderRadius(size.blockBorderRaduis * 2)
+        .onClick(() => {
+          this.useShowDialog('logout', '');
         })
     }
     .width('100%')
-    .padding({ left: size.pagePadding, right: size.pagePadding,bottom:size.pagePadding })
+    .padding({ left: size.pagePadding, right: size.pagePadding, bottom: size.pagePadding })
     .height('100%')
     .justifyContent(FlexAlign.Start)
     .backgroundColor(colors.pageBackgroundColor)
@@ -241,7 +233,7 @@ struct CustomDialogComponent {
     Column() {
       Text("请输入")
         .margin({ top: size.pagePadding, bottom: size.pagePadding })
-      Flex({alignItems:ItemAlign.Center}) {
+      Flex({ alignItems: ItemAlign.Center }) {
         Text(this.title)
           .flexShrink(0)
           .margin({ right: size.smallIconSize })
@@ -254,16 +246,17 @@ struct CustomDialogComponent {
           })
       }.margin(size.pagePadding)
 
-      Row(){
+      Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
         Text('取消')
           .onClick(() => {
             this.controller.close()
             this.cancel()
-          }).flexGrow(1)
+          })
+          .flexGrow(1)
           .textAlign(TextAlign.Center)
           .backgroundColor(colors.blockColor)
           .fontColor(Color.Black)
-        Divider().width(1).height('100%').backgroundColor(colors.pageBackgroundColor)
+        Divider().width(1).height('100%').backgroundColor(colors.tabBarborderColor)
         Text('确定')
           .onClick(() => {
             this.confirm(this.value)
@@ -272,7 +265,18 @@ struct CustomDialogComponent {
           .textAlign(TextAlign.Center)
           .backgroundColor(colors.blockColor)
           .fontColor(Color.Red)
-      }.alignItems(VerticalAlign.Center).height(size.dialogBtnHeight)
+      }.height(size.dialogBtnHeight).border({
+        width: {
+          top: 1,
+        },
+        color: {
+          top: colors.tabBarborderColor
+        },
+        style: {
+          top: BorderStyle.Solid
+        }
+      })
+      .width('100%')
     }
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
@@ -280,62 +284,6 @@ struct CustomDialogComponent {
   }
 }
 
-/**
- * @description: 修改新别弹窗
- * @date: 2024-01-14 21:47
- * @author wuwenqiang
- */
-@CustomDialog
-struct OptionDialogComponent {
-  controller: CustomDialogController
-  cancel: () => void
-  confirm: (value: string) => void
-  options: Array<string>
-
-  build() {
-    Column() {
-      Column() {
-        Text('男')
-          .textAlign(TextAlign.Center)
-          .width('100%')
-          .padding(size.pagePadding)
-          .backgroundColor(colors.blockColor)
-          .borderRadius(size.blockBorderRaduis)
-          .onClick(()=>{
-            this.confirm('男')
-          })
-        Divider()
-          .height(1)
-          .backgroundColor(colors.pageBackgroundColor)
-        Text('女')
-          .textAlign(TextAlign.Center)
-          .width('100%')
-          .padding(size.pagePadding)
-          .onClick(()=>{
-            this.confirm('女')
-          })
-      }.backgroundColor(colors.blockColor)
-      .borderRadius(size.blockBorderRaduis)
-      .padding({ left: size.pagePadding, right: size.pagePadding })
-
-      Divider()
-        .height(size.pagePadding)
-        .backgroundColor(Color.Transparent)
-      Text('取消')
-        .textAlign(TextAlign.Center)
-        .width('100%')
-        .padding(size.pagePadding)
-        .backgroundColor(colors.blockColor)
-        .borderRadius(size.blockBorderRaduis)
-        .onClick(() => {
-          this.cancel()
-        })
-      Divider()
-        .height(size.pagePadding)
-        .backgroundColor(Color.Transparent)
-    }.width('100%').backgroundColor(Color.Transparent).padding({ left: size.pagePadding, right: size.pagePadding })
-  }
-}
 
 /**
  * @description: 退出登录弹窗
@@ -353,7 +301,7 @@ struct LogoutDialogComponent {
     Column() {
       Text("是否退出登录？")
         .padding(size.pagePadding * 2)
-      Row(){
+      Row() {
         Text('取消')
           .onClick(() => {
             this.controller.close()

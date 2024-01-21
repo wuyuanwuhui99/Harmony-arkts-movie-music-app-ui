@@ -4,6 +4,7 @@
     "movie/pages/MovieDetailPage",
     "movie/pages/MoviePlayPage",
     "movie/pages/MovieUserPage",
-    "movie/pages/MovieLoginPage"
+    "movie/pages/MovieLoginPage",
+    "movie/pages/MovieRegisterPage"
   ]
 }

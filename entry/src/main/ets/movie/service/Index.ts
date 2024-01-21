@@ -131,3 +131,23 @@ export const loginService = (userId:string,password:string):Promise<MyAwesomeDat
   password = CryptoJS.MD5(password).toString();// 使用md5加密
   return httpRequest.post<number>(api.login,{userId,password})
 };
+
+/**
+ * @description: 注册
+ * @date: 2024-01-21 14:48
+ * @author wuwenqiang
+ */
+export const registerService = (userData:types.UserDataInterface):Promise<MyAwesomeData<number>>=>{
+  userData = {...userData};
+  userData.password = CryptoJS.MD5(userData.password).toString();// 使用md5加密
+  return httpRequest.put<number>(api.register,userData)
+};
+
+/**
+ * @description: 注册
+ * @date: 2024-01-21 14:48
+ * @author wuwenqiang
+ */
+export const verifyUserIdService = (userId:string):Promise<MyAwesomeData<number>>=>{
+  return httpRequest.get<number>(`${api.verifyUserId}?userId=${userId}`)
+};
