@@ -151,3 +151,12 @@ export const registerService = (userData:types.UserDataInterface):Promise<MyAwes
 export const verifyUserIdService = (userId:string):Promise<MyAwesomeData<number>>=>{
   return httpRequest.get<number>(`${api.verifyUserId}?userId=${userId}`)
 };
+
+/**
+ * @description: 获取推荐的电影
+ * @date: 2024-01-22 23:05
+ * @author wuwenqiang
+ */
+export const getRecommendSerivce = (classify:string):Promise<MyAwesomeData<Array<types.MovieInterface>>>=>{
+  return httpRequest.get<Array<types.MovieInterface>>(`${api.getRecommend}?classify=${encodeURIComponent(classify)}`)
+};

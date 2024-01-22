@@ -1,10 +1,11 @@
 {
   "src": [
-    "movie/pages/Index",
+    "movie/pages/IndexPage",
     "movie/pages/MovieDetailPage",
     "movie/pages/MoviePlayPage",
     "movie/pages/MovieUserPage",
     "movie/pages/MovieLoginPage",
-    "movie/pages/MovieRegisterPage"
+    "movie/pages/MovieRegisterPage",
+    "movie/pages/MovieSearchPage"
   ]
 }

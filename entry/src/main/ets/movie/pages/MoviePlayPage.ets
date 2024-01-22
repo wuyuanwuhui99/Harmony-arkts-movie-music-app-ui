@@ -103,9 +103,9 @@ struct MoviePlayPage {
                   }
                 })
               }
-                .columnsTemplate('1fr 1fr 1fr 1fr 1fr')
-                .columnsGap(10)
-                .rowsGap(10).margin({top:size.smallPadding})
+                .columnsTemplate('1fr 1fr 1fr 1fr')
+                .columnsGap(size.smallPadding)
+                .rowsGap(size.smallPadding).margin({top:size.smallPadding})
             }.blockStyle().alignItems(HorizontalAlign.Start)
           }
           .backgroundColor(colors.pageBackgroundColor)

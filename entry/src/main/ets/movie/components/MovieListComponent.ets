@@ -5,43 +5,67 @@ import * as size from '../../theme/size';
 
 @Component
 export default struct MovieListComponent{
-  @Prop movieListStr:string;
-  @State movieList:Array<MovieInterface> = []
-
-  aboutToAppear(){
-    // 把字符串转成对象
-    this.movieList = JSON.parse(this.movieListStr) as Array<MovieInterface>;
-  }
+  @Prop gravity:string;// 排列方向，vertical | horizontal
+  @Link movieList:Array<MovieInterface>;
 
   build(){
     Scroll(){
-      Row(){
-        ForEach(this.movieList,(item:MovieInterface)=>{
-          Column(){
-            Image(HOST + item.localImg)
-              .width(size.movieWidth)
-              .height(size.movieHeight)
-              .borderRadius(size.blockBorderRaduis)
-              .margin({bottom:size.smallPadding})
-            Text(item.movieName).fontSize(size.normalFontSize)
-          }
-          .margin({right:size.smallPadding})
-          .alignItems(HorizontalAlign.Center)
-          .width(size.movieWidth)
-          .onClick((event: ClickEvent)=>{
-            router.pushUrl({
-              url: 'movie/pages/MovieDetailPage', // 目标url
-              params: {
-                movieItem: item
-              }
-            }, router.RouterMode.Standard, (err) => {
-              if(err){
-                console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
-              }
-            });
+      if(this.gravity === 'horizontal'){
+        Row(){
+          ForEach(this.movieList,(item:MovieInterface,index:number)=>{
+            MovieItemComponent({movieItemStr:JSON.stringify(item)})
           })
-        })
+        }
+      }else{
+        Grid(){
+          ForEach(this.movieList,(item:MovieInterface,index:number)=>{
+            GridItem(){
+              MovieItemComponent({movieItemStr:JSON.stringify(item)})
+            }
+          })
+        }.columnsTemplate('1fr 1fr')
+        .columnsGap(size.smallPadding)
+        .rowsGap(size.smallPadding).margin({top:size.smallPadding})
       }
-    }.width('100%').scrollable(ScrollDirection.Horizontal)
+
+    }.width('100%').scrollable(this.gravity === 'horizontal' ? ScrollDirection.Horizontal: ScrollDirection.Vertical)
+  }
+}
+
+@Component
+struct MovieItemComponent{
+  @Prop movieItemStr:string;
+
+  @State movieItem:MovieInterface = null;
+
+  aboutToAppear(){
+    this.movieItem = JSON.parse(this.movieItemStr) as MovieInterface;
+  }
+
+
+  build(){
+    Column(){
+      Image(HOST + this.movieItem.localImg)
+        .width(size.movieWidth)
+        .height(size.movieHeight)
+        .borderRadius(size.blockBorderRaduis)
+        .margin({bottom:size.smallPadding})
+      Text(this.movieItem.movieName).fontSize(size.normalFontSize)
+    }
+    .margin({right:size.smallPadding})
+    .alignItems(HorizontalAlign.Center)
+    .width(size.movieWidth)
+    .onClick(()=>{
+      router.pushUrl({
+        url: 'movie/pages/MovieDetailPage', // 目标url
+        params: {
+          movieItem: this.movieItem
+        }
+      }, router.RouterMode.Standard, (err) => {
+        if(err){
+          console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
+        }
+      });
+    })
   }
 }

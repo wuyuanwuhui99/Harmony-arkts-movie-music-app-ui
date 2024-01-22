@@ -26,7 +26,7 @@ export default struct CategoryComponent{
     Column(){
       TitleComponent({title:this.classifyItem.category})
       if(this.movieList.length > 0){// 必须加判断，否则后更新的数据不会触发MovieListComponent组件重新渲染
-        MovieListComponent({movieListStr:JSON.stringify(this.movieList)})
+        MovieListComponent({gravity:'horizontal',movieList:$movieList})
       }
     }.backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
