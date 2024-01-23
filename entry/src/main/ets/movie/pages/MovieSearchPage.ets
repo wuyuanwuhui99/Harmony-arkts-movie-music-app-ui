@@ -4,14 +4,21 @@ import * as size from '../../theme/size';
 import { MovieInterface } from '../interface/Index';
 import TitleComponent from '../components/TitleComponent';
 import MovieListComponent from '../components/MovieListComponent';
-import {getRecommendSerivce} from '../service/Index';
+import { getRecommendSerivce, getSearchResultService } from '../service/Index';
+import preference from '../../utils/PreferenceModel';
+
 @Entry
 @Component
 struct MovieSearchPage {
   scroller: Scroller = new Scroller()
-  @State searchkeyWord: string = ''; // 搜索词
-  @State classify:string = '';
-  @State movieList:Array<MovieInterface> = [];
+  @State searchKeyWord: string = ''; // 搜索词
+  @State classify: string = '';
+  @State movieList: Array<MovieInterface> = [];
+  @State searching: boolean = false;
+  @State searchMovieList: Array<MovieInterface> = [];
+  @State loading: boolean = false;
+  @State searchRecordList: Array<string> = []
+  controller: TextInputController = new TextInputController()
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -23,11 +30,14 @@ struct MovieSearchPage {
 
   @State movieItem: MovieInterface = null;
 
-  aboutToAppear() {
+  async aboutToAppear() {
     const params = router.getParams(); // 获取传递过来的参数对象
     this.movieItem = params['movieItem'] as MovieInterface; // 获取info属性的值
     this.classify = params['classify'] as string; // 获取info属性的值
-    getRecommendSerivce(this.classify).then(res=>{
+    preference.getMovieSeachKeyWord().then(res => {
+      this.searchRecordList = res;
+    })
+    getRecommendSerivce(this.classify).then(res => {
       this.movieList.push(...res.data);
     })
   }
@@ -35,13 +45,30 @@ struct MovieSearchPage {
   build() {
     Column() {
       Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
-        TextInput({ placeholder: this.movieItem && this.movieItem.movieName })
-          .flexGrow(1)
-          .height(size.middleAvaterSize)
-          .backgroundColor(colors.pageBackgroundColor)
-          .onChange((value) => {
-            this.searchkeyWord = value;
-          })
+        Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
+          TextInput({ text: this.searchKeyWord, placeholder: this.movieItem && this.movieItem.movieName })
+            .flexGrow(1)
+            .height(size.middleAvaterSize)
+            .backgroundColor(Color.Transparent)
+            .onChange((value) => {
+              this.searchKeyWord = value.trim();
+            })
+
+          if (this.searchKeyWord) {
+            Image($r('app.media.icon_clear'))
+              .width(size.smallIconSize)
+              .height(size.smallIconSize)
+              .onClick(() => {
+                this.controller
+              })
+              .margin({ left: size.pagePadding, right: size.pagePadding })
+              .onClick(() => {
+                this.searchKeyWord = '';
+                this.searching = false;
+              })
+          }
+        }.borderRadius(size.middleAvaterSize).backgroundColor(colors.pageBackgroundColor)
+
         Text("搜索")
           .width('25%')
           .textAlign(TextAlign.Center)
@@ -51,29 +78,76 @@ struct MovieSearchPage {
           .borderRadius(size.pagePadding * 2)
           .height(size.middleAvaterSize)
           .fontColor(colors.blockColor)
+          .onClick(async () => {
+            if(this.loading)return;
+            this.loading = true;
+            this.searching = true;
+            if (!this.searchKeyWord) {
+              this.searchKeyWord = this.movieItem.movieName;
+            }
+            // 搜索记录写入缓存
+            preference.setMovieSeachKeyWord(this.searchKeyWord).then((res)=>{
+              this.searchRecordList = res;
+            });
+            // 搜索
+            getSearchResultService(this.searchKeyWord, 20, 1).then((res) => {
+              this.searchMovieList = res.data;
+            }).finally(()=>this.loading = false)
+          })
+
       }.blockStyle()
 
-      Scroll(this.scroller) {
-        Column(){
-          Column() {
-            TitleComponent({ title: "历史搜索" })
-            Flex({ wrap: FlexWrap.Wrap }) {
-              Text('长津湖之水门桥')
-                .backgroundColor(colors.pageBackgroundColor)
-                .height(size.middleAvaterSize)
-                .borderRadius(size.pagePadding * 2)
-                .textAlign(TextAlign.Center)
-                .padding({ left: size.pagePadding, right: size.pagePadding })
-            }
-          }.blockStyle()
-
-          Column(){
-            TitleComponent({ title: "推荐" })
-            MovieListComponent({movieList:$movieList,gravity:'vertical'})
-          }.blockStyle().margin({top:size.pagePadding,bottom:size.pagePadding})
+      if (this.searching) {
+        if(!this.loading){
+          Scroll(){
+            Column() {
+              if(this.searchMovieList.length === 0){
+                Text("暂无搜索结果")
+                  .width('100%')
+                  .height(size.bigAvaterSize)
+                  .textAlign(TextAlign.Center)
+              }else{
+                MovieListComponent({ movieList: $searchMovieList, gravity: 'vertical' })
+              }
+            }.blockStyle()
+          }.width('100%').scrollable(ScrollDirection.Vertical)
         }
+      } else {
+        Scroll(this.scroller) {
+          Column() {
+            Column() {
+              TitleComponent({ title: "历史搜索" })
+              if(this.searchRecordList.length === 0){
+                Text("暂无搜索记录")
+                  .width('100%')
+                  .height(size.bigAvaterSize)
+                  .textAlign(TextAlign.Center)
+              }else{
+                Flex({ wrap: FlexWrap.Wrap }) {
+                  ForEach(this.searchRecordList,(item:string)=>{
+                    Text(item)
+                      .backgroundColor(colors.pageBackgroundColor)
+                      .height(size.middleAvaterSize)
+                      .borderRadius(size.pagePadding * 2)
+                      .textAlign(TextAlign.Center)
+                      .padding({ left: size.pagePadding, right: size.pagePadding })
+                      .onClick(()=>{
+                        this.searchKeyWord = item;
+                      })
+                  })
+                }
+              }
 
-      }.flexGrow(1).width('100%').scrollable(ScrollDirection.Vertical)
+            }.blockStyle()
+
+            Column() {
+              TitleComponent({ title: "推荐" })
+              MovieListComponent({ movieList: $movieList, gravity: 'vertical' })
+            }.blockStyle().margin({ top: size.pagePadding, bottom: size.pagePadding })
+          }
+        }.width('100%').scrollable(ScrollDirection.Vertical)
+
+      }
     }
     .backgroundColor(colors.pageBackgroundColor)
     .padding({

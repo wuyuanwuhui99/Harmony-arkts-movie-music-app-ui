@@ -88,6 +88,29 @@ class PreferenceModel {
   setPassword(userId:string,password:string) {
     this.putPreference(userId,password);
   }
+
+  //获取date日期对应的浏览历史
+  async getMovieSeachKeyWord():Promise<Array<string>> {
+    let movieSearchKeyWord = <string> await this.getPreference('movieSearchKeyWord');
+    if(movieSearchKeyWord){
+      return JSON.parse(movieSearchKeyWord)
+    }else {
+      return []
+    }
+  }
+
+  // 电影搜索记录
+  async setMovieSeachKeyWord(keyWord):Promise<Array<string>> {
+    const movieSearchKeyWord:Array<string> = await this.getMovieSeachKeyWord();
+    const index = movieSearchKeyWord.findIndex(item => item === keyWord);
+    if(index !== -1){
+      movieSearchKeyWord.splice(index,1)
+    }
+    movieSearchKeyWord.unshift(keyWord);
+    // 最多只存十条记录
+    if(movieSearchKeyWord.length > 10)movieSearchKeyWord.splice(10,movieSearchKeyWord.length - 10)
+    return movieSearchKeyWord;
+  }
 }
 
 export default new PreferenceModel()

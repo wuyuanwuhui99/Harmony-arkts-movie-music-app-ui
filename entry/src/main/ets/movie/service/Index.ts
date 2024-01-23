@@ -160,3 +160,13 @@ export const verifyUserIdService = (userId:string):Promise<MyAwesomeData<number>
 export const getRecommendSerivce = (classify:string):Promise<MyAwesomeData<Array<types.MovieInterface>>>=>{
   return httpRequest.get<Array<types.MovieInterface>>(`${api.getRecommend}?classify=${encodeURIComponent(classify)}`)
 };
+
+
+/**
+ * @description: 电影搜索
+ * @date: 2024-01-23 22:12
+ * @author wuwenqiang
+ */
+export const getSearchResultService = (keyword:string, pageSize:number = 20, pageNum:number = 1):Promise<MyAwesomeData<Array<types.MovieInterface>>>=>{
+  return httpRequest.get<Array<types.MovieInterface>>(`${api.getSearchResult}?keyword=${encodeURIComponent(keyword)}&pageSize=${pageSize}&pageNum=${pageNum}`)
+};
