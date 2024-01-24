@@ -7,13 +7,24 @@ import * as size from '../../theme/size';
 export default struct MovieListComponent {
   @Prop gravity: string; // 排列方向，vertical | horizontal
   @Link movieList: Array<MovieInterface>;
+  @State movieListGroup: Array<Array<MovieInterface>> = [];
+
+  aboutToAppear(){
+    this.movieList.forEach((item,index)=>{
+      if(index % 3 === 0){
+        this.movieListGroup.push([item])
+      }else{
+        this.movieListGroup[this.movieListGroup.length - 1].push(item);
+      }
+    })
+  }
 
   build() {
     if (this.gravity === 'horizontal') {
       Scroll() {
         Row() {
           ForEach(this.movieList, (item: MovieInterface, index: number) => {
-            MovieItemComponent({ movieItemStr: JSON.stringify(item) })
+            MovieItemComponent({ movieItemStr: JSON.stringify(item),gravity:'horizontal' })
           })
         }
       }.width('100%').scrollable(this.gravity === 'horizontal' ? ScrollDirection.Horizontal : ScrollDirection.Vertical)
@@ -21,12 +32,14 @@ export default struct MovieListComponent {
       Grid() {
         ForEach(this.movieList, (item: MovieInterface, index: number) => {
           GridItem() {
-            MovieItemComponent({ movieItemStr: JSON.stringify(item) })
+            MovieItemComponent({ movieItemStr: JSON.stringify(item),gravity:'vertical' })
           }
         })
-      }.columnsTemplate('1fr 1fr')
-      .columnsGap(size.smallPadding)
-      .rowsGap(size.smallPadding).margin({ top: size.smallPadding })
+      }.columnsTemplate('1fr 1fr 1fr')
+      .height('100%')
+      .columnsGap(size.pagePadding)
+      .rowsGap(size.pagePadding)
+      .scrollBar(BarState.Off)
     }
   }
 }
@@ -35,6 +48,7 @@ export default struct MovieListComponent {
 struct MovieItemComponent {
   @Prop movieItemStr: string;
   @State movieItem: MovieInterface = null;
+  @Prop gravity: string; // 排列方向，vertical | horizontal
 
   aboutToAppear() {
     this.movieItem = JSON.parse(this.movieItemStr) as MovieInterface;
@@ -43,15 +57,20 @@ struct MovieItemComponent {
   build() {
     Column() {
       Image(HOST + this.movieItem.localImg)
-        .width(size.movieWidth)
-        .height(size.movieHeight)
+        .width(this.gravity === 'horizontal' ? size.movieWidth: '100%')
+        .height(this.gravity === 'horizontal' ? size.movieHeight: 'auto')
         .borderRadius(size.blockBorderRaduis)
         .margin({ bottom: size.smallPadding })
-      Text(this.movieItem.movieName).fontSize(size.normalFontSize)
+      Text(this.movieItem.movieName)
+        .maxLines(1)
+        .textAlign(TextAlign.Center)
+        .width(this.gravity === 'horizontal' ? size.movieWidth: '100%')
+        .textOverflow({overflow: TextOverflow.Ellipsis})
+        .fontSize(size.normalFontSize)
     }
     .margin({ right: size.smallPadding })
     .alignItems(HorizontalAlign.Center)
-    .width(size.movieWidth)
+    .width(this.gravity === 'horizontal' ? size.movieWidth: '100%')
     .onClick(() => {
       router.pushUrl({
         url: 'movie/pages/MovieDetailPage', // 目标url

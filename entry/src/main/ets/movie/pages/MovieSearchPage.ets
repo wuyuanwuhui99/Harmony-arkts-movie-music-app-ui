@@ -13,7 +13,7 @@ struct MovieSearchPage {
   scroller: Scroller = new Scroller()
   @State searchKeyWord: string = ''; // 搜索词
   @State classify: string = '';
-  @State movieList: Array<MovieInterface> = [];
+  @State recommendMovieList: Array<MovieInterface> = []; // 推荐的电影
   @State searching: boolean = false;
   @State searchMovieList: Array<MovieInterface> = [];
   @State loading: boolean = false;
@@ -38,115 +38,115 @@ struct MovieSearchPage {
       this.searchRecordList = res;
     })
     getRecommendSerivce(this.classify).then(res => {
-      this.movieList.push(...res.data);
+      this.recommendMovieList.push(...res.data);
     })
   }
 
   build() {
-    Column() {
-      Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
+    Scroll() {
+      Column() {
+
+
         Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
-          TextInput({ text: this.searchKeyWord, placeholder: this.movieItem && this.movieItem.movieName })
-            .flexGrow(1)
+          Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
+            TextInput({ text: this.searchKeyWord, placeholder: this.movieItem && this.movieItem.movieName })
+              .flexGrow(1)
+              .height(size.middleAvaterSize)
+              .backgroundColor(Color.Transparent)
+              .onChange((value) => {
+                this.searchKeyWord = value.trim();
+              })
+
+            if (this.searchKeyWord) {
+              Image($r('app.media.icon_clear'))
+                .width(size.smallIconSize)
+                .height(size.smallIconSize)
+                .onClick(() => {
+                  this.controller
+                })
+                .margin({ left: size.pagePadding, right: size.pagePadding })
+                .onClick(() => {
+                  this.searchKeyWord = '';
+                  this.searching = false;
+                })
+            }
+          }.borderRadius(size.middleAvaterSize).backgroundColor(colors.pageBackgroundColor)
+
+          Text("搜索")
+            .width('25%')
+            .textAlign(TextAlign.Center)
+            .fontSize(size.normalFontSize)
+            .margin({ left: size.pagePadding })
+            .backgroundColor(colors.lineBackgroundColor)
+            .borderRadius(size.pagePadding * 2)
             .height(size.middleAvaterSize)
-            .backgroundColor(Color.Transparent)
-            .onChange((value) => {
-              this.searchKeyWord = value.trim();
+            .fontColor(colors.blockColor)
+            .onClick(async () => {
+              if (this.loading) return;
+              this.loading = true;
+              this.searching = true;
+              if (!this.searchKeyWord) {
+                this.searchKeyWord = this.movieItem.movieName;
+              }
+              // 搜索记录写入缓存
+              preference.setMovieSeachKeyWord(this.searchKeyWord).then((res) => {
+                this.searchRecordList = res;
+              });
+              // 搜索
+              getSearchResultService(this.searchKeyWord, 20, 1).then((res) => {
+                this.searchMovieList = res.data;
+              }).finally(() => this.loading = false)
             })
 
-          if (this.searchKeyWord) {
-            Image($r('app.media.icon_clear'))
-              .width(size.smallIconSize)
-              .height(size.smallIconSize)
-              .onClick(() => {
-                this.controller
-              })
-              .margin({ left: size.pagePadding, right: size.pagePadding })
-              .onClick(() => {
-                this.searchKeyWord = '';
-                this.searching = false;
-              })
-          }
-        }.borderRadius(size.middleAvaterSize).backgroundColor(colors.pageBackgroundColor)
+        }.blockStyle()
 
-        Text("搜索")
-          .width('25%')
-          .textAlign(TextAlign.Center)
-          .fontSize(size.normalFontSize)
-          .margin({ left: size.pagePadding })
-          .backgroundColor(colors.lineBackgroundColor)
-          .borderRadius(size.pagePadding * 2)
-          .height(size.middleAvaterSize)
-          .fontColor(colors.blockColor)
-          .onClick(async () => {
-            if(this.loading)return;
-            this.loading = true;
-            this.searching = true;
-            if (!this.searchKeyWord) {
-              this.searchKeyWord = this.movieItem.movieName;
-            }
-            // 搜索记录写入缓存
-            preference.setMovieSeachKeyWord(this.searchKeyWord).then((res)=>{
-              this.searchRecordList = res;
-            });
-            // 搜索
-            getSearchResultService(this.searchKeyWord, 20, 1).then((res) => {
-              this.searchMovieList = res.data;
-            }).finally(()=>this.loading = false)
-          })
-
-      }.blockStyle()
-
-      if (this.searching) {
-        if(!this.loading){
-          Scroll(){
-            Column() {
-              if(this.searchMovieList.length === 0){
+        if (this.searching) {
+          if (!this.loading) {
+            Flex({ direction: FlexDirection.Column }) {
+              if (this.searchMovieList.length === 0) {
                 Text("暂无搜索结果")
                   .width('100%')
                   .height(size.bigAvaterSize)
                   .textAlign(TextAlign.Center)
-              }else{
+              } else {
                 MovieListComponent({ movieList: $searchMovieList, gravity: 'vertical' })
               }
-            }.blockStyle()
-          }.width('100%').scrollable(ScrollDirection.Vertical)
-        }
-      } else {
-        Scroll(this.scroller) {
+            }.blockStyle().height('auto')
+          }
+        } else {
           Column() {
             Column() {
               TitleComponent({ title: "历史搜索" })
-              if(this.searchRecordList.length === 0){
+              if (this.searchRecordList.length === 0) {
                 Text("暂无搜索记录")
                   .width('100%')
                   .height(size.bigAvaterSize)
                   .textAlign(TextAlign.Center)
-              }else{
+              } else {
                 Flex({ wrap: FlexWrap.Wrap }) {
-                  ForEach(this.searchRecordList,(item:string)=>{
+                  ForEach(this.searchRecordList, (item: string) => {
                     Text(item)
                       .backgroundColor(colors.pageBackgroundColor)
                       .height(size.middleAvaterSize)
                       .borderRadius(size.pagePadding * 2)
                       .textAlign(TextAlign.Center)
                       .padding({ left: size.pagePadding, right: size.pagePadding })
-                      .onClick(()=>{
+                      .onClick(() => {
                         this.searchKeyWord = item;
                       })
                   })
                 }
               }
-
             }.blockStyle()
 
-            Column() {
-              TitleComponent({ title: "推荐" })
-              MovieListComponent({ movieList: $movieList, gravity: 'vertical' })
-            }.blockStyle().margin({ top: size.pagePadding, bottom: size.pagePadding })
+            if (this.recommendMovieList.length > 0) {
+              Column() {
+                TitleComponent({ title: "推荐" })
+                MovieListComponent({ movieList: $recommendMovieList, gravity: 'vertical' })
+              }.blockStyle().margin({ top: size.pagePadding, bottom: size.pagePadding })
+            }
           }
-        }.width('100%').scrollable(ScrollDirection.Vertical)
-
+        }
       }
     }
     .backgroundColor(colors.pageBackgroundColor)
@@ -154,6 +154,7 @@ struct MovieSearchPage {
       left: size.pagePadding,
       right: size.pagePadding
     })
+    .scrollable(ScrollDirection.Vertical)
     .height('100%')
     .width('100%')
   }
