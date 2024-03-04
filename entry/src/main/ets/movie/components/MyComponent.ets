@@ -1,3 +1,4 @@
+import router from '@ohos.router';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import AvaterComponent from './AvaterComponent';
@@ -235,7 +236,15 @@ export default struct MyComponent {
                 Image($r('app.media.icon_music')).classifyIconStyle()
                 Text('音乐').flexGrow(1)
                 Image($r('app.media.icon_arrow')).arrowIconStyle()
-              }.width('100%')
+              }.width('100%').onClick(()=>{
+                router.pushUrl({
+                  url: 'music/pages/MusicIndexPage', // 目标url
+                }, router.RouterMode.Standard, (err) => {
+                  if (err) {
+                    console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
+                  }
+                });
+              })
             }
 
             Column() {
@@ -273,7 +282,7 @@ export default struct MyComponent {
                 top: BorderStyle.Solid
               }
             })
-          }.blockStyle().margin({bottom:size.pagePadding}).alignItems(HorizontalAlign.Start)
+          }.blockStyle().margin({top:size.pagePadding,bottom:size.pagePadding}).alignItems(HorizontalAlign.Start)
         }
       }.scrollable(ScrollDirection.Vertical)
     }
