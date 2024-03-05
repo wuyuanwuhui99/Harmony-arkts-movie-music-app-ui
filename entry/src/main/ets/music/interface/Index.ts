@@ -44,7 +44,7 @@ export interface MusicClassifyInterface {
 }
 
 // 歌手字段
-export interface MusicAuthorInterface {
+export interface MusicSingerInterface {
   id : number,//主键
   authorId : number,// 歌手id
   authorName: string,// 歌手名称
