@@ -19,9 +19,9 @@ export default struct MusicCircleComponent{
   }
 
   @State allClassifyList: Array<MusicClassifyInterface> = [];
-  @State currentClassifyList: Array<MusicClassifyInterface> = [];
-  @State isScrollEnd: boolean = false;
-  scroller: Scroller = new Scroller()
+  @State pageNum: number = 3;
+  scroller: Scroller = new Scroller();
+
 
   aboutToAppear(){
     getMusicClassifyService().then((res)=>{
@@ -35,7 +35,7 @@ export default struct MusicCircleComponent{
         Column() {
           MusicSearchComponent()
           MusicCategoryComponent()
-          ForEach(this.allClassifyList,(item:MusicClassifyInterface)=>{
+          ForEach(this.allClassifyList.slice(0,this.pageNum),(item:MusicClassifyInterface)=>{
             if(item.classifyName === '推荐歌手'){
               MusicSingerComponent()
             }else{
@@ -43,18 +43,14 @@ export default struct MusicCircleComponent{
             }
           })
           Row() {
-            Text(this.isScrollEnd ? '已经到底了...' : '正在加载更多...')
+            Text(this.pageNum == this.allClassifyList.length ? '已经到底了...' : '正在加载更多...')
           }.padding({ top: size.pagePadding,bottom:size.pagePadding })
         }
       }
       .scrollable(ScrollDirection.Vertical)
       .onScrollEdge((side: Edge) => {
-        if (!this.isScrollEnd) {
-          const length: number = this.currentClassifyList.length
-          this.currentClassifyList.push(...this.allClassifyList.slice(length, length + 2))
-          if (this.currentClassifyList.length === this.allClassifyList.length) {
-            this.isScrollEnd = true
-          }
+        if (this.pageNum < this.allClassifyList.length) {
+          this.pageNum++;
         }
       }) // 滚动方向纵向
     }

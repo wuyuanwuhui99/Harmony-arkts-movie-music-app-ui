@@ -89,6 +89,9 @@ export default struct MusicRecommendComponent{
                 .margin({left:size.pagePadding})
             }.blockStyle()
           })
+          Row() {
+            Text(this.total <= this.pageSize * this.pageNum ? '已经到底了...' : '正在加载更多...')
+          }.padding({ top: size.pagePadding,bottom:size.pagePadding })
         }
       }.scrollable(ScrollDirection.Vertical)
       .backgroundColor(colors.pageBackgroundColor)
