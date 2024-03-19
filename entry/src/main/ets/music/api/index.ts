@@ -12,5 +12,8 @@ export default {
   deleteMusicFavorite: '/service/myMusic-getway/deleteMusicFavorite/',// 删除收藏
   queryMusicFavorite: '/service/myMusic-getway/queryMusicFavorite',// 查询收藏
   searchMusic: '/service/myMusic/searchMusic',// 音乐搜索
-  getSingerCategory:'/service/myMusic/getSingerCategory'// 获取歌手分类
+  getSingerCategory:'/service/myMusic/getSingerCategory',// 获取歌手分类
+  saveLike:'/service/social-getway/saveLike',// 添加点赞
+  deleteLike:'/service/social-getway/deleteLike',// 删除点赞
+  insertComment:'/service/social-getway/insertComment'// 新增评论
 };

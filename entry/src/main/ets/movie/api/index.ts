@@ -1,5 +1,5 @@
 export default {
-  getUserData: '/service/movie/getUserData', // 获取用户信息
+  getUserData: '/service/user/getUserData', // 获取用户信息
   getCategoryList: '/service/movie/getCategoryList', //获取分类影片
   getKeyWord: '/service/movie/getKeyWord', //按照classify查询搜索栏的关键词
   getAllCategoryByClassify: '/service/movie/getAllCategoryByClassify', //按classify大类查询所有catory小类
