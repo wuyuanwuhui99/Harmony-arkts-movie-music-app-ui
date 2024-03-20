@@ -30,13 +30,13 @@ export default struct MusicSingerComponent {
 
   build() {
     Column() {
-      Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
+      Row() {
         Image($r('app.media.icon_down'))
           .width(size.smallIconSize)
           .height(size.smallIconSize)
-        Text("推荐歌手").margin({ left: size.pagePadding }).flexGrow(1)
+        Text("推荐歌手").margin({ left: size.pagePadding }).layoutWeight(1)
         Text("更多")
-      }.alignSelf(ItemAlign.Start).margin({ bottom: size.pagePadding })
+      }.alignItems(VerticalAlign.Center).margin({ bottom: size.pagePadding })
 
       Row() {
         ForEach(this.singerList, (item: MusicSingerInterface) => {

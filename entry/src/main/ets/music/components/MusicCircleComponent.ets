@@ -1,8 +1,9 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import {getCircleListByTypeService} from '../service';
-import {MusicInterface,MusicSingerInterface,CircleInterface} from '../interface';
+import {CircleInterface,CommentInterface} from '../interface';
 import {HOST} from '../../config/constant';
+import {formatTime} from '../../utils/common';
 
 // LazyForEach列表栏加载，
 // 参考文档：https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/arkts-rendering-control-lazyforeach-0000001524417213-V3
@@ -119,7 +120,7 @@ export default struct MusicCircleComponent{
     Scroll(this.scroller) {
       Column(){
         LazyForEach(this.circleList,(item:CircleInterface,index:number)=>{
-          Flex({ direction: FlexDirection.Row }){
+          Row(){
             Image(item.useravater ? HOST + item.useravater : $r("app.media.default_avater"))
               .width(size.middleAvaterSize)
               .height(size.middleAvaterSize)
@@ -137,7 +138,7 @@ export default struct MusicCircleComponent{
                   .height(size.middleAvaterSize)
                   .borderRadius(size.middleAvaterSize)
                 Text(`${item.musicSongName} - ${item.musicAuthorName}`)
-                  .flexGrow(1)
+                  .layoutWeight(1)
                   .margin({left:size.pagePadding})
                 Image($r('app.media.icon_music_play'))
                   .width(size.smallIconSize)
@@ -149,9 +150,82 @@ export default struct MusicCircleComponent{
               .height(size.middleAvaterSize)
               .borderRadius(size.middleAvaterSize)
               .backgroundColor(colors.pageBackgroundColor)
-            }.flexGrow(1).alignItems(HorizontalAlign.Start)
-          }.blockStyle()
+
+              Row(){
+                Text(formatTime(item.createTime)).fontColor(colors.disableTextColor)
+                Blank()
+                Image($r('app.media.icon_music_menu'))
+                  .width(size.smallIconSize)
+                  .height(size.smallIconSize)
+              }.width('100%').margin({top:size.pagePadding})
+              if(item.circleLikes.length > 0 || item.circleComments.length > 0){
+                Column(){
+                  if(item.circleLikes.length > 0){
+                    Flex({ direction: FlexDirection.Row,wrap: FlexWrap.Wrap}){
+                      Image($r('app.media.icon_music_like'))
+                        .width(size.smallIconSize)
+                        .height(size.smallIconSize)
+                        .margin({top:size.smallPadding,right:size.smallPadding})
+                      ForEach(item.circleLikes,(cItem:CircleInterface,index:number)=>{
+                        Text(`${cItem.username}${index === item.circleLikes.length - 1 ? '' : '、'}`)
+                          .margin({left:size.smallPadding})
+                          .fontColor(colors.blueColor)
+                          .margin({top:size.smallPadding})
+                      })
+                    }
+                  }
+                  if(item.circleComments.length > 0){
+                    ForEach(item.circleComments.filter((fItem:CommentInterface)=>!fItem.parentId),(bItem:CommentInterface)=>{
+                      Row(){
+                        Image(bItem.avater ? HOST + bItem.avater : $r('app.media.default_avater'))
+                          .width(size.middleAvaterSize)
+                          .height(size.middleAvaterSize)
+                          .margin({right:size.pagePadding})
+                          .borderRadius(size.middleAvaterSize)
+                        Column(){
+                          Text(bItem.username)
+                            .fontColor(colors.disableTextColor)
+                            .padding({bottom:size.smallPadding})
+                          Text(bItem.content).margin({bottom:size.smallPadding})
+                          Text(formatTime(bItem.createTime))
+                            .fontColor(colors.disableTextColor)
+                            .padding({bottom:size.pagePadding})
+                          ForEach(item.circleComments.filter((fItem:CommentInterface)=>fItem.topId && fItem.topId === bItem.id),(cItem:CommentInterface)=>{
+                            Row(){
+                              Image(cItem.avater ? HOST + cItem.avater : $r('app.media.default_avater'))
+                                .width(size.smallAvaterSize)
+                                .height(size.smallAvaterSize)
+                                .margin({right:size.pagePadding})
+                                .borderRadius(size.smallAvaterSize)
+                              Column(){
+                                Text(`${cItem.username}▶${cItem.replyUserName}`)
+                                  .fontColor(colors.disableTextColor)
+                                  .padding({bottom:size.smallPadding})
+                                Text(cItem.content)
+                                  .padding({bottom:size.smallPadding})
+                                Text(formatTime(cItem.createTime))
+                                  .fontColor(colors.disableTextColor)
+                                  .padding({bottom:size.smallPadding})
+                              }.alignItems(HorizontalAlign.Start).layoutWeight(1)
+                            }.width('100%').alignItems(VerticalAlign.Top)
+                          })
+                        }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                      }
+                      .alignItems(VerticalAlign.Top)
+                      .width('100%')
+                      .margin({top:size.pagePadding})
+                    })
+                  }
+                }.backgroundColor(colors.pageBackgroundColor)
+                .margin({top:size.pagePadding})
+                .alignItems(HorizontalAlign.Start)
+                .padding({left:size.pagePadding,right:size.pagePadding})
+                .borderRadius(size.blockBorderRaduis)
+              }
+            }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+          }.alignItems(VerticalAlign.Top).blockStyle()
         })
+        Text('——已经到底了——').fontColor(colors.disableTextColor).padding(size.pagePadding)
       }.justifyContent(FlexAlign.Start)
     }.scrollable(ScrollDirection.Vertical)
     .width("100%")

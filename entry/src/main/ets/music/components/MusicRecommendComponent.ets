@@ -123,7 +123,7 @@ export default struct MusicRecommendComponent{
       Scroll(this.scroller) {
         Column(){
           LazyForEach(this.musicList,(item:MusicInterface,index:number)=>{
-            Flex({direction:FlexDirection.Row,alignItems: ItemAlign.Center}){
+            Row(){
               if(index===0){
                 Image($r("app.media.icon_no1"))
                   .width(size.smallIconSize)
@@ -153,7 +153,7 @@ export default struct MusicRecommendComponent{
                   .fontColor(colors.disableTextColor)
                   .margin({top:size.smallPadding/2})
                   .maxLines(1).textOverflow({overflow:TextOverflow.Ellipsis})
-              }.flexGrow(1).alignItems(HorizontalAlign.Start).margin({left:size.pagePadding})
+              }.layoutWeight(1).alignItems(HorizontalAlign.Start).margin({left:size.pagePadding})
               Image($r("app.media.icon_music_play"))
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)
@@ -166,7 +166,7 @@ export default struct MusicRecommendComponent{
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)
                 .margin({left:size.pagePadding})
-            }.blockStyle()
+            }.blockStyle().alignItems(VerticalAlign.Center)
           })
           Row() {
             Text(this.total <= this.pageSize * this.pageNum ? '已经到底了...' : '正在加载更多...')

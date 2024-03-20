@@ -27,16 +27,16 @@ export default struct MusicClassifyComponent{
 
   build(){
     Column(){
-      Flex({direction:FlexDirection.Row,alignItems: ItemAlign.Center}){
+      Row(){
         Image($r('app.media.icon_down'))
           .width(size.smallIconSize)
           .height(size.smallIconSize)
-        Text(this.classifyName).margin({left:size.pagePadding}).flexGrow(1)
+        Text(this.classifyName).margin({left:size.pagePadding}).layoutWeight(1)
         Text("更多")
-      }.alignSelf(ItemAlign.Start)
+      }.alignItems(VerticalAlign.Center)
       Column(){
         ForEach(this.musicList,(item:MusicInterface,index:number)=>{
-          Flex({direction:FlexDirection.Row,alignItems: ItemAlign.Center}){
+          Row(){
             Image(/http[s]?:\/\//.test(item.cover) ? item.cover.replace('{size}','480') : HOST + item.cover)
               .width(size.middleAvaterSize)
               .height(size.middleAvaterSize)
@@ -50,7 +50,7 @@ export default struct MusicClassifyComponent{
                 .maxLines(1)
                 .textOverflow({overflow: TextOverflow.Ellipsis})
                 .fontColor(colors.disableTextColor)
-            }.flexGrow(1).alignItems(HorizontalAlign.Start)
+            }.layoutWeight(1).alignItems(HorizontalAlign.Start)
             Image($r("app.media.icon_music_play"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)
@@ -64,6 +64,7 @@ export default struct MusicClassifyComponent{
               .height(size.smallIconSize)
               .margin({left:size.pagePadding})
           }
+          .alignItems(VerticalAlign.Center)
           .margin({top:size.pagePadding}).padding({bottom:index === this.musicList.length - 1 ? 0 : size.pagePadding})
           .border({
             width: {
@@ -76,7 +77,6 @@ export default struct MusicClassifyComponent{
               bottom: BorderStyle.Solid
             }
           })
-          .alignSelf(ItemAlign.Start)
         })
 
       }
