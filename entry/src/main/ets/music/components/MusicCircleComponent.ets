@@ -1,9 +1,11 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import {getCircleListByTypeService} from '../service';
+import {getCircleListByTypeService,saveLikeService,deleteLikeService,insertCommentService} from '../service';
 import {CircleInterface,CommentInterface} from '../interface';
-import {HOST} from '../../config/constant';
+import {UserDataInterface} from '../../movie/interface';
+import {HOST,USER_DATA} from '../../config/constant';
 import {formatTime} from '../../utils/common';
+import { LikeInterface } from '../interface/Index';
 
 // LazyForEach列表栏加载，
 // 参考文档：https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/arkts-rendering-control-lazyforeach-0000001524417213-V3
@@ -96,6 +98,12 @@ export default struct MusicCircleComponent{
   @State circleList:MyDataSource = new MyDataSource();
   @State total:number = 0;
   @State pageNum:number = 1;
+  @State customPopup: boolean = false;
+  @State handlePopup: boolean = false;
+  @State index:number = -1;// 当前点击的评论和点赞弹出框的下标
+  @State likeIndex:number = -1;// 是否已经点赞,-1表示未点赞
+  @StorageLink(USER_DATA) userData: UserDataInterface = null;
+
   pageSize:number = 5;
 
   aboutToAppear(){
@@ -110,10 +118,53 @@ export default struct MusicCircleComponent{
   useCircleList(){
     getCircleListByTypeService("music", this.pageNum, this.pageSize).then((res) => {
       res.data.forEach((item:CircleInterface)=>{
+        if(!item.circleLikes)item.circleLikes = <Array<LikeInterface>>[];
+        if(!item.circleComments)item.circleComments = <Array<CommentInterface>>[];
         this.circleList.pushData(item);
       })
       this.total = res.total;
     })
+  }
+
+  // popup构造器定义弹框内容
+  @Builder popupBuilder() {
+    Row(){
+      Row({space:size.smallPadding}){
+        Image($r('app.media.icon_like_white'))
+          .width(size.smallIconSize)
+          .height(size.smallIconSize)
+        Text(
+          this.likeIndex !== -1 ? '取消赞' :'赞')
+          .fontColor(colors.blockColor)
+      }.onClick(()=>{
+        if(this.likeIndex !== -1){
+          deleteLikeService(this.circleList.getData(this.index).id,'music_circle').then((res)=>{
+            if (res.data > 0){
+              this.circleList.getData(this.index).circleLikes.splice(this.likeIndex, 1)
+            }
+          });
+        }else{
+          const likeItem : LikeInterface = {
+            type: "music_circle",
+            relationId: this.circleList.getData(this.index).id
+          }
+          saveLikeService(likeItem).then((res)=>{
+            this.circleList.getData(this.index).circleLikes.push(res.data);
+          })
+        }
+        this.index = -1;
+      }).width('50%').justifyContent(FlexAlign.Center)
+      Row({space:size.smallPadding}){
+        Image($r('app.media.icon_comment_white'))
+          .width(size.smallIconSize)
+          .height(size.smallIconSize)
+        Text('评论').fontColor(colors.blockColor)
+      }.onClick(()=>{
+        this.index = -1;
+      }).width('50%').justifyContent(FlexAlign.Center)
+    }
+    .width(size.popupMenuWidth)
+    .height(size.popupMenuHeight)
   }
 
   build(){
@@ -126,11 +177,10 @@ export default struct MusicCircleComponent{
               .height(size.middleAvaterSize)
               .borderRadius(size.middleAvaterSize)
               .margin({right:size.pagePadding})
-            Column(){
+            Column({space:size.smallPadding}){
               Text(item.username)
                 .fontColor(colors.blueColor)
                 .fontWeight(FontWeight.Bold)
-                .margin({bottom:size.smallPadding})
               Text(item.content)
               Row(){
                 Image(HOST + item.musicCover)
@@ -146,18 +196,27 @@ export default struct MusicCircleComponent{
                   .margin({right:size.pagePadding})
               }
               .width('100%')
-              .margin({top:size.pagePadding})
               .height(size.middleAvaterSize)
               .borderRadius(size.middleAvaterSize)
               .backgroundColor(colors.pageBackgroundColor)
 
               Row(){
-                Text(formatTime(item.createTime)).fontColor(colors.disableTextColor)
-                Blank()
+                Text(formatTime(item.createTime))
+                  .layoutWeight(1)
+                  .fontColor(colors.disableTextColor)
                 Image($r('app.media.icon_music_menu'))
                   .width(size.smallIconSize)
                   .height(size.smallIconSize)
-              }.width('100%').margin({top:size.pagePadding})
+                  .onClick(()=>{
+                    this.index = index;
+                    this.likeIndex = this.circleList.getData(index).circleLikes.findIndex((item:LikeInterface)=>item.userId === this.userData.userId);
+                  })
+                  .bindPopup(this.index === index, {
+                    builder: this.popupBuilder, // 气泡的内容
+                    placement:Placement.Left, // 气泡的弹出位置
+                    popupColor:colors.disableTextColor // 气泡的背景色
+                  })
+              }.width('100%')
               if(item.circleLikes.length > 0 || item.circleComments.length > 0){
                 Column(){
                   if(item.circleLikes.length > 0){
@@ -182,14 +241,12 @@ export default struct MusicCircleComponent{
                           .height(size.middleAvaterSize)
                           .margin({right:size.pagePadding})
                           .borderRadius(size.middleAvaterSize)
-                        Column(){
+                        Column({space:size.smallPadding}){
                           Text(bItem.username)
                             .fontColor(colors.disableTextColor)
-                            .padding({bottom:size.smallPadding})
-                          Text(bItem.content).margin({bottom:size.smallPadding})
+                          Text(bItem.content)
                           Text(formatTime(bItem.createTime))
                             .fontColor(colors.disableTextColor)
-                            .padding({bottom:size.pagePadding})
                           ForEach(item.circleComments.filter((fItem:CommentInterface)=>fItem.topId && fItem.topId === bItem.id),(cItem:CommentInterface)=>{
                             Row(){
                               Image(cItem.avater ? HOST + cItem.avater : $r('app.media.default_avater'))
@@ -197,15 +254,12 @@ export default struct MusicCircleComponent{
                                 .height(size.smallAvaterSize)
                                 .margin({right:size.pagePadding})
                                 .borderRadius(size.smallAvaterSize)
-                              Column(){
+                              Column({space:size.smallPadding}){
                                 Text(`${cItem.username}▶${cItem.replyUserName}`)
                                   .fontColor(colors.disableTextColor)
-                                  .padding({bottom:size.smallPadding})
                                 Text(cItem.content)
-                                  .padding({bottom:size.smallPadding})
                                 Text(formatTime(cItem.createTime))
                                   .fontColor(colors.disableTextColor)
-                                  .padding({bottom:size.smallPadding})
                               }.alignItems(HorizontalAlign.Start).layoutWeight(1)
                             }.width('100%').alignItems(VerticalAlign.Top)
                           })
@@ -216,8 +270,8 @@ export default struct MusicCircleComponent{
                       .margin({top:size.pagePadding})
                     })
                   }
+                  Blank().height(size.pagePadding)
                 }.backgroundColor(colors.pageBackgroundColor)
-                .margin({top:size.pagePadding})
                 .alignItems(HorizontalAlign.Start)
                 .padding({left:size.pagePadding,right:size.pagePadding})
                 .borderRadius(size.blockBorderRaduis)
