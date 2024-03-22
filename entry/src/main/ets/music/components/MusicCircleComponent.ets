@@ -1,3 +1,4 @@
+import promptAction from '@ohos.promptAction'
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import {getCircleListByTypeService,saveLikeService,deleteLikeService,insertCommentService} from '../service';
@@ -6,6 +7,7 @@ import {UserDataInterface} from '../../movie/interface';
 import {HOST,USER_DATA} from '../../config/constant';
 import {formatTime} from '../../utils/common';
 import { LikeInterface } from '../interface/Index';
+import Notification from '@system.notification';
 
 // LazyForEach列表栏加载，
 // 参考文档：https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/arkts-rendering-control-lazyforeach-0000001524417213-V3
@@ -23,7 +25,6 @@ class BasicDataSource implements IDataSource {
 
   registerDataChangeListener(listener: DataChangeListener): void {
     if (this.listeners.indexOf(listener) < 0) {
-      console.info('add listener');
       this.listeners.push(listener);
     }
   }
@@ -31,7 +32,6 @@ class BasicDataSource implements IDataSource {
   unregisterDataChangeListener(listener: DataChangeListener): void {
     const pos = this.listeners.indexOf(listener);
     if (pos >= 0) {
-      console.info('remove listener');
       this.listeners.splice(pos, 1);
     }
   }
@@ -101,10 +101,64 @@ export default struct MusicCircleComponent{
   @State customPopup: boolean = false;
   @State handlePopup: boolean = false;
   @State index:number = -1;// 当前点击的评论和点赞弹出框的下标
+  @State circleId:number = 0;// 当前点赞或评论的朋友圈id
   @State likeIndex:number = -1;// 是否已经点赞,-1表示未点赞
   @StorageLink(USER_DATA) userData: UserDataInterface = null;
-
+  @State firstComment:CommentInterface = null; // 一级评论
+  @State replyComment:CommentInterface = null; // 回复的评论
   pageSize:number = 5;
+  loading:boolean = false;
+
+  // 评论框的弹窗
+  dialogController: CustomDialogController = new CustomDialogController({
+    customStyle: true,
+    builder: InputComponent({
+      placeholder: this.replyComment ? `回复：${this.replyComment.username}` : (this.firstComment ? `评论${this.firstComment.username}`: '评论'),
+      onSend:(text:string)=>{
+        if(this.loading)return;
+        this.loading = true;
+        const commentItem : CommentInterface = {
+          id: 0,//主键
+          content: text,//评论内容
+          parentId: 0,//父节点id
+          topId: 0,//顶级节点id
+          type: "music_circle",// 类型
+          relationId: 0,//影片id
+          createTime: "",//创建时间
+          updateTime: "",//更新时间
+          replyCount: 0,//回复数量
+          userId: "",//用户id
+          username: "",//用户名
+          avater: "",//用户头像
+          replyUserId: "",//被回复者id
+          replyUserName: "",//被回复者名称
+          showCommentCount: "",//显示的回复数量
+          replyPageNum: 0,
+          replyList: []
+        }
+        commentItem.relationId = this.circleList.getData(this.index).id;
+        if (this.firstComment) {// 获取一级评论的id
+          commentItem.topId = this.firstComment.id;
+        }
+        if (this.replyComment) {// 获取回复的id
+          commentItem.parentId = this.replyComment.id;
+        }
+        // 发送评论
+        insertCommentService(commentItem).then((res)=>{
+          this.circleList.getData(this.index).circleComments.push(res.data);
+          this.dialogController.close();
+          this.replyComment = this.firstComment = null;
+        }).finally(()=>{
+          this.loading = false;
+        });
+      }
+    }),
+    alignment: DialogAlignment.Bottom,
+  })
+
+  getTopComment(circleComments:Array<CommentInterface>):Array<CommentInterface>{
+    return circleComments.filter((fItem:CommentInterface)=>!fItem.parentId)
+  }
 
   aboutToAppear(){
     this.useCircleList();
@@ -152,15 +206,18 @@ export default struct MusicCircleComponent{
             this.circleList.getData(this.index).circleLikes.push(res.data);
           })
         }
-        this.index = -1;
+        this.circleId = -1;
       }).width('50%').justifyContent(FlexAlign.Center)
       Row({space:size.smallPadding}){
         Image($r('app.media.icon_comment_white'))
           .width(size.smallIconSize)
           .height(size.smallIconSize)
-        Text('评论').fontColor(colors.blockColor)
+        Text('评论').fontColor(colors.blockColor).onClick(()=>{
+          this.circleId = -1;
+          this.dialogController.open()
+        })
       }.onClick(()=>{
-        this.index = -1;
+        this.circleId = -1;
       }).width('50%').justifyContent(FlexAlign.Center)
     }
     .width(size.popupMenuWidth)
@@ -208,10 +265,11 @@ export default struct MusicCircleComponent{
                   .width(size.smallIconSize)
                   .height(size.smallIconSize)
                   .onClick(()=>{
+                    this.circleId = item.id;
                     this.index = index;
                     this.likeIndex = this.circleList.getData(index).circleLikes.findIndex((item:LikeInterface)=>item.userId === this.userData.userId);
                   })
-                  .bindPopup(this.index === index, {
+                  .bindPopup(this.circleId === item.id, {
                     builder: this.popupBuilder, // 气泡的内容
                     placement:Placement.Left, // 气泡的弹出位置
                     popupColor:colors.disableTextColor // 气泡的背景色
@@ -234,7 +292,7 @@ export default struct MusicCircleComponent{
                     }
                   }
                   if(item.circleComments.length > 0){
-                    ForEach(item.circleComments.filter((fItem:CommentInterface)=>!fItem.parentId),(bItem:CommentInterface)=>{
+                    ForEach(this.getTopComment(item.circleComments),(bItem:CommentInterface)=>{
                       Row(){
                         Image(bItem.avater ? HOST + bItem.avater : $r('app.media.default_avater'))
                           .width(size.middleAvaterSize)
@@ -244,7 +302,11 @@ export default struct MusicCircleComponent{
                         Column({space:size.smallPadding}){
                           Text(bItem.username)
                             .fontColor(colors.disableTextColor)
-                          Text(bItem.content)
+                          Text(bItem.content).onClick(()=>{
+                            this.index = index;
+                            this.replyComment = this.firstComment = bItem;// 回复评论
+                            this.dialogController.open()
+                          })
                           Text(formatTime(bItem.createTime))
                             .fontColor(colors.disableTextColor)
                           ForEach(item.circleComments.filter((fItem:CommentInterface)=>fItem.topId && fItem.topId === bItem.id),(cItem:CommentInterface)=>{
@@ -257,7 +319,12 @@ export default struct MusicCircleComponent{
                               Column({space:size.smallPadding}){
                                 Text(`${cItem.username}▶${cItem.replyUserName}`)
                                   .fontColor(colors.disableTextColor)
-                                Text(cItem.content)
+                                Text(cItem.content).onClick(()=>{
+                                  this.index = index;
+                                  this.firstComment = bItem;// 一级评论
+                                  this.replyComment = cItem;// 回复评论
+                                  this.dialogController.open()
+                                })
                                 Text(formatTime(cItem.createTime))
                                   .fontColor(colors.disableTextColor)
                               }.alignItems(HorizontalAlign.Start).layoutWeight(1)
@@ -292,5 +359,45 @@ export default struct MusicCircleComponent{
         this.useCircleList();
       }
     })
+  }
+}
+
+@CustomDialog
+struct InputComponent{
+  @State text:string = '';
+  placeholder:string = '评论';
+  onSend: (value: string) => void
+  controller: CustomDialogController;
+  build(){
+    Column(){
+      Blank().layoutWeight(1).onClick(()=>{
+        this.controller.close()
+      })
+      Row(){
+        TextInput({ placeholder: this.placeholder,})
+          .layoutWeight(1)
+          .height(size.inputHeight)
+          .onChange((value) => {
+            this.text = value;
+          })
+        Button('发送', { type: ButtonType.Capsule, stateEffect: true })
+          .backgroundColor(this.text ? colors.lineBackgroundColor : colors.disableTextColor)
+          .width(size.btnWidth).height(size.inputHeight)
+          .margin({left:size.pagePadding})
+          .onClick(()=>{
+            if(!this.text.trim()){
+              promptAction.showToast({
+                message: '评论或回复内容不能为空',
+                duration: 2000,
+                bottom:'50%'
+              });
+             return
+            }
+            this.onSend(this.text);
+          })
+      }.backgroundColor(colors.blockColor).padding(size.pagePadding)
+    }
+    .height('100%')
+    .width('100%')
   }
 }
