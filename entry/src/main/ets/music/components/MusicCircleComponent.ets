@@ -61,6 +61,7 @@ class BasicDataSource implements IDataSource {
   }
 }
 
+@Observed
 class MyDataSource extends BasicDataSource {
   private dataArray: Array<CircleInterface> = [];
 
@@ -106,6 +107,8 @@ export default struct MusicCircleComponent{
   @StorageLink(USER_DATA) userData: UserDataInterface = null;
   @State firstComment:CommentInterface = null; // 一级评论
   @State replyComment:CommentInterface = null; // 回复的评论
+
+  replyIndex:number = -1; // 回复的下标
   pageSize:number = 5;
   loading:boolean = false;
 
@@ -145,7 +148,12 @@ export default struct MusicCircleComponent{
         }
         // 发送评论
         insertCommentService(commentItem).then((res)=>{
-          this.circleList.getData(this.index).circleComments.push(res.data);
+          const {circleComments} = this.circleList.getData(this.index);
+          if(this.firstComment){// 二级评论，相当于回复
+            circleComments[this.replyIndex].replyList.push(res.data);
+          }else{// 一级评论
+            circleComments.push(res.data);
+          }
           this.dialogController.close();
           this.replyComment = this.firstComment = null;
         }).finally(()=>{
@@ -155,10 +163,6 @@ export default struct MusicCircleComponent{
     }),
     alignment: DialogAlignment.Bottom,
   })
-
-  getTopComment(circleComments:Array<CommentInterface>):Array<CommentInterface>{
-    return circleComments.filter((fItem:CommentInterface)=>!fItem.parentId)
-  }
 
   aboutToAppear(){
     this.useCircleList();
@@ -172,8 +176,6 @@ export default struct MusicCircleComponent{
   useCircleList(){
     getCircleListByTypeService("music", this.pageNum, this.pageSize).then((res) => {
       res.data.forEach((item:CircleInterface)=>{
-        if(!item.circleLikes)item.circleLikes = <Array<LikeInterface>>[];
-        if(!item.circleComments)item.circleComments = <Array<CommentInterface>>[];
         this.circleList.pushData(item);
       })
       this.total = res.total;
@@ -292,7 +294,7 @@ export default struct MusicCircleComponent{
                     }
                   }
                   if(item.circleComments.length > 0){
-                    ForEach(this.getTopComment(item.circleComments),(bItem:CommentInterface)=>{
+                    ForEach(item.circleComments,(bItem:CommentInterface,cIndex:number)=>{
                       Row(){
                         Image(bItem.avater ? HOST + bItem.avater : $r('app.media.default_avater'))
                           .width(size.middleAvaterSize)
@@ -309,7 +311,7 @@ export default struct MusicCircleComponent{
                           })
                           Text(formatTime(bItem.createTime))
                             .fontColor(colors.disableTextColor)
-                          ForEach(item.circleComments.filter((fItem:CommentInterface)=>fItem.topId && fItem.topId === bItem.id),(cItem:CommentInterface)=>{
+                          ForEach(bItem.replyList,(cItem:CommentInterface)=>{
                             Row(){
                               Image(cItem.avater ? HOST + cItem.avater : $r('app.media.default_avater'))
                                 .width(size.smallAvaterSize)
@@ -321,6 +323,7 @@ export default struct MusicCircleComponent{
                                   .fontColor(colors.disableTextColor)
                                 Text(cItem.content).onClick(()=>{
                                   this.index = index;
+                                  this.replyIndex = index;
                                   this.firstComment = bItem;// 一级评论
                                   this.replyComment = cItem;// 回复评论
                                   this.dialogController.open()
