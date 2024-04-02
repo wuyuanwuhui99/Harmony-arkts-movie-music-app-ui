@@ -26,7 +26,7 @@ struct MovieUserPage {
   @Styles arrowStyle(){
     .margin({ left: size.smallPadding })
     .height(size.smallIconSize)
-    .width(size.smallIconSize).opacity(size.opacity)
+    .width(size.smallIconSize)
   }
 
   @Styles rowStyle(){

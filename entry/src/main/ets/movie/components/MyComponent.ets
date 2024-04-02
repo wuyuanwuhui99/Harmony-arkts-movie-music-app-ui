@@ -47,7 +47,6 @@ export default struct MyComponent {
   @Styles arrowIconStyle(){
     .width(size.smallIconSize)
     .height(size.smallIconSize)
-    .opacity(size.opacity)
   }
 
   aboutToAppear() {

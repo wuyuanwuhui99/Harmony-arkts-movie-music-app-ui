@@ -7,7 +7,6 @@ import {UserDataInterface} from '../../movie/interface';
 import {HOST,USER_DATA} from '../../config/constant';
 import {formatTime} from '../../utils/common';
 import { LikeInterface } from '../interface/Index';
-import Notification from '@system.notification';
 
 // LazyForEach列表栏加载，
 // 参考文档：https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/arkts-rendering-control-lazyforeach-0000001524417213-V3
