@@ -3,6 +3,8 @@ import * as size from '../../theme/size';
 import AvaterComponent from '../../movie/components/AvaterComponent';
 import { UserDataInterface } from '../../movie/interface/Index'
 import { HOST,USER_DATA } from '../../config/constant';
+import {getMySingerService} from '../service';
+import {MusicSingerInterface} from '../interface';
 
 @Component
 export default struct MusicMyComponent{
@@ -10,6 +12,7 @@ export default struct MusicMyComponent{
 
   @StorageLink(USER_DATA) userData: UserDataInterface = null;
   @State dimensions:number = size.middleAvaterSize;// 导入的值不能直接传给组件
+  @State mySingerList:Array<MusicSingerInterface> = [];// 我关注的歌手列表
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -17,6 +20,12 @@ export default struct MusicMyComponent{
     .padding(size.pagePadding)
     .width('100%')
     .margin({top:size.pagePadding})
+  }
+
+  aboutToAppear(){
+    getMySingerService(1,5).then((res)=>{
+      this.mySingerList = res.data;
+    })
   }
 
   build(){
@@ -65,6 +74,36 @@ export default struct MusicMyComponent{
           Row(){
             Image($r("app.media.icon_down")).width(size.smallIconSize).height(size.smallIconSize)
             Text("我的歌单").margin({left:size.pagePadding})
+            Blank()
+            Image($r("app.media.icon_add")).width(size.smallIconSize).height(size.smallIconSize)
+          }.width('100%')
+          ForEach(this.mySingerList,(item:MusicSingerInterface)=>{
+            Row(){
+              Image(item.avatar ? (/http[s]?:\/\//.test(item.avatar) ? item.avatar.replace('{size}', '480') : HOST + item.avatar) : $r("app.media.default_avater"))
+                .width(size.middleAvaterSize)
+                .height(size.middleAvaterSize)
+                .borderRadius(size.middleAvaterSize)
+              Column(){
+                Text(item.authorName)
+                Text(item.total.toString() + '首').fontColor(colors.disableTextColor)
+              }.margin({left:size.pagePadding}).alignItems(HorizontalAlign.Start)
+              Blank()
+              Image($r("app.media.icon_music_play"))
+                .width(size.smallIconSize)
+                .height(size.smallIconSize)
+                .margin({left:size.pagePadding})
+              Image($r("app.media.icon_music_menu"))
+                .width(size.smallIconSize)
+                .height(size.smallIconSize)
+                .margin({left:size.pagePadding})
+            }.width('100%').margin({top:size.pagePadding})
+          })
+        }.blockStyle()
+
+        Column(){
+          Row(){
+            Image($r("app.media.icon_down")).width(size.smallIconSize).height(size.smallIconSize)
+            Text("我关注的歌手").margin({left:size.pagePadding})
             Blank()
             Image($r("app.media.icon_add")).width(size.smallIconSize).height(size.smallIconSize)
           }.width('100%')
