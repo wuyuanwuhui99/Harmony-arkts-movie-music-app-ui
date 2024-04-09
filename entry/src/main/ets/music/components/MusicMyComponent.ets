@@ -143,17 +143,15 @@ export default struct MusicMyComponent{
           Row(){
             Image($r("app.media.icon_down")).width(size.smallIconSize).height(size.smallIconSize)
             Text("我听过的歌曲").margin({left:size.pagePadding})
-            Blank()
-            Image($r("app.media.icon_add")).width(size.smallIconSize).height(size.smallIconSize)
           }.width('100%')
           ForEach(this.myRecordMusicList,(item:MusicInterface)=>{
             Row(){
-              Image(item.cover ? (/http[s]?:\/\//.test(item.cover) ? item.cover.replace('{size}', '480') : HOST + item.avatar) : $r("app.media.default_avater"))
+              Image(item.cover ? (/http[s]?:\/\//.test(item.cover) ? item.cover.replace('{size}', '480') : HOST + item.cover) : $r("app.media.default_avater"))
                 .width(size.middleAvaterSize)
                 .height(size.middleAvaterSize)
                 .borderRadius(size.middleAvaterSize)
               Column(){
-                Text(item.authorName)
+                Text(item.songName)
                 Text(`听过${item.times.toString()}次`).fontColor(colors.disableTextColor)
               }.margin({left:size.pagePadding}).alignItems(HorizontalAlign.Start)
               Blank()
