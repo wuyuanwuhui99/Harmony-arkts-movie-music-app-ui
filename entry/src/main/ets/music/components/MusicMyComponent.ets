@@ -16,6 +16,8 @@ export default struct MusicMyComponent{
   @State myMusicMenuList:Array<MuiscPlayMenuInterface> = [];// 我的歌单
   @State mySingerList:Array<MusicSingerInterface> = [];// 我关注的歌手列表
   @State myRecordMusicList:Array<MusicInterface> =[];// 我听过的歌曲
+  @State isFoldRecordMusic:boolean = false;// 是否折叠我听过的歌曲
+  @State isFoldMySinger:boolean = false;// 是否折叠我关注的歌手
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -29,13 +31,11 @@ export default struct MusicMyComponent{
     getMySingerService(1,5).then((res)=>{
       this.mySingerList = res.data;
     });
-    getMusicPlayMenuService().then((res)=>{
-     this.myMusicMenuList = res.data;
-    });
-    getMusicRecordService(1,5).then((res)=>{
-      this.myRecordMusicList = res.data;
-    })
+    getMusicPlayMenuService().then(res => this.myMusicMenuList = res.data);
+    getMusicRecordService(1,5).then(res => this.myRecordMusicList = res.data);
   }
+
+
 
   build(){
     Scroll(this.scroller) {
@@ -111,60 +111,83 @@ export default struct MusicMyComponent{
 
         Column(){
           Row(){
-            Image($r("app.media.icon_down")).width(size.smallIconSize).height(size.smallIconSize)
+            Image($r("app.media.icon_down"))
+              .width(size.smallIconSize)
+              .height(size.smallIconSize)
+              .onClick(()=>{
+                this.isFoldMySinger = !this.isFoldMySinger;
+                if(!this.isFoldMySinger){
+                  getMusicPlayMenuService().then(res => this.myMusicMenuList = res.data);
+                }
+              }).rotate({ angle: this.isFoldMySinger ? 90 : 0 })
             Text("我关注的歌手").margin({left:size.pagePadding})
             Blank()
-            Image($r("app.media.icon_add")).width(size.smallIconSize).height(size.smallIconSize)
+            Text("更多").fontColor(colors.disableTextColor)
           }.width('100%')
-          ForEach(this.mySingerList,(item:MusicSingerInterface)=>{
-            Row(){
-              Image(item.avatar ? (/http[s]?:\/\//.test(item.avatar) ? item.avatar.replace('{size}', '480') : HOST + item.avatar) : $r("app.media.default_avater"))
-                .width(size.middleAvaterSize)
-                .height(size.middleAvaterSize)
-                .borderRadius(size.middleAvaterSize)
-              Column(){
-                Text(item.authorName)
-                Text(item.total.toString() + '首').fontColor(colors.disableTextColor)
-              }.margin({left:size.pagePadding}).alignItems(HorizontalAlign.Start)
-              Blank()
-              Image($r("app.media.icon_music_play"))
-                .width(size.smallIconSize)
-                .height(size.smallIconSize)
-                .margin({left:size.pagePadding})
-              Image($r("app.media.icon_music_menu"))
-                .width(size.smallIconSize)
-                .height(size.smallIconSize)
-                .margin({left:size.pagePadding})
-            }.width('100%').margin({top:size.pagePadding})
-          })
+          if(!this.isFoldMySinger){
+            ForEach(this.mySingerList,(item:MusicSingerInterface)=>{
+              Row(){
+                Image(item.avatar ? (/http[s]?:\/\//.test(item.avatar) ? item.avatar.replace('{size}', '480') : HOST + item.avatar) : $r("app.media.default_avater"))
+                  .width(size.middleAvaterSize)
+                  .height(size.middleAvaterSize)
+                  .borderRadius(size.middleAvaterSize)
+                Column(){
+                  Text(item.authorName)
+                  Text(item.total.toString() + '首').fontColor(colors.disableTextColor)
+                }.margin({left:size.pagePadding}).alignItems(HorizontalAlign.Start)
+                Blank()
+                Image($r("app.media.icon_music_play"))
+                  .width(size.smallIconSize)
+                  .height(size.smallIconSize)
+                  .margin({left:size.pagePadding})
+                Image($r("app.media.icon_music_menu"))
+                  .width(size.smallIconSize)
+                  .height(size.smallIconSize)
+                  .margin({left:size.pagePadding})
+              }.width('100%').margin({top:size.pagePadding})
+            })
+          }
         }.blockStyle()
 
         Column(){
           Row(){
-            Image($r("app.media.icon_down")).width(size.smallIconSize).height(size.smallIconSize)
+            Image($r("app.media.icon_down"))
+              .width(size.smallIconSize)
+              .height(size.smallIconSize)
+              .onClick(()=>{
+                this.isFoldRecordMusic = !this.isFoldRecordMusic;
+                if(!this.isFoldRecordMusic){
+                  getMusicRecordService(1,5).then(res => this.myRecordMusicList = res.data);
+                }
+              }).rotate({ angle: this.isFoldRecordMusic ? 90 : 0 })
             Text("我听过的歌曲").margin({left:size.pagePadding})
+            Blank()
+            Text("更多").fontColor(colors.disableTextColor)
           }.width('100%')
-          ForEach(this.myRecordMusicList,(item:MusicInterface)=>{
-            Row(){
-              Image(item.cover ? (/http[s]?:\/\//.test(item.cover) ? item.cover.replace('{size}', '480') : HOST + item.cover) : $r("app.media.default_avater"))
-                .width(size.middleAvaterSize)
-                .height(size.middleAvaterSize)
-                .borderRadius(size.middleAvaterSize)
-              Column(){
-                Text(item.songName)
-                Text(`听过${item.times.toString()}次`).fontColor(colors.disableTextColor)
-              }.margin({left:size.pagePadding}).alignItems(HorizontalAlign.Start)
-              Blank()
-              Image($r("app.media.icon_music_play"))
-                .width(size.smallIconSize)
-                .height(size.smallIconSize)
-                .margin({left:size.pagePadding})
-              Image($r("app.media.icon_music_menu"))
-                .width(size.smallIconSize)
-                .height(size.smallIconSize)
-                .margin({left:size.pagePadding})
-            }.width('100%').margin({top:size.pagePadding})
-          })
+          if(!this.isFoldRecordMusic){// 如果是展开状态
+            ForEach(this.myRecordMusicList,(item:MusicInterface)=>{
+              Row(){
+                Image(item.cover ? (/http[s]?:\/\//.test(item.cover) ? item.cover.replace('{size}', '480') : HOST + item.cover) : $r("app.media.default_avater"))
+                  .width(size.middleAvaterSize)
+                  .height(size.middleAvaterSize)
+                  .borderRadius(size.middleAvaterSize)
+                Column(){
+                  Text(item.songName)
+                  Text(`听过${item.times.toString()}次`).fontColor(colors.disableTextColor)
+                }.margin({left:size.pagePadding}).alignItems(HorizontalAlign.Start)
+                Blank()
+                Image($r("app.media.icon_music_play"))
+                  .width(size.smallIconSize)
+                  .height(size.smallIconSize)
+                  .margin({left:size.pagePadding})
+                Image($r("app.media.icon_music_menu"))
+                  .width(size.smallIconSize)
+                  .height(size.smallIconSize)
+                  .margin({left:size.pagePadding})
+              }.width('100%').margin({top:size.pagePadding})
+            })
+          }
+
         }.blockStyle()
       }
 
