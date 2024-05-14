@@ -125,7 +125,6 @@ export default struct CommentComponent {
         .margin({ top: size.pagePadding })
       })
     }
-
   }
 }
 
