@@ -2,7 +2,7 @@ import api from '../api/index';
 import httpRequest from '../../utils/HttpUtil';
 import * as types from '../interface/Index'
 import { MyAwesomeData } from '../../movie/interface';
-
+import {CircleEnum} from '../../config/constant';
 /**
  * @description: 获取推荐的音乐
  * @date: 2024-03-02 22:44
@@ -63,7 +63,7 @@ export const saveLikeService = (likeItem:types.LikeInterface):Promise<MyAwesomeD
  * @date: 2024-03-12 23:25
  * @author wuwenqiang
  */
-export const deleteLikeService = (relationId:number,type:string):Promise<MyAwesomeData<number>> => {
+export const deleteLikeService = (relationId:number,type:CircleEnum):Promise<MyAwesomeData<number>> => {
   return httpRequest.delete<number>(`${api.deleteLike}?relationId=${relationId}&type=${type}`);
 }
 

@@ -1,4 +1,5 @@
 // 歌曲字段
+import { CircleEnum } from '../../config/constant';
 export interface MusicInterface  {
   id : number, //主键
   albumId : number, // 专辑id
@@ -62,9 +63,9 @@ export interface MusicSingerInterface {
 }
 
 // 点赞字段
-export interface  LikeInterface {
+export interface LikeInterface {
   id?:number,
-  type:string,
+  likeType:CircleEnum,
   relationId:number,// 朋友圈id
   userId?:string,// 用户id
   username?:string,// 用户名称

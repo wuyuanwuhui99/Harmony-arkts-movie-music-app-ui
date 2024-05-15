@@ -10,17 +10,17 @@ import CommentController from '../controller/CommentController';
 @Component
 export default struct CommentComponent {
   @Prop commentList:string;
-  @Prop circleId:number;
+  @Prop relationId:number;
   private loading:boolean = false;
   @State firstComment:CommentInterface = null;
   @State replyComment:CommentInterface = null;
   @State replyIndex:number = -1;
-  public commentController: CommentController = null;
+  public controller: CommentController = null;
   @State mCommentList: Array<CommentInterface> = [];
   aboutToAppear(){
     this.mCommentList = JSON.parse(this.commentList) as  Array<CommentInterface>
-    if (this.commentController) {
-      this.commentController.attach(this); //绑定控制器
+    if (this.controller) {
+      this.controller.attach(this); //绑定控制器
     }
   }
 
@@ -43,7 +43,7 @@ export default struct CommentComponent {
           parentId: 0, //父节点id
           topId: 0, //顶级节点id
           type: "music_circle", // 类型
-          relationId: this.circleId, //影片id
+          relationId: this.relationId, //影片id
           createTime: "", //创建时间
           updateTime: "", //更新时间
           replyCount: 0, //回复数量

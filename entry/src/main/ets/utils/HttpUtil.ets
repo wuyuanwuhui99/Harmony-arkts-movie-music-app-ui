@@ -1,6 +1,8 @@
 import http from '@ohos.net.http';
 import {HOST} from '../config/constant';
 import {MyAwesomeData} from '../movie/interface/Index'
+import promptAction from '@ohos.promptAction';
+import display from '@ohos.display';
 
 /**
  * @description: 声明业务数据类型
@@ -62,10 +64,19 @@ class HttpRequest {
           if(result.status == STATUS.SUCCESS){
             resolve(result)
           }else{
+            promptAction.showToast({
+              message: result.msg,
+              duration: 2000,
+              bottom: px2fp(display.getDefaultDisplaySync().height) / 2
+            });
             reject(result)
           }
         }).catch((err:Error)=>{
-          console.info(`请求错误，地址：${HOST + url}${options.extraData &&'，请求参数：'+ JSON.stringify(options.extraData)},错误信息： ${JSON.stringify(err)}`)
+          promptAction.showToast({
+            message: `请求错误，地址：${HOST + url}${options.extraData &&'，请求参数：'+ JSON.stringify(options.extraData)},错误信息： ${JSON.stringify(err)}`,
+            duration: 2000,
+            bottom: px2fp(display.getDefaultDisplaySync().height) / 2
+          });
         }).finally(()=>{
           // 当该请求使用完毕时，调用destroy方法主动销毁。
           httpRequest.destroy();

@@ -1,15 +1,14 @@
-import promptAction from '@ohos.promptAction'
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import { getCircleListByTypeService, saveLikeService, deleteLikeService, insertCommentService } from '../service';
+import { getCircleListByTypeService } from '../service';
 import { CircleInterface, CommentInterface } from '../interface';
 import { UserDataInterface } from '../../movie/interface';
 import { HOST, USER_DATA } from '../../config/constant';
 import { formatTime } from '../../utils/common';
-import { LikeInterface } from '../interface/Index';
 import CommentComponent from './CommentComponent';
 import CommentController from '../controller/CommentController';
 import LikeComponent from './LikeComponent';
+import LikeController from '../controller/LikeController';
 
 // LazyForEach列表栏加载，
 // 参考文档：https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/arkts-rendering-control-lazyforeach-0000001524417213-V3
@@ -95,22 +94,24 @@ export default struct MusicCircleComponent {
     .margin({ top: size.pagePadding })
   }
 
-  scroller: Scroller = new Scroller()
+
   @State circleList: MyDataSource = new MyDataSource();
   @State total: number = 0;
   @State pageNum: number = 1;
   @State customPopup: boolean = false;
   @State handlePopup: boolean = false;
-  @State index: number = -1; // 当前点击的评论和点赞弹出框的下标
+  @State circleIndex: number = -1; // 当前点击的评论和点赞弹出框的下标
   @State circleId: number = 0; // 当前点赞或评论的朋友圈id
   @State likeIndex: number = -1; // 是否已经点赞,-1表示未点赞
   @StorageLink(USER_DATA) userData: UserDataInterface = null;
   @State firstComment: CommentInterface = null; // 一级评论
   @State replyComment: CommentInterface = null; // 回复的评论
-  private commentController: Array<CommentController> = [];
 
-  replyIndex: number = -1; // 回复的下标
-  pageSize: number = 5;
+  private commentController: Array<CommentController> = [];
+  private likeController: Array<LikeController> = [];
+
+  private pageSize: number = 5;
+  private scroller: Scroller = new Scroller()
 
   aboutToAppear() {
     this.useCircleList();
@@ -126,6 +127,7 @@ export default struct MusicCircleComponent {
       res.data.forEach((item: CircleInterface) => {
         this.circleList.pushData(item);
         this.commentController.push(new CommentController())
+        this.likeController.push(new LikeController())
       })
       this.total = res.total;
     })
@@ -142,22 +144,8 @@ export default struct MusicCircleComponent {
             this.likeIndex !== -1 ? '取消赞' : '赞')
           .fontColor(colors.blockColor)
       }.onClick(() => {
-        if (this.likeIndex !== -1) {
-          deleteLikeService(this.circleList.getData(this.index).id, 'music_circle').then((res) => {
-            if (res.data > 0) {
-              this.circleList.getData(this.index).circleLikes.splice(this.likeIndex, 1)
-            }
-          });
-        } else {
-          const likeItem: LikeInterface = {
-            type: "music_circle",
-            relationId: this.circleList.getData(this.index).id
-          }
-          saveLikeService(likeItem).then((res) => {
-            this.circleList.getData(this.index).circleLikes.push(res.data);
-          })
-        }
-        this.circleId = -1;
+        this.likeController[this.circleIndex].useLike()
+        this.circleId = this.likeIndex = -1;
       }).width('50%').justifyContent(FlexAlign.Center)
 
       Row({ space: size.smallPadding }) {
@@ -166,7 +154,7 @@ export default struct MusicCircleComponent {
           .height(size.smallIconSize)
         Text('评论').fontColor(colors.blockColor).onClick(() => {
           this.circleId = -1;
-          this.commentController[this.index].openInputDialog()
+          this.commentController[this.circleIndex].openInputDialog()
         })
       }.onClick(() => {
         this.circleId = -1;
@@ -218,10 +206,8 @@ export default struct MusicCircleComponent {
                   .height(size.smallIconSize)
                   .onClick(() => {
                     this.circleId = item.id;
-                    this.index = index;
-                    this.likeIndex = this.circleList.getData(index)
-                      .circleLikes
-                      .findIndex((item: LikeInterface) => item.userId === this.userData.userId);
+                    this.circleIndex = index;
+                    this.likeIndex = this.likeController[index].getLikeIndex();
                   })
                   .bindPopup(this.circleId === item.id, {
                     builder: this.popupBuilder, // 气泡的内容
@@ -231,8 +217,8 @@ export default struct MusicCircleComponent {
               }.width('100%')
 
               Column() {
-                LikeComponent({circleId:item.id,likeList:JSON.stringify(item.circleLikes)})
-                CommentComponent({commentController:this.commentController[index],circleId:item.id,commentList:JSON.stringify(item.circleComments)})
+                LikeComponent({controller:this.likeController[index],relationId:item.id,likeList:JSON.stringify(item.circleLikes)})
+                CommentComponent({controller:this.commentController[index],relationId:item.id,commentList:JSON.stringify(item.circleComments)})
                 Blank().height(size.pagePadding)
               }.backgroundColor(colors.pageBackgroundColor)
               .alignItems(HorizontalAlign.Start)
