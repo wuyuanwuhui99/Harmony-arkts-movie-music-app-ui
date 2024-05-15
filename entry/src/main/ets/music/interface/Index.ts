@@ -65,7 +65,7 @@ export interface MusicSingerInterface {
 // 点赞字段
 export interface LikeInterface {
   id?:number,
-  likeType:CircleEnum,
+  type:CircleEnum,
   relationId:number,// 朋友圈id
   userId?:string,// 用户id
   username?:string,// 用户名称

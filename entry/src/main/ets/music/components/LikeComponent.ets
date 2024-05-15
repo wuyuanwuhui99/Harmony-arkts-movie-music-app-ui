@@ -49,7 +49,7 @@ export default struct LikeComponent {
       const likeItem = {
         id: -1,
         relationId:this.relationId,
-        likeType:CircleEnum.MUSIC,
+        type:CircleEnum.MUSIC,
       } as LikeInterface;
       saveLikeService(likeItem).then((res)=>{
         this.mLikeList.push(res.data);
@@ -66,7 +66,7 @@ export default struct LikeComponent {
         .height(size.smallIconSize)
         .margin({ top: size.smallPadding, right: size.smallPadding })
       ForEach(this.mLikeList, (cItem: LikeInterface, index: number) => {
-        Text(`${cItem.username}${index === this.likeList.length - 1 ? '' : '、'}`)
+        Text(`${cItem.username}${index === this.mLikeList.length - 1 ? '' : '、'}`)
           .margin({ left: size.smallPadding })
           .fontColor(colors.blueColor)
           .margin({ top: size.smallPadding })
