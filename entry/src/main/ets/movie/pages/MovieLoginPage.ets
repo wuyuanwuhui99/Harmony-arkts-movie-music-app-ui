@@ -142,7 +142,7 @@ struct MovieLoginPage {
           .padding(size.smallPadding)
           .border({
             width: 1,
-            color: colors.tabBarborderColor,
+            color: colors.borderColor,
             style: BorderStyle.Solid
           })
           .borderRadius(size.blockBorderRaduis * 2)

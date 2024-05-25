@@ -3,6 +3,9 @@ import httpRequest from '../../utils/HttpUtil';
 import * as types from '../interface/Index'
 import { MyAwesomeData } from '../interface';
 import CryptoJS from '@ohos/crypto-js';
+import { SocialEnum } from '../../config/constant';
+import hilog from '@ohos.hilog';
+import { MovieInterface } from '../interface/Index';
 
 /**
  * @description: 根据token获取用户信息
@@ -55,8 +58,8 @@ export const getUserMsgService = ():Promise<MyAwesomeData<types.UserMsgInterface
  * @date: 2023-12-13 21:45
  * @author wuwenqiang
  */
-export const getPlayRecordMovieListService = ():Promise<MyAwesomeData<Array<types.MovieInterface>>>=> {
-  return httpRequest.get<Array<types.MovieInterface>>(api.getPlayRecord)
+export const getPlayRecordMovieListService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MovieInterface>>>=> {
+  return httpRequest.get<Array<types.MovieInterface>>(`${api.getPlayRecord}?pageNum=${pageNum}&pageSize=${pageSize}`)
 }
 
 /**
@@ -169,4 +172,41 @@ export const getRecommendSerivce = (classify:string):Promise<MyAwesomeData<Array
  */
 export const getSearchResultService = (keyword:string, pageSize:number = 20, pageNum:number = 1):Promise<MyAwesomeData<Array<types.MovieInterface>>>=>{
   return httpRequest.get<Array<types.MovieInterface>>(`${api.getSearchResult}?keyword=${encodeURIComponent(keyword)}&pageSize=${pageSize}&pageNum=${pageNum}`)
+};
+
+
+/**
+ * @author: wuwenqiang
+ * @description: 获取影片评论总数
+ * @date: 2023-12-28 23:18
+ */
+export const getCommentCountService = (id:number,type:string):Promise<MyAwesomeData<number>>=>{
+  return httpRequest.get<number>(`${api.getCommentCount}?relationId=${id}&type=${type}&pageSize=20&pageNum=1`)
+};
+
+/**
+ * @author: wuwenqiang
+ * @description: 查询是否已经收藏
+ * @date: 2023-12-28 22:53
+ */
+export const isFavoriteService = (movieId:number):Promise<MyAwesomeData<number>>=>{
+  return httpRequest.get<number>(`${api.isFavorite}?movieId=${movieId}`)
+};
+
+/**
+ * @author: wuwenqiang
+ * @description: 添加收藏
+ * @date: 2023-12-28 22:58
+ */
+export const saveFavoriteService = (movieId:number):Promise<MyAwesomeData<number>>=>{
+  return httpRequest.post<number>(`${api.saveFavorite}/${movieId}`,{})
+};
+
+/**
+ * @author: wuwenqiang
+ * @description: 取消收藏
+ * @date: 2023-12-28 22:58
+ */
+export const deleteFavoriteService = (movieId:number):Promise<MyAwesomeData<number>>=>{
+  return httpRequest.delete<number>(`${api.deleteFavorite}/${movieId}`);
 };

@@ -44,7 +44,7 @@ struct MovieRegisterPage {
         bottom: 1
       },
       color: {
-        bottom: colors.tabBarborderColor
+        bottom: colors.borderColor
       },
       style: {
         bottom: BorderStyle.Solid

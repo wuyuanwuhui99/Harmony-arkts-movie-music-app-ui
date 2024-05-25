@@ -256,7 +256,7 @@ struct CustomDialogComponent {
           .textAlign(TextAlign.Center)
           .backgroundColor(colors.blockColor)
           .fontColor(Color.Black)
-        Divider().width(1).height('100%').backgroundColor(colors.tabBarborderColor)
+        Divider().width(1).height('100%').backgroundColor(colors.borderColor)
         Text('确定')
           .onClick(() => {
             this.confirm(this.value)
@@ -270,7 +270,7 @@ struct CustomDialogComponent {
           top: 1,
         },
         color: {
-          top: colors.tabBarborderColor
+          top: colors.borderColor
         },
         style: {
           top: BorderStyle.Solid

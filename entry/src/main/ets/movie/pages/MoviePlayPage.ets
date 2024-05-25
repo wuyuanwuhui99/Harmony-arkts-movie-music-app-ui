@@ -5,6 +5,10 @@ import display from '@ohos.display';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import {getMovieUrlService} from '../service';
+import {getCommentCountService,isFavoriteService,saveFavoriteService,deleteFavoriteService} from '../service';
+import { SocialEnum } from '../../config/constant';
+import BottomDialogComponent from '../components/BottomDialogComponent';
+
 @Entry
 @Component
 struct MoviePlayPage {
@@ -12,8 +16,12 @@ struct MoviePlayPage {
   @State recommendMovieList:Array<MovieInterface> = [];// 推荐的电影
   @State currentUrl:string =  '';// 当前播放地址
   @State currentUrlGroup:number = 0;// 当前选中的url分组
-  controller: web_webview.WebviewController = new web_webview.WebviewController();
-  screenWidth:number = display.getDefaultDisplaySync().width;
+  @State commentTotal:number = 0;// 评论总数
+  @State isFavorite:boolean = false;// 是否搜查电影
+  private loading:boolean = false;
+  private controller: web_webview.WebviewController = new web_webview.WebviewController();
+  private screenWidth:number = display.getDefaultDisplaySync().width;
+  private customDialogController:CustomDialogController;
   @State movieUrlGroup:Array<Array<MovieUrlInterface>> = <Array<Array<MovieUrlInterface>>>[];// 电影分组
 
   @Styles blockStyle(){
@@ -29,7 +37,7 @@ struct MoviePlayPage {
     this.movieItem = params['movieItem'] as MovieInterface; // 获取info属性的值
     getMovieUrlService(72667/*this.movieItem.id*/).then(res=>{// 获取电影播放地址分组
       res.data.forEach((dItem,dIndex)=>{
-        if(dIndex == 0){
+        if(dIndex === 0){
           this.currentUrl = dItem.url;
         }
         const index:number = this.movieUrlGroup.findIndex((mItem)=> mItem[0].playGroup === dItem.playGroup)
@@ -40,6 +48,24 @@ struct MoviePlayPage {
         }
       })
     })
+
+    /**
+     * @author: wuwenqiang
+     * @description: 查询评论数量
+     * @date: 2024-05-25 16:30
+     */
+    getCommentCountService(this.movieItem.id,SocialEnum.MOVIE.toString()).then((res)=>{
+      this.commentTotal = res.data;
+    });
+
+    /**
+     * @author: wuwenqiang
+     * @description: 查询是否已经收藏
+     * @date: 2024-05-25 16:30
+     */
+    isFavoriteService(this.movieItem.id).then((res)=>{
+      this.isFavorite = res.data > 0;
+    })
   }
 
   build() {
@@ -48,14 +74,47 @@ struct MoviePlayPage {
         Column(){
           if(this.currentUrl){
             Web({ src: this.currentUrl, controller:this.controller })
-              .height(size.webviewHeight)
               .width('100%')
+              .aspectRatio(16/9)
               .backgroundColor(Color.Black)
           }else{
             Row().height(size.webviewHeight).width('100%').backgroundColor(Color.Black)
           }
 
           Column(){
+            Row(){
+              Image($r('app.media.icon_comment'))
+                .height(size.middlIconSize)
+                .width(size.middlIconSize)
+                .margin({right:size.pagePadding}).onClick(()=>{
+                if(!this.customDialogController){
+                  this.customDialogController = new CustomDialogController({
+                    customStyle: true,
+                    builder: BottomDialogComponent(),
+                    alignment: DialogAlignment.Bottom,
+                  })
+                }
+                this.customDialogController.open();
+              })
+              Text(this.commentTotal.toString())
+              Blank()
+              Image(this.isFavorite ? $r('app.media.icon_collection_active') : $r('app.media.icon_collection'))
+                .height(size.middlIconSize)
+                .width(size.middlIconSize)
+                .margin({right:size.pagePadding}).onClick(()=>{
+                if(this.loading)return;
+                this.loading = false;
+                if(this.isFavorite){
+                  deleteFavoriteService(this.movieItem.id).then(res => this.isFavorite = !(res.data > 0)).finally(()=>this.loading = false)
+                }else{
+                  saveFavoriteService(this.movieItem.id).then(res => this.isFavorite = res.data > 0).finally(()=>this.loading = false)
+                }
+              })
+              Image($r('app.media.icon_share'))
+                .height(size.middlIconSize)
+                .width(size.middlIconSize)
+            }.blockStyle()
+
             Column(){
               Text(this.movieItem.movieName)
                 .fontWeight(FontWeight.Bolder)
@@ -80,7 +139,7 @@ struct MoviePlayPage {
                   ForEach(this.movieUrlGroup,(item:Array<MovieUrlInterface>,index:number)=>{
                     Text((/^\d$/.test(item[0].playGroup) ? '分组': '') + item[0].playGroup).border({
                       width: { top: this.currentUrlGroup == index ? 1 : 0,bottom: this.currentUrlGroup == index ? 0 : 1, left : this.currentUrlGroup == index ? 1 : 0, right:this.currentUrlGroup == index ? 1 : 0},
-                      color: colors.disableTextColor,
+                      color: colors.pageBackgroundColor,
                       style: BorderStyle.Solid
                     }).padding(size.smallPadding)
                       .fontColor(this.currentUrlGroup == index ? Color.Orange : Color.Black)

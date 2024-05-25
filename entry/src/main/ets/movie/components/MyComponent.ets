@@ -71,7 +71,7 @@ export default struct MyComponent {
    * @author wuwenqiang
    */
   usePlayRecord() {
-    getPlayRecordMovieListService().then(res => {
+    getPlayRecordMovieListService(1,20).then(res => {
       this.playRecordMovieList = res.data;
     })
   }
@@ -257,7 +257,7 @@ export default struct MyComponent {
                 top: 1
               },
               color: {
-                top: colors.tabBarborderColor
+                top: colors.borderColor
               },
               style: {
                 top: BorderStyle.Solid
@@ -275,7 +275,7 @@ export default struct MyComponent {
                 top: 1
               },
               color: {
-                top: colors.tabBarborderColor
+                top: colors.borderColor
               },
               style: {
                 top: BorderStyle.Solid

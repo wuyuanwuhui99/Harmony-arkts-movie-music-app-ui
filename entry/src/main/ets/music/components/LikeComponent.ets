@@ -2,7 +2,7 @@ import { LikeInterface } from '../interface/Index';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import LikeController from '../controller/LikeController';
-import { CircleEnum, USER_DATA } from '../../config/constant';
+import { SocialEnum, USER_DATA } from '../../config/constant';
 import { UserDataInterface } from '../../movie/interface';
 import { deleteLikeService, saveLikeService } from '../service';
 
@@ -40,7 +40,7 @@ export default struct LikeComponent {
     this.loading = false;
     const index = this.getLikeIndex();
     if(index !== -1){
-       deleteLikeService(this.relationId,CircleEnum.MUSIC).then(()=>{
+       deleteLikeService(this.relationId,SocialEnum.MUSIC).then(()=>{
          this.mLikeList.splice(index,1);
        }).finally(()=>{
          this.loading = false;
@@ -49,7 +49,7 @@ export default struct LikeComponent {
       const likeItem = {
         id: -1,
         relationId:this.relationId,
-        type:CircleEnum.MUSIC,
+        type:SocialEnum.MUSIC,
       } as LikeInterface;
       saveLikeService(likeItem).then((res)=>{
         this.mLikeList.push(res.data);
