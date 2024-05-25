@@ -6,6 +6,7 @@ import CryptoJS from '@ohos/crypto-js';
 import { SocialEnum } from '../../config/constant';
 import hilog from '@ohos.hilog';
 import { MovieInterface } from '../interface/Index';
+import { CommentInterface } from '../../music/interface/Index';
 
 /**
  * @description: 根据token获取用户信息
@@ -210,3 +211,21 @@ export const saveFavoriteService = (movieId:number):Promise<MyAwesomeData<number
 export const deleteFavoriteService = (movieId:number):Promise<MyAwesomeData<number>>=>{
   return httpRequest.delete<number>(`${api.deleteFavorite}/${movieId}`);
 };
+
+/**
+ * @author: wuwenqiang
+ * @description: 取消收藏
+ * @date: 2023-12-28 22:58
+ */
+export const insertCommentService = (commentItem:CommentInterface):Promise<MyAwesomeData<CommentInterface>> => {
+  return httpRequest.post<CommentInterface>(api.insertComment,commentItem);
+}
+
+/**
+ * @description: 获取一级评论
+ * @date: 2024-05-12 12:21
+ * @author wuwenqiang
+ */
+export const getTopCommentListService = (relationId:number,type:string,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<CommentInterface>>> => {
+  return httpRequest.get<Array<CommentInterface>>(`${api.getTopCommentList}?relationId=${relationId}&type=${type}&pageSize=${pageSize}&pageNum=${pageNum}`);
+}

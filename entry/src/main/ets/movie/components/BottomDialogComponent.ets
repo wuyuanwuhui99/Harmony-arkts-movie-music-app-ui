@@ -3,8 +3,8 @@ import * as size from '../../theme/size';
 
 @CustomDialog
 export default struct BottomDialogComponent {
-  @BuilderParam builder:()=>{};
-
+  @BuilderParam builder : () => void;
+  // 使用父组件@Builder装饰的方法初始化子组件@BuilderParam
   controller: CustomDialogController
 
   // 弹窗中的内容描述

@@ -1,6 +1,6 @@
 import * as size from '../../theme/size';
 import { MovieInterface } from '../interface/Index';
-import {getCategoryListService} from '../service/Index';
+import {getCategoryListService} from '../service/index';
 import {HOST} from  '../../config/constant';
 
 @Component

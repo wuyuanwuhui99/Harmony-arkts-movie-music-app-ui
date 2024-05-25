@@ -2,7 +2,7 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { ClassifyInterface } from '../interface/Index'
 import SwiperComponent from './SwiperComponent';
-import { getAllCategoryListByPageNameService } from '../service/Index';
+import { getAllCategoryListByPageNameService } from '../service/index';
 import CategoryComponent from './CategoryComponent';
 import SearchComponent from './SearchComponent';
 
@@ -12,7 +12,7 @@ export default struct HomeComponent {
   @State allCategoryList: Array<ClassifyInterface> = [];
   @State currentCategoryList: Array<ClassifyInterface> = [];
   @State isScrollEnd: boolean = false;
-  scroller: Scroller = new Scroller()
+  private scroller: Scroller = new Scroller()
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)

@@ -3,7 +3,7 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { UserDataInterface } from '../interface';
 import promptAction from '@ohos.promptAction'
-import { registerService, verifyUserIdService } from '../service/Index';
+import { registerService, verifyUserIdService } from '../service';
 import preference from '../../utils/PreferenceModel';
 import display from '@ohos.display';
 import OptionDialogComponent from '../components/OptionDialogComponent';

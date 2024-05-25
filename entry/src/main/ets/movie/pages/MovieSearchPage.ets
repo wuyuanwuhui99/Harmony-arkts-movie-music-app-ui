@@ -4,7 +4,7 @@ import * as size from '../../theme/size';
 import { MovieInterface } from '../interface/Index';
 import TitleComponent from '../components/TitleComponent';
 import MovieListComponent from '../components/MovieListComponent';
-import { getRecommendSerivce, getSearchResultService } from '../service/Index';
+import { getRecommendSerivce, getSearchResultService } from '../service';
 import preference from '../../utils/PreferenceModel';
 
 @Entry
