@@ -78,7 +78,7 @@ export interface  CommentInterface {
   id:number,//主键
   content:string,//评论内容
   parentId:number,//父节点id
-  type:string,
+  type:string,// 类型
   topId:number,//顶级节点id
   relationId:number,//影片id
   createTime:string,//创建时间
@@ -90,8 +90,8 @@ export interface  CommentInterface {
   replyUserId:string,//被回复者id
   replyUserName:string,//被回复者名称
   showCommentCount:string,//显示的回复数量
-  replyPageNum:number,
-  replyList:Array<CommentInterface>
+  replyPageNum:number,// 回复数量
+  replyList:Array<CommentInterface>// 回复列表
 }
 
 export interface CircleInterface {

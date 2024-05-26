@@ -212,29 +212,6 @@ export default struct CommentComponent{
         Divider().height(1).color(colors.borderColor)
         this.buildCommentInput()
       }
-      // Row(){
-      //   TextInput({ placeholder: "评论", text: '' })
-      //     .layoutWeight(1)
-      //     .margin({right:size.pagePadding})
-      //     .backgroundColor(colors.pageBackgroundColor)
-      //     .height(size.inputHeight)
-      //     .onChange((value) => {
-      //       this.text = value;
-      //     })
-      //   Button('发送', { type: ButtonType.Capsule, stateEffect: true })
-      //     .backgroundColor(colors.lineBackgroundColor)
-      //     .width(size.btnWidth)
-      //     .enabled(Boolean(this.text))
-      //     .height(size.inputHeight)
-      //     .margin({ left: size.pagePadding })
-      //     .onClick(() => {
-      //
-      //     })
-      // } .border({
-      //   width: { top: 1 },
-      //   color: { top: colors.borderColor },
-      //   style: { top: BorderStyle.Solid }
-      // }).padding(size.pagePadding).width('100%')
     }.width('100%').height('100%')
   }
 }
