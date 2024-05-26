@@ -230,23 +230,24 @@ struct CustomDialogComponent {
   }
 
   build() {
-    Column() {
+    Column({space:size.pagePadding}) {
       Text("请输入")
-        .margin({ top: size.pagePadding, bottom: size.pagePadding })
-      Flex({ alignItems: ItemAlign.Center }) {
+        .margin({ top: size.pagePadding })
+      Row() {
         Text(this.title)
-          .flexShrink(0)
           .margin({ right: size.smallIconSize })
         TextInput({ placeholder: '请输入', text: this.text })
-          .flexGrow(1)
+          .layoutWeight(1)
           .backgroundColor(colors.pageBackgroundColor)
           .height(size.lineHeight * 2)
           .onChange((value: string) => {
             this.value = value
           })
-      }.margin(size.pagePadding)
+      }.width('100%')
+      .padding({left:size.pagePadding,right:size.pagePadding})
+      .alignItems(VerticalAlign.Center)
 
-      Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
+      Row() {
         Text('取消')
           .onClick(() => {
             this.controller.close()

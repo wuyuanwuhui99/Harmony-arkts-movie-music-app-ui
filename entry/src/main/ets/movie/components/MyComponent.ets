@@ -82,17 +82,28 @@ export default struct MyComponent {
         Column() {
           Row() {
             AvaterComponent({ dimensions: this.bigAvaterSize })
-            Flex({ direction: FlexDirection.Column }) {
+            Column() {
               Text(this.userData?.username || '')
                 .fontSize(size.bigFontSize)
                 .fontWeight(FontWeight.Bolder)
                 .margin({ bottom: size.smallPadding })
               Text(this.userData?.sign || '').fontColor(colors.disableTextColor)
             }
+            .alignItems(HorizontalAlign.Start)
             .margin({ left: size.pagePadding })
-            .flexGrow(1)
-
-            Image($r('app.media.icon_edit')).height(size.bigIconSize).width(size.bigIconSize)
+            .layoutWeight(1)
+            Image($r('app.media.icon_edit'))
+              .height(size.bigIconSize)
+              .width(size.bigIconSize)
+              .onClick(()=>{
+                router.pushUrl({
+                    url: 'movie/pages/MovieUserPage', // 目标url
+                  }, router.RouterMode.Standard, (err) => {
+                    if (err) {
+                      console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
+                    }
+                })
+              })
           }.blockStyle().width('100%').align(Alignment.Center)
 
           Row() {

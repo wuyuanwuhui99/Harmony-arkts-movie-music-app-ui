@@ -7,7 +7,7 @@ export default struct TitleComponent{
   @Prop title:string;
 
   build(){
-    Flex({direction:FlexDirection.Row,alignItems: ItemAlign.Center}){
+    Row(){
       Divider()
         .height(size.lineHeight)
         .width(size.lineWidth)

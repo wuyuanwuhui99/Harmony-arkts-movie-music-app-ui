@@ -52,36 +52,42 @@ struct MovieLoginPage {
           .width(size.bigIconSize * 3)
           .height(size.bigIconSize * 3)
           .margin({ top: size.pagePadding * 2, bottom: size.pagePadding * 2 })
-        Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
+        Row() {
           Image($r('app.media.icon_user_active'))
             .width(size.smallIconSize)
             .height(size.smallIconSize)
             .margin({ left: size.smallPadding, right: size.smallPadding })
           TextInput({ placeholder: "请输入账号", text: this.userData.userId })
-            .flexGrow(1)
+            .layoutWeight(1)
             .backgroundColor(Color.Transparent)
             .onChange((value) => {
               this.userId = value;
             })
-        }.padding(size.smallPadding).border({
+        }
+        .alignItems(VerticalAlign.Center)
+        .width('100%')
+        .padding(size.smallPadding).border({
           width: 1,
           color: colors.pageBackgroundColor,
           style: BorderStyle.Solid
         }).borderRadius(size.blockBorderRaduis * 2)
 
-        Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
+        Row() {
           Image($r('app.media.icon_password'))
             .width(size.smallIconSize)
             .height(size.smallIconSize)
             .margin({ left: size.smallPadding, right: size.smallPadding })
           TextInput({ placeholder: "请输入密码", text: '123456' })
             .type(InputType.Password)
-            .flexGrow(1)
+            .layoutWeight(1)
             .backgroundColor(Color.Transparent)
             .onChange((value) => {
               this.password = value;
             })
-        }.margin({ top: size.pagePadding })
+        }
+        .alignItems(VerticalAlign.Center)
+        .width('100%')
+        .margin({ top: size.pagePadding })
         .padding(size.smallPadding)
         .border({
           width: 1,

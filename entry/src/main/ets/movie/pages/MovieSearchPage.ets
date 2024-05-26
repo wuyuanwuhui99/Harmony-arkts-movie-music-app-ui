@@ -11,7 +11,7 @@ import preference from '../../utils/PreferenceModel';
 @Component
 struct MovieSearchPage {
   scroller: Scroller = new Scroller()
-  @State searchKeyWord: string = ''; // 搜索词
+  @State searchKeyWord: string = '蜀山'; // 搜索词
   @State classify: string = '';
   @State recommendMovieList: Array<MovieInterface> = []; // 推荐的电影
   @State searching: boolean = false;
@@ -45,10 +45,9 @@ struct MovieSearchPage {
   build() {
     Scroll() {
       Column() {
-        Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
-          Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
+        Row() {
+          Row() {
             TextInput({ text: this.searchKeyWord, placeholder: this.movieItem && this.movieItem.movieName })
-              .flexGrow(1)
               .height(size.middleAvaterSize)
               .backgroundColor(Color.Transparent)
               .onChange((value) => {
@@ -68,7 +67,10 @@ struct MovieSearchPage {
                   this.searching = false;
                 })
             }
-          }.borderRadius(size.middleAvaterSize).backgroundColor(colors.pageBackgroundColor)
+          }
+          .borderRadius(size.middleAvaterSize)
+          .backgroundColor(colors.pageBackgroundColor)
+          .layoutWeight(1)
           Text("搜索")
             .width('25%')
             .textAlign(TextAlign.Center)
@@ -94,12 +96,11 @@ struct MovieSearchPage {
                 this.searchMovieList = res.data;
               }).finally(() => this.loading = false)
             })
-
         }.blockStyle()
 
         if (this.searching) {
           if (!this.loading) {
-            Flex({ direction: FlexDirection.Column }) {
+            Column() {
               if (this.searchMovieList.length === 0) {
                 Text("暂无搜索结果")
                   .width('100%')
@@ -108,7 +109,7 @@ struct MovieSearchPage {
               } else {
                 MovieListComponent({ movieList: $searchMovieList, gravity: 'vertical' })
               }
-            }.blockStyle().height('auto')
+            }.blockStyle()
           }
         } else {
           Column() {
@@ -144,13 +145,14 @@ struct MovieSearchPage {
             }
           }
         }
-      }
+      }.justifyContent(FlexAlign.Start)
     }
     .backgroundColor(colors.pageBackgroundColor)
     .padding({
       left: size.pagePadding,
       right: size.pagePadding
     })
+    .align(Alignment.Top)
     .scrollable(ScrollDirection.Vertical)
     .height('100%')
     .width('100%')
