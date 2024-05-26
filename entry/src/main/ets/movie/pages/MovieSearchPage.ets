@@ -47,7 +47,7 @@ struct MovieSearchPage {
       Column() {
         Row() {
           Row() {
-            TextInput({ text: this.searchKeyWord, placeholder: this.movieItem && this.movieItem.movieName })
+            TextInput({ text: this.searchKeyWord, placeholder: this.movieItem?.movieName })
               .height(size.middleAvaterSize)
               .backgroundColor(Color.Transparent)
               .onChange((value) => {

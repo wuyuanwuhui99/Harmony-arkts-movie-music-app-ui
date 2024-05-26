@@ -62,7 +62,7 @@ struct MovieDetailPage {
                 .padding({bottom:size.smallPadding})
                 .fontWeight(FontWeight.Bolder)
                 .fontSize(size.bigFontSize)
-              Text(this.movieItem.description ? this.movieItem.description.replace(/\n|\s/g,'') : '')
+              Text(this.movieItem.description?.replace(/\n|\s/g,'') || '')
                 .padding({bottom:size.smallPadding})
                 .fontSize(size.normalFontSize)
                 .fontColor(colors.disableTextColor)

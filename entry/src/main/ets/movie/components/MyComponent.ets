@@ -137,7 +137,7 @@ export default struct MyComponent {
                 .rotate({ angle: this.showPlayRecordMovieList ? 90 : 0 })
             }
             .margin({
-              bottom: this.showPlayRecordMovieList && this.playRecordMovieList.length > 0 ? size.pagePadding : 0
+              bottom: this.playRecordMovieList?.length > 0 ? size.pagePadding : 0
             })
             .width('100%')
             .onClick(() => {
@@ -147,7 +147,7 @@ export default struct MyComponent {
               }
             })
 
-            if (this.showPlayRecordMovieList && this.playRecordMovieList.length > 0) {
+            if (this.playRecordMovieList?.length > 0) {
               Scroll() {
                 Row() {
                   ForEach(this.playRecordMovieList, (item: MovieInterface) => {

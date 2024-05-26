@@ -8,7 +8,7 @@ export default struct AvaterComponent {
   @Prop dimensions: number;
 
   build() {
-    Image(this.userData && this.userData.avater ? HOST + this.userData.avater : $r('app.media.default_avater'))
+    Image(this.userData?.avater ? HOST + this.userData.avater : $r('app.media.default_avater'))
       .height(this.dimensions)
       .width(this.dimensions)
       .borderRadius(this.dimensions).onClick(() => {

@@ -119,7 +119,7 @@ struct MovieUserPage {
       Column() {
         Row() {
           Text('头像').flexGrow(1)
-          Image(this.userData && this.userData.avater ? HOST + this.userData.avater : $r('app.media.default_avater'))
+          Image(this.userData?.avater ? HOST + this.userData.avater : $r('app.media.default_avater'))
             .height(size.bigAvaterSize)
             .width(size.bigAvaterSize)
             .borderRadius(size.bigAvaterSize)

@@ -33,7 +33,7 @@ export default struct SearchComponent{
     Row(){
       AvaterComponent({dimensions:this.dimensions})
       Row(){
-        Text(this.movieItem && this.movieItem.movieName)
+        Text(this.movieItem?.movieName)
           .fontSize(size.normalFontSize)
           .fontColor(colors.disableTextColor)
       }

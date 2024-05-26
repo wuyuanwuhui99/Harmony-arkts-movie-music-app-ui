@@ -37,7 +37,7 @@ export default struct MusicSearchComponent {
     Row() {
       AvaterComponent({ dimensions: this.dimensions })
       Row() {
-        Text(this.musicItem && this.musicItem.songName)
+        Text(this.musicItem?.songName)
           .fontSize(size.normalFontSize)
           .fontColor(colors.disableTextColor)
       }

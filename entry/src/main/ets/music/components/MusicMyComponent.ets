@@ -46,8 +46,8 @@ export default struct MusicMyComponent {
         Row() {
           AvaterComponent({ dimensions: this.dimensions })
           Column() {
-            Text(this.userData && this.userData.username).fontWeight(FontWeight.Bold)
-            Text(this.userData && this.userData.sign).fontColor(colors.disableTextColor)
+            Text(this.userData?.username).fontWeight(FontWeight.Bold)
+            Text(this.userData?.sign).fontColor(colors.disableTextColor)
           }.alignItems(HorizontalAlign.Start).margin({ left: size.pagePadding })
         }.blockStyle()
 

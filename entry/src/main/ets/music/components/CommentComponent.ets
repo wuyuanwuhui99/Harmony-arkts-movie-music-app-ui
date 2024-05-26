@@ -33,7 +33,7 @@ export default struct CommentComponent {
   dialogController: CustomDialogController = new CustomDialogController({
     customStyle: true,
     builder: CommentInputComponent({
-      placeholder: `评论${this.firstComment ? this.firstComment.username : ''}`,
+      placeholder: `评论${this.firstComment?.username || ''}`,
       onSend: (text: string) => {
         if (this.loading) return;
         this.loading = true;
