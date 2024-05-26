@@ -106,15 +106,16 @@ export default struct CommentComponent{
             }
             // 发送评论
             insertCommentService(commentItem).then((res) => {
-              // 必须重新解构，然后再赋值，否则添加回复不生效
-              const commentList = [...this.commentList];
               if (this.firstComment) { // 二级评论，相当于回复
-                commentList[this.replyIndex].replyList.push(res.data);
+                // 必须重新解构，然后再赋值，否则添加回复不生效
+                const commentItem = {...this.commentList[this.replyIndex]};
+                commentItem.replyList === null && (commentItem.replyList = []);
+                commentItem.replyList.push(res.data);// 添加回复列表
+                this.commentList.splice(this.replyIndex,1,commentItem);// 替换掉原数据里面的那一条数据
               } else { // 一级评论
-                commentList.push(res.data);
+                this.commentList.push(res.data);
               }
               // 重新赋值，改变对象的内存地址，否则添加回复不生效
-              this.commentList = commentList;
               this.dialogController?.close();
               this.replyComment = this.firstComment = null;
               this.text = '';
