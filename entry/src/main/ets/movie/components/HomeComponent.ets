@@ -2,7 +2,7 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { ClassifyInterface } from '../interface/Index'
 import SwiperComponent from './SwiperComponent';
-import { getAllCategoryListByPageNameService } from '../service/index';
+import { getAllCategoryListByPageNameService } from '../service/Index';
 import CategoryComponent from './CategoryComponent';
 import SearchComponent from './SearchComponent';
 

@@ -22,19 +22,12 @@ export default struct InputComponent {
             this.text = value;
           })
         Button('发送', { type: ButtonType.Capsule, stateEffect: true })
-          .backgroundColor(this.text ? colors.lineBackgroundColor : colors.disableTextColor)
+          .backgroundColor(colors.lineBackgroundColor)
           .width(size.btnWidth)
+          .enabled(Boolean(this.text))
           .height(size.inputHeight)
           .margin({ left: size.pagePadding })
           .onClick(() => {
-            if (!this.text.trim()) {
-              promptAction.showToast({
-                message: '评论或回复内容不能为空',
-                duration: 2000,
-                bottom: '50%'
-              });
-              return
-            }
             this.onSend(this.text);
           })
       }.backgroundColor(colors.blockColor).padding(size.pagePadding)

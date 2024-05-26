@@ -8,7 +8,7 @@ import httpRequest from '../../utils/HttpUtil';
 import { UserDataInterface } from '../interface/Index'
 import preference from '../../utils/PreferenceModel';
 import { USER_DATA } from '../../config/constant';
-import { getUserDataService } from '../service';
+import { getUserDataService } from '../service/Index';
 
 @Entry
 @Component

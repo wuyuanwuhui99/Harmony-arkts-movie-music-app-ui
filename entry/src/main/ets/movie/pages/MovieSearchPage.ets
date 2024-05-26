@@ -4,7 +4,7 @@ import * as size from '../../theme/size';
 import { MovieInterface } from '../interface/Index';
 import TitleComponent from '../components/TitleComponent';
 import MovieListComponent from '../components/MovieListComponent';
-import { getRecommendSerivce, getSearchResultService } from '../service';
+import { getRecommendSerivce, getSearchResultService } from '../service/Index';
 import preference from '../../utils/PreferenceModel';
 
 @Entry
@@ -45,8 +45,6 @@ struct MovieSearchPage {
   build() {
     Scroll() {
       Column() {
-
-
         Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
           Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
             TextInput({ text: this.searchKeyWord, placeholder: this.movieItem && this.movieItem.movieName })
@@ -71,7 +69,6 @@ struct MovieSearchPage {
                 })
             }
           }.borderRadius(size.middleAvaterSize).backgroundColor(colors.pageBackgroundColor)
-
           Text("搜索")
             .width('25%')
             .textAlign(TextAlign.Center)

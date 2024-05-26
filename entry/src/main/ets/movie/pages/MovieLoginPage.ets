@@ -1,7 +1,7 @@
 import router from '@ohos.router';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import { loginService } from '../service';
+import { loginService } from '../service/Index';
 import { UserDataInterface } from '../interface';
 import { USER_DATA } from '../../config/constant';
 import promptAction from '@ohos.promptAction'

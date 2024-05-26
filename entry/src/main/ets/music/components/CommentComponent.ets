@@ -3,7 +3,7 @@ import { CommentInterface } from '../interface/Index';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { formatTime } from '../../utils/common';
-import { insertCommentService } from '../service';
+import { insertCommentService } from '../service/Index';
 import CommentInputComponent from './CommentInputComponent';
 import CommentController from '../controller/CommentController';
 

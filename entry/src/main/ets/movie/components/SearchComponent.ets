@@ -2,7 +2,7 @@ import router from '@ohos.router';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { MovieInterface } from '../interface/Index';
-import {getSearchKeyWordService} from '../service/index';
+import {getSearchKeyWordService} from '../service/Index';
 import AvaterComponent from './AvaterComponent';
 @Component
 export default struct SearchComponent{

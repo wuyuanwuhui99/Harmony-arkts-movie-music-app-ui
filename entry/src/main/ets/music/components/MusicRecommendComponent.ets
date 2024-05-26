@@ -1,4 +1,4 @@
-import { getMusicListByClassifyIdService } from '../service';
+import { getMusicListByClassifyIdService } from '../service/Index';
 import { MusicInterface } from '../interface';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';

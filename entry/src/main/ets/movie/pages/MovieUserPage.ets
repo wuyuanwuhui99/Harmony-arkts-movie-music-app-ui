@@ -4,7 +4,7 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { HOST } from '../../config/constant';
 import { USER_DATA } from '../../config/constant';
-import { updateUserDataService } from '../service';
+import { updateUserDataService } from '../service/Index';
 import preference from '../../utils/PreferenceModel';
 import OptionDialogComponent from '../components/OptionDialogComponent';
 

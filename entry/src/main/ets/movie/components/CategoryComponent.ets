@@ -2,7 +2,7 @@ import TitleComponent from './TitleComponent';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { ClassifyInterface,MovieInterface } from '../interface/Index';
-import {getCategoryListService} from '../service';
+import {getCategoryListService} from '../service/Index';
 import MovieListComponent from './MovieListComponent';
 @Component
 export default struct CategoryComponent{

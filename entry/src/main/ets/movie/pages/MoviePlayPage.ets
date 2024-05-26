@@ -3,8 +3,8 @@ import web_webview from '@ohos.web.webview'
 import { MovieInterface, MovieUrlInterface } from "../interface";
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import { getMovieUrlService } from '../service';
-import { getCommentCountService, isFavoriteService, saveFavoriteService, deleteFavoriteService } from '../service';
+import { getMovieUrlService } from '../service/Index';
+import { getCommentCountService, isFavoriteService, saveFavoriteService, deleteFavoriteService } from '../service/Index';
 import { SocialEnum } from '../../config/constant';
 import BottomDialogComponent from '../components/BottomDialogComponent';
 import CommentComponent from '../components/CommentComponent';
@@ -38,9 +38,8 @@ struct MoviePlayPage {
   aboutToAppear() {
     const params = router.getParams(); // 获取传递过来的参数对象
     this.movieItem = params['movieItem'] as MovieInterface; // 获取info属性的值
-
-    getMovieUrlService(72667 /*this.movieItem.id*/
-    ).then(res => { // 获取电影播放地址分组
+    this.movieItem.id = 72667;// 测试数据
+    getMovieUrlService(this.movieItem.id).then(res => { // 获取电影播放地址分组
       res.data.forEach((dItem, dIndex) => {
         if (dIndex === 0) {
           this.currentUrl = dItem.url;
@@ -73,6 +72,11 @@ struct MoviePlayPage {
     })
   }
 
+  /**
+   * @author: wuwenqiang
+   * @description: 创建评论
+   * @date: 2024-05-25 16:30
+   */
   @Builder commentBuilder() {
     CommentComponent({ relationId: this.movieItem.id, type: SocialEnum.MOVIE.toString() })
   }
@@ -100,7 +104,7 @@ struct MoviePlayPage {
                   this.customDialogController = new CustomDialogController({
                     customStyle: true,
                     builder: BottomDialogComponent({
-                      builder: this.commentBuilder
+                      builder: this.commentBuilder.bind(this)
                     }),
                     alignment: DialogAlignment.Bottom,
                   })

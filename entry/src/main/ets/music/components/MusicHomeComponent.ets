@@ -2,7 +2,7 @@ import MusicSearchComponent from './MusicSearchComponent';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import {MusicClassifyInterface} from '../interface';
-import {getMusicClassifyService} from '../service';
+import {getMusicClassifyService} from '../service/Index';
 import MusicClassifyComponent from './MusicClassifyComponent';
 import MusicCategoryComponent from './MusicCategoryComponent';
 import MusicSingerComponent from './MusicSingerComponent';

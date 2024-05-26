@@ -1,4 +1,5 @@
 export const pagePadding:number = 15;
+export const miniPadding:number = 5;
 export const smallPadding:number = 10;
 export const smallIconSize:number = 20;
 export const middlIconSize:number = 30;

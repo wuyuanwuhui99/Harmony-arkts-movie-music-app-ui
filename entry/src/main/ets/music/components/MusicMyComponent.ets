@@ -3,7 +3,7 @@ import * as size from '../../theme/size';
 import AvaterComponent from '../../movie/components/AvaterComponent';
 import { UserDataInterface } from '../../movie/interface/Index'
 import { HOST, USER_DATA } from '../../config/constant';
-import { getMySingerService, getMusicPlayMenuService, getMusicRecordService } from '../service';
+import { getMySingerService, getMusicPlayMenuService, getMusicRecordService } from '../service/Index';
 import { MusicSingerInterface, MuiscPlayMenuInterface } from '../interface';
 import { MusicInterface } from '../interface/Index';
 

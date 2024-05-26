@@ -9,7 +9,7 @@ import {
   getPlayRecordMovieListService,
   getMyViewsMovieListService,
   getMyFavoriteMovieListService
-} from '../service/index'
+} from '../service/Index'
 import { HOST } from '../../config/constant';
 
 @Entry

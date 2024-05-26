@@ -3,7 +3,7 @@ import AvaterComponent from '../../movie/components/AvaterComponent';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { MusicInterface } from '../interface';
-import { getKeyWordMusicService } from '../service';
+import { getKeyWordMusicService } from '../service/Index';
 
 @Component
 export default struct MusicSearchComponent {

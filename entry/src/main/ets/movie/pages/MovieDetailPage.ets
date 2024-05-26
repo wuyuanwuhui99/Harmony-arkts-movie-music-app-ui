@@ -4,7 +4,7 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import {HOST} from '../../config/constant';
 import TitleComponent from '../components/TitleComponent';
-import {getMovieStartListService,getRecommentListService,saveViewRecordService} from '../service';
+import {getMovieStartListService,getRecommentListService,saveViewRecordService} from '../service/Index';
 @Entry
 @Component
 struct MovieDetailPage {

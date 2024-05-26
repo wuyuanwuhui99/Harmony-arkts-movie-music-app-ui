@@ -4,7 +4,7 @@ import * as size from '../../theme/size';
 import LikeController from '../controller/LikeController';
 import { SocialEnum, USER_DATA } from '../../config/constant';
 import { UserDataInterface } from '../../movie/interface';
-import { deleteLikeService, saveLikeService } from '../service';
+import { deleteLikeService, saveLikeService } from '../service/Index';
 
 @Component
 export default struct LikeComponent {

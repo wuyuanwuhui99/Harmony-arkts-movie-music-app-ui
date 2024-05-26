@@ -1,6 +1,6 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import { getCircleListByTypeService } from '../service';
+import { getCircleListByTypeService } from '../service/Index';
 import { CircleInterface, CommentInterface } from '../interface';
 import { UserDataInterface } from '../../movie/interface';
 import { HOST, USER_DATA } from '../../config/constant';
