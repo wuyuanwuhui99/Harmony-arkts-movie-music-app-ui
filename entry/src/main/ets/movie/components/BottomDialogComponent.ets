@@ -3,6 +3,7 @@ import * as size from '../../theme/size';
 
 @CustomDialog
 export default struct BottomDialogComponent {
+  @Prop dialogHeight: string;
   @BuilderParam builder : () => void;
   // 使用父组件@Builder装饰的方法初始化子组件@BuilderParam
   controller: CustomDialogController
@@ -13,7 +14,7 @@ export default struct BottomDialogComponent {
       this.builder()
     }
     .borderRadius({topLeft:size.blockBorderRaduis,topRight:size.blockBorderRaduis})
-    .height('80%')
+    .height(this.dialogHeight)
     .width('100%')
     .backgroundColor(colors.blockColor)
   }

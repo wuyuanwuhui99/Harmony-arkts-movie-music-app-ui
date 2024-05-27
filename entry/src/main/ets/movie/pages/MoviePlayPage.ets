@@ -104,6 +104,7 @@ struct MoviePlayPage {
                   this.customDialogController = new CustomDialogController({
                     customStyle: true,
                     builder: BottomDialogComponent({
+                      dialogHeight: '80%',
                       builder: this.commentBuilder.bind(this)
                     }),
                     alignment: DialogAlignment.Bottom,

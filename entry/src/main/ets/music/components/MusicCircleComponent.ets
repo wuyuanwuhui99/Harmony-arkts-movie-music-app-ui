@@ -3,9 +3,9 @@ import * as size from '../../theme/size';
 import { getCircleListByTypeService } from '../service/Index';
 import { CircleInterface, CommentInterface } from '../interface';
 import { UserDataInterface } from '../../movie/interface';
-import { HOST, USER_DATA } from '../../config/constant';
+import { HOST, SocialEnum, USER_DATA } from '../../config/constant';
 import { formatTime } from '../../utils/common';
-import CommentComponent from './CommentComponent';
+import CommentComponent from '../../movie/components/CommentComponent';
 import CommentController from '../controller/CommentController';
 import LikeComponent from './LikeComponent';
 import LikeController from '../controller/LikeController';
@@ -218,7 +218,7 @@ export default struct MusicCircleComponent {
 
               Column() {
                 LikeComponent({controller:this.likeController[index],relationId:item.id,likeList:JSON.stringify(item.circleLikes)})
-                CommentComponent({controller:this.commentController[index],relationId:item.id,commentList:JSON.stringify(item.circleComments)})
+                CommentComponent({type:SocialEnum.MUSIC_CIRCLE.toString(),relationId:item.id,commentListStr:JSON.stringify(item.circleComments)})
                 Blank().height(size.pagePadding)
               }.backgroundColor(colors.pageBackgroundColor)
               .alignItems(HorizontalAlign.Start)
