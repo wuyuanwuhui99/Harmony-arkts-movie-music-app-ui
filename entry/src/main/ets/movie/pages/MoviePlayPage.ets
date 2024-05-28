@@ -78,7 +78,7 @@ struct MoviePlayPage {
    * @date: 2024-05-25 16:30
    */
   @Builder commentBuilder() {
-    CommentComponent({ relationId: this.movieItem.id, type: SocialEnum.MOVIE.toString() })
+    CommentComponent({commentListStr:'' ,relationId: this.movieItem.id, type: SocialEnum.MOVIE.toString() })
   }
 
   build() {
