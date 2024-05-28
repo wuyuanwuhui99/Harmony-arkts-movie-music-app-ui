@@ -5,6 +5,7 @@ import { HOST } from '../../config/constant';
 import { CommentInterface } from '../../music/interface/Index';
 import { formatTime } from '../../utils/common';
 import BottomDialogComponent from './BottomDialogComponent';
+import CommentController from '../controller/CommentController';
 
 // 传入buildCommentList方法必须是一个对象形式，否则无法实现响应式
 interface CommentParamsInterface {
@@ -26,9 +27,12 @@ export default struct CommentComponent {
   private loading: boolean = false;
   private scroller: Scroller = new Scroller()
   private dialogController: CustomDialogController;
+  public controller: CommentController = null;
 
   aboutToAppear() {
-
+    if (this.controller) {
+      this.controller.attach(this); //绑定控制器
+    }
     /**
      * @author: wuwenqiang
      * @description: 获取评论列表
@@ -49,7 +53,7 @@ export default struct CommentComponent {
    * @description: 打开评论框弹窗
    * @date: 2024-05-26 14:26
    */
-  openDialog(): void {
+  openInputDialog(): void {
     if (!this.dialogController) {
       this.dialogController = new CustomDialogController({
         customStyle: true,
@@ -74,7 +78,7 @@ export default struct CommentComponent {
         TextInput({
           text: this.text,
           placeholder: this.replyComment ? `回复${this.replyComment.username}` : (this.firstComment ? `回复${this.firstComment.username}` : '评论')
-        })
+        }).defaultFocus(true)
           .layoutWeight(1)
           .focusable(this.focusableInput)
           .height(size.inputHeight)
@@ -144,7 +148,7 @@ export default struct CommentComponent {
    */
   useReply(item: CommentInterface, index: number) {
     if (this.commentListStr) {
-      this.openDialog();
+      this.openInputDialog();
     }
     this.focusableInput = true;
     this.replyIndex = index;

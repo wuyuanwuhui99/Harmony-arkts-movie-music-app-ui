@@ -6,7 +6,7 @@ import { UserDataInterface } from '../../movie/interface';
 import { HOST, SocialEnum, USER_DATA } from '../../config/constant';
 import { formatTime } from '../../utils/common';
 import CommentComponent from '../../movie/components/CommentComponent';
-import CommentController from '../controller/CommentController';
+import CommentController from '../../movie/controller/CommentController';
 import LikeComponent from './LikeComponent';
 import LikeController from '../controller/LikeController';
 
@@ -218,7 +218,7 @@ export default struct MusicCircleComponent {
 
               Column() {
                 LikeComponent({controller:this.likeController[index],relationId:item.id,likeList:JSON.stringify(item.circleLikes)})
-                CommentComponent({type:SocialEnum.MUSIC_CIRCLE.toString(),relationId:item.id,commentListStr:JSON.stringify(item.circleComments)})
+                CommentComponent({controller:this.commentController[index],type:SocialEnum.MUSIC_CIRCLE.toString(),relationId:item.id,commentListStr:JSON.stringify(item.circleComments)})
                 Blank().height(size.pagePadding)
               }.backgroundColor(colors.pageBackgroundColor)
               .alignItems(HorizontalAlign.Start)
