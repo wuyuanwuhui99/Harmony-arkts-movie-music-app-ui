@@ -32,6 +32,12 @@ struct MusicIndexPage {
         .tabBar(this.tabBuilder(1, '推荐', $r('app.media.icon_recomment_active'), $r('app.media.icon_recomment')))
 
         TabContent() {
+
+        }
+        .tabBar(this.musicCircleBuilder())
+
+
+        TabContent() {
           if (this.isInitPage[2]) {
             MusicCircleComponent()
           } else {
@@ -80,5 +86,15 @@ struct MusicIndexPage {
       color: { top: colors.disableTextColor },
       style: { top: BorderStyle.Solid }
     })
+  }
+
+  @Builder musicCircleBuilder(){
+    Stack(){
+      Image($r('app.media.default_avater'))
+        .height(size.bigAvaterSize)
+        .height(size.bigAvaterSize)
+        .borderRadius(size.bigAvaterSize)
+    }
+
   }
 }
