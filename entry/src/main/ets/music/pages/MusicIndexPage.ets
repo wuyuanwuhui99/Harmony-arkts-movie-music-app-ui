@@ -12,7 +12,7 @@ struct MusicIndexPage {
   @State isInitPage: Array<boolean> = [true, false, false, false];
 
   build() {
-    Column() {
+    Stack() {
       Tabs({
         index: this.activeIndex,
         barPosition: BarPosition.End
@@ -31,10 +31,8 @@ struct MusicIndexPage {
         }
         .tabBar(this.tabBuilder(1, '推荐', $r('app.media.icon_recomment_active'), $r('app.media.icon_recomment')))
 
-        TabContent() {
-
-        }
-        .tabBar(this.musicCircleBuilder())
+        TabContent() {}
+        .tabBar(this.placehostBuilder())
 
 
         TabContent() {
@@ -56,18 +54,37 @@ struct MusicIndexPage {
         .tabBar(this.tabBuilder(3, '我的', $r('app.media.icon_user_active'), $r('app.media.icon_user')))
 
       }
-      .barHeight(70)
+      .barHeight(size.barHeight)
       .barMode(BarMode.Fixed)
       .onChange((index) => {
         this.isInitPage[index] = true;
         this.activeIndex = index
       })
+
+      // 用图片组件代作为导航栏中间凸起组件
+      Image($r('app.media.icon_song_default'))
+        .margin({bottom:size.barHeight - size.bigAvaterSize/2 - size.miniPadding})
+        .height(size.bigAvaterSize + size.miniPadding * 2)
+        .height(size.bigAvaterSize + size.miniPadding * 2)
+        .alignSelf(ItemAlign.Center)// 设置悬浮图标居中对齐
+        .borderRadius(size.bigAvaterSize + size.miniPadding * 2)
+        .backgroundColor(colors.blockColor)
+        .border({
+          width: size.miniPadding,
+          color: colors.pageBackgroundColor,
+          style: BorderStyle.Solid
+        })
     }
     .width('100%')
     .height('100%')
-
+    .alignContent(Alignment.Bottom)// 设置Tab组件和凸起悬浮按钮底部对齐
   }
 
+  /**
+   * @description: 底部导航栏中间占位符，不做任何操作
+   * @date: 2024-05-30 22:47
+   * @author wuwenqiang
+   */
   @Builder tabBuilder(index: number, title: string, selectedImage: Resource, normalImage: Resource) {
     Column() {
       Image(this.activeIndex == index ? selectedImage : normalImage)
@@ -81,20 +98,14 @@ struct MusicIndexPage {
     }
     .width('100%')
     .justifyContent(FlexAlign.Center)
-    .border({
-      width: { top: 1 },
-      color: { top: colors.disableTextColor },
-      style: { top: BorderStyle.Solid }
-    })
   }
 
-  @Builder musicCircleBuilder(){
-    Stack(){
-      Image($r('app.media.default_avater'))
-        .height(size.bigAvaterSize)
-        .height(size.bigAvaterSize)
-        .borderRadius(size.bigAvaterSize)
-    }
-
+  /**
+   * @description: 底部导航栏中间占位符，不做任何操作
+   * @date: 2024-05-30 22:47
+   * @author wuwenqiang
+   */
+  @Builder placehostBuilder(){
+    Row()
   }
 }

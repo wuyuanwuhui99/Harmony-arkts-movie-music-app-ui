@@ -22,3 +22,4 @@ export const inputHeight:number = 40;
 export const opacity:number = 0.2;
 export const popupMenuWidth:number = 200;
 export const popupMenuHeight:number = 40;
+export const barHeight:number = 70;

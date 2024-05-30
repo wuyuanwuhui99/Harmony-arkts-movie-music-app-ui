@@ -57,7 +57,7 @@ struct Index {
           .tabBar(this.tabBuilder(3, '我的', $r('app.media.icon_user_active'), $r('app.media.icon_user')))
 
         }
-        .barHeight(70)
+        .barHeight(size.barHeight)
         .barMode(BarMode.Fixed)
         .onChange((index) => {
           this.isInitPage[index] = true;
