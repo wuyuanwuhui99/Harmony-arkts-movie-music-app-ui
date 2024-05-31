@@ -3,6 +3,7 @@ import { MusicInterface } from '../interface';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { HOST } from '../../config/constant';
+import router from '@ohos.router';
 
 // LazyForEach列表栏加载，
 // 参考文档：https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/arkts-rendering-control-lazyforeach-0000001524417213-V3
@@ -156,7 +157,14 @@ export default struct MusicRecommendComponent {
               Image($r("app.media.icon_music_play"))
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)
-                .margin({ left: size.pagePadding })
+                .margin({ left: size.pagePadding }).onClick(()=>{
+                router.pushUrl({
+                  url: 'music/pages/MusicPlayerPage', // 目标url
+                  params: {
+                    musicItem: item
+                  }
+                }, router.RouterMode.Standard);
+              })
               Image(item.isFavorite ? $r("app.media.icon_like_active") : $r("app.media.icon_like"))
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)

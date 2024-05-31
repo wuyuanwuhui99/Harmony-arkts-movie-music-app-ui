@@ -57,6 +57,18 @@ export default struct MusicClassifyComponent {
               .width(size.smallIconSize)
               .height(size.smallIconSize)
               .margin({ left: size.pagePadding })
+              .onClick(()=>{
+                router.pushUrl({
+                  url: 'music/pages/MusicPlayerPage', // 目标url
+                  params: {
+                    musicItem: item
+                  }
+                }, router.RouterMode.Standard, (err) => {
+                  if (err) {
+                    console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
+                  }
+                });
+              })
             Image(item.isFavorite === 0 ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)

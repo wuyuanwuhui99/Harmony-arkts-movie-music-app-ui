@@ -81,7 +81,7 @@ struct MusicIndexPage {
   }
 
   /**
-   * @description: 底部导航栏中间占位符，不做任何操作
+   * @description: 底部导航栏切换
    * @date: 2024-05-30 22:47
    * @author wuwenqiang
    */
