@@ -4,16 +4,23 @@ import router from '@ohos.router';
 import { MusicInterface } from '../interface/Index';
 import display from '@ohos.display';
 import {HOST} from '../../config/constant';
-
+import Lyric,{LineInterface} from '../../utils/Lyric';
 @Entry
 @Component
 struct MusicPlayerPage {
-
+  @State lyric:Lyric = null;
   @State musicItem:MusicInterface = null;
+  @State currentLineNum:number = 0;
+
   private circleSize:number = px2vp(display.getDefaultDisplaySync().width * 0.8)
   aboutToAppear() {
     const params = router.getParams(); // 获取传递过来的参数对象
     this.musicItem = params['musicItem'] as MusicInterface; // 获取info属性的值
+
+    if (!this.musicItem.lyrics) return;
+    this.lyric = new Lyric(this.musicItem.lyrics, ({ lineNum = 0 }) => {
+      this.currentLineNum = lineNum;
+    })
   }
 
   build(){
@@ -47,7 +54,20 @@ struct MusicPlayerPage {
       .borderRadius(this.circleSize)
       .width('80%')
       .aspectRatio(1)
-      Column().layoutWeight(1)
+
+      // 歌词
+      Scroll(){
+        Column(){
+          if(this.lyric?.lines.length > 0){
+            ForEach(this.lyric?.lines,(item:LineInterface,index:number)=>{
+              Text(item.txt).fontColor(colors.blockColor).opacity(this.currentLineNum === index ? 1 : 0.5)
+            })
+          }else{
+            Text("暂无歌词").fontColor(colors.blockColor).opacity(0.5)
+          }
+        }.alignItems(HorizontalAlign.Center).justifyContent(FlexAlign.Center)
+      }.scrollable(ScrollDirection.Vertical).layoutWeight(1)
+
       Text(this.musicItem.authorName).width('80%').fontColor(colors.blockColor)
       Row(){
         Image($r('app.media.icon_music_collect')).width(size.middlIconSize).aspectRatio(1)

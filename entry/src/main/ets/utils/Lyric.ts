@@ -13,9 +13,10 @@ interface TagRegInterface {
   by?:string,
 }
 
-interface LineInterface {
-  time:number,
+export interface LineInterface {
+  time?:number,
   txt:string,
+  lineNum?:number
 }
 
 const tagRegMap:TagRegInterface = {
@@ -26,28 +27,22 @@ const tagRegMap:TagRegInterface = {
   by: 'by'
 }
 
-
-
-function noop() {
-}
-
-
 export default class Lyric {
   private lrc:string = '';
   private tags:TagRegInterface = {};
-  private lines:Array<LineInterface> = []
-  private handler:void
+  public lines:Array<LineInterface> = []
   private state:STATUS = STATUS.STATE_PAUSE;
   private curLine:number = 0;
   private curNum:number = 0;
   private startStamp:number = 0;
   private timer:number = 0;
   private pauseStamp:number;
+  private handler:(data:LineInterface) => void
 
-  constructor(lrc:string, hanlder:void) {
-    this.lrc = lrc
-    this.handler = hanlder
-    this._init()
+  constructor(lrc:string, handlder:(data:LineInterface) => void) {
+    this.lrc = lrc;
+    this.handler = handlder;
+    this._init();
   }
 
   _init() {
