@@ -18,6 +18,7 @@ struct MusicPlayerPage {
   @State duration:number = 0;
   @State currentTime:number = 0;
   @State progress:number = 0;
+  private scroller: Scroller = new Scroller()
 
   @StorageLink(MUSIC_STORAGE) avPlayer:media.AVPlayer | null  = null;
 
@@ -34,8 +35,12 @@ struct MusicPlayerPage {
       this.avPlayer.url = HOST + this.musicItem.localPlayUrl;
     }
 
-    if (!this.musicItem.lyrics) return;
+    if (!this.musicItem.lyrics) return;// 如果有歌词
+
     this.lyric = new Lyric(this.musicItem.lyrics, ({ lineNum = 0 }) => {
+      // 滚动到相对应的歌词
+      this.scroller.scrollToIndex(lineNum);
+      // 当前播放的歌词下标
       this.currentLineNum = lineNum;
     })
   }
@@ -66,6 +71,8 @@ struct MusicPlayerPage {
           this.avPlayer.play(); // 调用播放接口开始播放
           break;
         case 'playing': // play成功调用后触发该状态机上报
+          console.log('playing')
+          break
         case 'paused': // pause成功调用后触发该状态机上报
           this.avPlayer.play(); // 再次播放接口开始播放
           break;
@@ -84,12 +91,13 @@ struct MusicPlayerPage {
 
     // 当前播放时长
     this.avPlayer.on('timeUpdate',(millisecond:number)=>{
-      this.currentTime = millisecond
+      this.currentTime = millisecond;
       this.angle += 5;
       if(this.angle === 360)this.angle = 0;
       if(this.duration){
         this.progress = Math.ceil((this.currentTime / this.duration) * 100)
       }
+      this.lyric?.seek(Math.floor(millisecond));// 歌词跳转到对应的时间线
     })
 
     // 总时长
@@ -131,17 +139,29 @@ struct MusicPlayerPage {
       .aspectRatio(1)
 
       // 歌词
-      Scroll(){
-        Column(){
-          if(this.lyric?.lines.length > 0){
-            ForEach(this.lyric?.lines,(item:LineInterface,index:number)=>{
-              Text(item.txt).fontColor(colors.blockColor).opacity(this.currentLineNum === index ? 1 : 0.5)
-            })
-          }else{
-            Text("暂无歌词").fontColor(colors.blockColor).opacity(0.5)
-          }
-        }.alignItems(HorizontalAlign.Center).justifyContent(FlexAlign.Center)
-      }.scrollable(ScrollDirection.Vertical).layoutWeight(1)
+      if(this.lyric?.lines.length > 0){
+        // 歌词列表
+        List({space:size.miniPadding,scroller:this.scroller}) {
+          ForEach(this.lyric?.lines, (item: LineInterface, index: number) => {
+            ListItem(){
+              Text(item.txt)
+                .fontColor(colors.blockColor)
+                .opacity(this.currentLineNum === index ? 1 : 0.5)
+                .alignSelf(ItemAlign.Center)
+            }.width('100%')
+          })
+        }
+        .width('100%')
+        .layoutWeight(1)
+      }else{
+        Row(){
+          Text("暂无歌词").fontColor(colors.blockColor).opacity(0.5)
+        }
+        .width('100%')
+        .layoutWeight(1)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(VerticalAlign.Center)
+      }
 
       Text(this.musicItem.authorName).width('80%').fontColor(colors.blockColor)
       Row(){
