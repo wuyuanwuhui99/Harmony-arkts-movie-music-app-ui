@@ -3,23 +3,98 @@ import * as size from '../../theme/size';
 import router from '@ohos.router';
 import { MusicInterface } from '../interface/Index';
 import display from '@ohos.display';
-import {HOST} from '../../config/constant';
+import {HOST,MUSIC_STORAGE} from '../../config/constant';
 import Lyric,{LineInterface} from '../../utils/Lyric';
+import media from '@ohos.multimedia.media';
+import { formatSecond } from '../../utils/common';
+
 @Entry
 @Component
 struct MusicPlayerPage {
   @State lyric:Lyric = null;
   @State musicItem:MusicInterface = null;
   @State currentLineNum:number = 0;
+  @State angle:number = 0;
+  @State duration:number = 0;
+  @State currentTime:number = 0;
+  @State progress:number = 0;
+
+  @StorageLink(MUSIC_STORAGE) avPlayer:media.AVPlayer | null  = null;
 
   private circleSize:number = px2vp(display.getDefaultDisplaySync().width * 0.8)
-  aboutToAppear() {
+
+  async aboutToAppear() {
     const params = router.getParams(); // 获取传递过来的参数对象
     this.musicItem = params['musicItem'] as MusicInterface; // 获取info属性的值
+
+    if(this.avPlayer == null){
+      this.avPlayer = await media.createAVPlayer();
+      AppStorage.SetOrCreate<media.AVPlayer>(MUSIC_STORAGE, this.avPlayer);
+      this.setAVPlayerCallback()
+      this.avPlayer.url = HOST + this.musicItem.localPlayUrl;
+    }
 
     if (!this.musicItem.lyrics) return;
     this.lyric = new Lyric(this.musicItem.lyrics, ({ lineNum = 0 }) => {
       this.currentLineNum = lineNum;
+    })
+  }
+
+  // 注册avplayer回调函数
+  setAVPlayerCallback() {
+    // seek操作结果回调函数
+    this.avPlayer.on('seekDone', (seekDoneTime) => {
+      console.info(`AVPlayer seek succeeded, seek time is ${seekDoneTime}`);
+    })
+    // error回调监听函数,当avPlayer在操作过程中出现错误时调用reset接口触发重置流程
+    this.avPlayer.on('error', (err) => {
+      this.avPlayer.reset(); // 调用reset重置资源，触发idle状态
+    })
+    // 状态机变化回调函数
+    this.avPlayer.on('stateChange', async (state:string) => {
+      switch (state) {
+        case 'idle': // 成功调用reset接口后触发该状态机上报
+          this.avPlayer.release(); // 调用release接口销毁实例对象
+          break;
+        case 'initialized': // avplayer 设置播放源后触发该状态上报
+          this.avPlayer.prepare().then(() => {
+          }, (err) => {
+            console.error(`Invoke prepare failed, code is ${err.code}, message is ${err.message}`);
+          });
+          break;
+        case 'prepared': // prepare调用成功后上报该状态机
+          this.avPlayer.play(); // 调用播放接口开始播放
+          break;
+        case 'playing': // play成功调用后触发该状态机上报
+        case 'paused': // pause成功调用后触发该状态机上报
+          this.avPlayer.play(); // 再次播放接口开始播放
+          break;
+        case 'completed': // 播放结束后触发该状态机上报
+          this.avPlayer.stop(); //调用播放结束接口
+          break;
+        case 'stopped': // stop接口成功调用后触发该状态机上报
+          this.avPlayer.reset(); // 调用reset接口初始化avplayer状态
+          break;
+        case 'released':
+          break;
+        default:
+          break;
+      }
+    });
+
+    // 当前播放时长
+    this.avPlayer.on('timeUpdate',(millisecond:number)=>{
+      this.currentTime = millisecond
+      this.angle += 5;
+      if(this.angle === 360)this.angle = 0;
+      if(this.duration){
+        this.progress = Math.ceil((this.currentTime / this.duration) * 100)
+      }
+    })
+
+    // 总时长
+    this.avPlayer.on('durationUpdate',(millisecond:number)=>{
+      this.duration = millisecond
     })
   }
 
@@ -42,9 +117,9 @@ struct MusicPlayerPage {
         })
         .width(this.circleSize - size.smallPadding * 2)
         .aspectRatio(1)
+        .rotate({ angle: this.angle })
         .padding(size.smallPadding * 5)
         .borderRadius(this.circleSize - size.smallPadding * 2)
-
       }
       .border({
         width: size.smallPadding,
@@ -76,11 +151,11 @@ struct MusicPlayerPage {
         Image($r('app.media.icon_music_white_menu')).width(size.middlIconSize).aspectRatio(1)
       }.width('80%').justifyContent(FlexAlign.SpaceBetween)
       Row({space:size.smallPadding}){
-        Text("00:00").fontColor(colors.blockColor)
-        Slider({value:0})
+        Text(this.currentTime ? formatSecond(this.currentTime/1000) : '00:00').fontColor(colors.blockColor)
+        Slider({value:this.progress})
           .selectedColor(colors.blockColor)
           .layoutWeight(1)
-        Text("30:00").fontColor(colors.blockColor)
+        Text(this.duration ? formatSecond(this.duration/1000) : '00:00').fontColor(colors.blockColor)
       }.width('80%').alignItems(VerticalAlign.Center)
 
       Row(){
@@ -95,7 +170,7 @@ struct MusicPlayerPage {
         .aspectRatio(1)
         .borderRadius(size.bigAvaterSize)
         .border({
-          width: 1,
+          width: 2,
           color: colors.blockColor,
           style: BorderStyle.Solid
         })
