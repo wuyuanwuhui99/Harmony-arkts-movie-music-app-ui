@@ -4,38 +4,31 @@ import MusicCircleComponent from '../components/MusicCircleComponent'
 import MusicHomeComponent from '../components/MusicHomeComponent'
 import MusicMyComponent from '../components/MusicMyComponent'
 import MusicRecommendComponent from '../components/MusicRecommendComponent'
-import {MUSIC_MODEL,MUSIC_PLAYER,HOST} from '../../config/constant'
-import { MusicInterface } from '../interface/Index';
-import media from '@ohos.multimedia.media';
+import {MUSIC_STORAGE,HOST} from '../../config/constant'
+import { MusicStorageInterface } from '../interface/Index';
 @Entry
 @Component
 struct MusicIndexPage {
   @State activeIndex: number = 0;
   @State isInitPage: Array<boolean> = [true, false, false, false];
-  @State musicItem:MusicInterface | null = null;
-  @State avPlayer:media.AVPlayer | null = null;
+  @State musicStorage: MusicStorageInterface | null =  null;
   @State angle:number = 0;
 
   onPageShow(){
-
-    this.musicItem = AppStorage.Get<MusicInterface | null>(MUSIC_MODEL);
-    this.avPlayer = AppStorage.Get<media.AVPlayer | null>(MUSIC_PLAYER);
+    this.musicStorage = AppStorage.Get<MusicStorageInterface>(MUSIC_STORAGE) || null;
     // 先销毁播放界面的监听事件,不能在播放页面销毁
     // 因为页面返回时，先执行了当前页面的onPageShow方法，再执行播放页面的aboutToDisappear方法
     // 如果在播放页面的aboutToDisappear方法中销毁监听事件，会导致当前页面的绑定的事件不生效
-    this.avPlayer?.off('durationUpdate');
-    this.avPlayer?.off('timeUpdate');
-    this.avPlayer?.off('stateChange');
-    this.avPlayer?.off('seekDone');
+    this.musicStorage?.audio.off('durationUpdate');
+    this.musicStorage?.audio.off('timeUpdate');
+    this.musicStorage?.audio.off('stateChange');
+    this.musicStorage?.audio.off('seekDone');
+
     // 重新绑定监听事件
-    this.avPlayer?.on('timeUpdate',()=>{
+    this.musicStorage?.audio.on('timeUpdate',()=>{
       this.angle += 5;
       if(this.angle === 360)this.angle = 0;
     })
-  }
-
-  onPageHide(){
-    this.avPlayer?.off('timeUpdate');
   }
 
   build() {
@@ -79,7 +72,6 @@ struct MusicIndexPage {
           }
         }
         .tabBar(this.tabBuilder(3, '我的', $r('app.media.icon_user_active'), $r('app.media.icon_user')))
-
       }
       .barHeight(size.barHeight)
       .barMode(BarMode.Fixed)
@@ -89,7 +81,7 @@ struct MusicIndexPage {
       })
 
       // 用图片组件代作为导航栏中间凸起组件
-      Image(this.musicItem ? HOST + this.musicItem.cover: $r('app.media.icon_song_default'))
+      Image(this.musicStorage?.musicItem ? HOST + this.musicStorage.musicItem.cover: $r('app.media.icon_song_default'))
         .margin({bottom:size.barHeight - size.bigAvaterSize/2 - size.miniPadding})
         .height(size.bigAvaterSize + size.miniPadding * 2)
         .height(size.bigAvaterSize + size.miniPadding * 2)

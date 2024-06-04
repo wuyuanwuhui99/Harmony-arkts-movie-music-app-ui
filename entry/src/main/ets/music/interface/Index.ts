@@ -1,5 +1,6 @@
 // 歌曲字段
 import { SocialEnum } from '../../config/constant';
+import media from '@ohos.multimedia.media';
 export interface MusicInterface  {
   id : number, //主键
   albumId : number, // 专辑id
@@ -137,4 +138,24 @@ export interface MuiscPlayMenuInterface {
   cover:string;// 歌单封面
   createTime:string;// 创建时间
   updateTime:string;// 更新时间
+}
+
+export enum LoopMode {
+  ORDER,// 顺序播放
+  RANDOM,// 随机播放
+  REPEAT,// 单曲循环
+}
+
+// 音乐仓库
+export interface MusicStorageInterface {
+  musicItem: MusicInterface,
+  audio?: media.AVPlayer,
+  isPlaying: boolean,
+  musicList: Array<MusicInterface>,
+  classifyId: number,// 播放的类型
+  playIndex: number,// 播放的下标
+  total: number,
+  loop: LoopMode// 默认顺序播放
+  pageNum: number,// 第几页
+  pageSize: number// 每页显示条数
 }

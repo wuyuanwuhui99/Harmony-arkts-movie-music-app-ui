@@ -1,5 +1,5 @@
 export const zerofull=(value:number):string|number=>{
-  return value < 9 ? "0"+value:value
+  return value < 10 ? "0" + value : value + ''
 }
 
 export const formatTime=(value:any):string=>{
@@ -7,15 +7,15 @@ export const formatTime=(value:any):string=>{
   var nowDate = new Date()
   let diff = Math.ceil((nowDate.getTime()-date.getTime())/1000);
   if(diff < 60){
-    return "刚刚"
+    return "刚刚";
   }else if(diff < 60*60){
-    return Math.ceil(diff/60) + "分前"
+    return Math.ceil(diff/60) + "分前";
   }else if(diff < 60*60*24){
-    return Math.ceil(diff/(60*60))+"小时前"
+    return Math.ceil(diff/(60*60))+"小时前";
   }else if(diff < 60*60*24*30){
-    return Math.ceil(diff/(60*60*24))+"天前"
+    return Math.ceil(diff/(60*60*24))+"天前";
   }else if(diff < 60*60*24*30*12){
-    return Math.ceil(diff/(60*60*24*30))+"个月前"
+    return Math.ceil(diff/(60*60*24*30))+"个月前";
   }
   const year = zerofull(date.getFullYear());
   const month = zerofull(date.getMonth()+1);

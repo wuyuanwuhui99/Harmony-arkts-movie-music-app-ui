@@ -1,13 +1,13 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import router from '@ohos.router';
-import { MusicInterface } from '../interface/Index';
+import { MusicInterface,MusicStorageInterface,LoopMode} from '../interface/Index';
 import display from '@ohos.display';
-import {HOST,MUSIC_PLAYER,MUSIC_MODEL} from '../../config/constant';
+import {HOST,MUSIC_STORAGE} from '../../config/constant';
 import Lyric,{LineInterface} from '../../utils/Lyric';
 import media from '@ohos.multimedia.media';
 import { formatSecond } from '../../utils/common';
-
+import {getMusicListByClassifyIdService} from '../service';
 @Entry
 @Component
 struct MusicPlayerPage {
@@ -17,27 +17,42 @@ struct MusicPlayerPage {
   @State duration:number = 0;
   @State currentTime:number = 0;
   @State progress:number = 0;
-  @State playing:boolean = false;
   private scroller: Scroller = new Scroller()
-
-  @State avPlayer:media.AVPlayer | null  = AppStorage.Get<media.AVPlayer>(MUSIC_PLAYER);
-  @State musicItem:MusicInterface | null  = AppStorage.Get<MusicInterface>(MUSIC_MODEL);
-
   private circleSize:number = px2vp(display.getDefaultDisplaySync().width * 0.8)
-
+  @State musicStorage: MusicStorageInterface = AppStorage.Get<MusicStorageInterface>(MUSIC_STORAGE) || {
+    musicItem: null,
+    audio: null,
+    isPlaying: true,
+    musicList: [],
+    classifyId: -1,
+    playIndex: -1,
+    total: 0,
+    loop: LoopMode.ORDER,
+    pageNum: 1,
+    pageSize: 50
+  };
 
   async aboutToAppear() {
-    const params = router.getParams(); // 获取传递过来的参数对象
+    const params:any = router.getParams(); // 获取传递过来的参数对象
     const musicItem:MusicInterface = params['musicItem'] as MusicInterface; // 获取info属性的值
+    const classifyId:number =  params.classifyId as number;
+    if(this.musicStorage.classifyId !== classifyId){
+      this.musicStorage.classifyId = classifyId;
+      getMusicListByClassifyIdService(this.musicStorage.classifyId, this.musicStorage.pageNum, this.musicStorage.pageSize).then(res => {
+        this.musicStorage.total = res.total;
+        this.musicStorage.playIndex = res.data.findIndex((mItem)=>{musicItem.id === mItem.id});
+        AppStorage.SetOrCreate<MusicStorageInterface>(MUSIC_STORAGE,this.musicStorage);
+        PersistentStorage.PersistProp<MusicStorageInterface>(MUSIC_STORAGE, this.musicStorage);
+      });
+    }
 
-    if(this.avPlayer == null || this.musicItem.id !== musicItem.id){
-      this.musicItem = musicItem;
-      this.avPlayer = await media.createAVPlayer();
+    if(this.musicStorage.audio == null || this.musicStorage.musicItem.id !== musicItem.id){
+      this.musicStorage.musicItem = musicItem;
+      this.musicStorage.audio = await media.createAVPlayer();
       this.setAVPlayerCallback();
-      this.avPlayer.url = HOST + musicItem.localPlayUrl;
-      AppStorage.SetOrCreate<media.AVPlayer>(MUSIC_PLAYER,this.avPlayer);
-      AppStorage.SetOrCreate<MusicInterface>(MUSIC_MODEL,musicItem);
-      PersistentStorage.PersistProp<MusicInterface>(MUSIC_MODEL, musicItem);
+      this.musicStorage.audio.url = HOST + musicItem.localPlayUrl;
+      AppStorage.SetOrCreate<MusicStorageInterface>(MUSIC_STORAGE,this.musicStorage);
+      PersistentStorage.PersistProp<MusicStorageInterface>(MUSIC_STORAGE, this.musicStorage);
     }else{
       this.setAVPlayerCallback();
     }
@@ -45,8 +60,8 @@ struct MusicPlayerPage {
   }
 
   useLyric(){
-    if (!this.musicItem.lyrics) return;// 如果有歌词
-    this.lyric = new Lyric(this.musicItem.lyrics, ({ lineNum = 0 }) => {
+    if (!this.musicStorage.musicItem.lyrics) return;// 如果有歌词
+    this.lyric = new Lyric(this.musicStorage.musicItem.lyrics, ({ lineNum = 0 }) => {
       // 滚动到相对应的歌词
       this.scroller.scrollToIndex(lineNum);
       // 当前播放的歌词下标
@@ -57,45 +72,50 @@ struct MusicPlayerPage {
   // 注册avplayer回调函数
   setAVPlayerCallback() {
     // seek操作结果回调函数
-    this.avPlayer.on('seekDone', (seekDoneTime) => {
+    this.musicStorage.audio.off('seekDone');
+    this.musicStorage.audio.off('stateChange');
+    this.musicStorage.audio.off('timeUpdate');
+    this.musicStorage.audio.off('durationUpdate');
+
+    this.musicStorage.audio.on('seekDone', (seekDoneTime) => {
       console.info(`AVPlayer seek succeeded, seek time is ${seekDoneTime}`);
     })
     // 状态机变化回调函数
-    this.avPlayer.on('stateChange', async (state:string) => {
+    this.musicStorage.audio.on('stateChange', async (state:string) => {
       switch (state) {
         case 'idle': // 成功调用reset接口后触发该状态机上报
-          this.avPlayer.release(); // 调用release接口销毁实例对象
+          this.musicStorage.audio.release(); // 调用release接口销毁实例对象
           break;
         case 'initialized': // avplayer 设置播放源后触发该状态上报
-          this.avPlayer.prepare().then(() => {
+          this.musicStorage.audio.prepare().then(() => {
           }, (err) => {
             console.error(`Invoke prepare failed, code is ${err.code}, message is ${err.message}`);
           });
           break;
         case 'prepared': // prepare调用成功后上报该状态机
-          this.avPlayer.play(); // 调用播放接口开始播放
+          this.musicStorage.audio.play(); // 调用播放接口开始播放
           break;
         case 'playing': // play成功调用后触发该状态机上报
-          this.playing = true;
+          this.musicStorage.isPlaying = true;
           console.log('playing')
           break
         case 'paused': // pause成功调用后触发该状态机上报
-          this.playing = false;
+          this.musicStorage.isPlaying = false;
           break;
         case 'completed': // 播放结束后触发该状态机上报
-          this.avPlayer.stop(); //调用播放结束接口
+          this.musicStorage.audio.stop(); //调用播放结束接口
           break;
         case 'stopped': // stop接口成功调用后触发该状态机上报
-          this.playing = false;
+          this.musicStorage.isPlaying = false;
           break;
         case 'released':
-          this.playing = false;
+          this.musicStorage.isPlaying = false;
           break;
       }
     });
 
     // 当前播放时长
-    this.avPlayer.on('timeUpdate',(millisecond:number)=>{
+    this.musicStorage.audio.on('timeUpdate',(millisecond:number)=>{
       this.currentTime = millisecond;
       this.angle += 5;
       if(this.angle === 360)this.angle = 0;
@@ -106,20 +126,20 @@ struct MusicPlayerPage {
     })
 
     // 总时长
-    this.avPlayer.on('durationUpdate',(millisecond:number)=>{
+    this.musicStorage.audio.on('durationUpdate',(millisecond:number)=>{
       this.duration = millisecond
     });
   }
 
   build(){
     Column({space:size.pagePadding}){
-      Text(this.musicItem.songName)
+      Text(this.musicStorage.musicItem.songName)
         .margin({top:size.pagePadding,bottom:size.pagePadding})
         .fontColor(colors.blockColor)
         .fontSize(size.bigFontSize)
       Row(){
         Row(){
-          Image(HOST + this.musicItem.cover)
+          Image(HOST + this.musicStorage.musicItem.cover)
             .width('100%')
             .aspectRatio(1)
             .borderRadius(this.circleSize - size.smallPadding * 12)
@@ -168,7 +188,7 @@ struct MusicPlayerPage {
         .alignItems(VerticalAlign.Center)
       }
 
-      Text(this.musicItem.authorName).width('80%').fontColor(colors.blockColor)
+      Text(this.musicStorage.musicItem.authorName).width('80%').fontColor(colors.blockColor)
       Row(){
         Image($r('app.media.icon_music_collect')).width(size.middlIconSize).aspectRatio(1)
         Image($r('app.media.icon_music_down')).width(size.middlIconSize).aspectRatio(1)
@@ -187,7 +207,7 @@ struct MusicPlayerPage {
         Image($r('app.media.icon_music_order')).width(size.middlIconSize).aspectRatio(1)
         Image($r('app.media.icon_music_prev')).width(size.middlIconSize).aspectRatio(1)
         Row(){
-          Image($r('app.media.icon_music_play_white')).width(size.middlIconSize).aspectRatio(1)
+          Image(this.musicStorage.isPlaying ? $r('app.media.icon_music_playing') : $r('app.media.icon_music_play_white')).width(size.middlIconSize).aspectRatio(1)
         }
         .justifyContent(FlexAlign.Center)
         .alignItems(VerticalAlign.Center)
@@ -198,6 +218,9 @@ struct MusicPlayerPage {
           width: 2,
           color: colors.blockColor,
           style: BorderStyle.Solid
+        }).onClick(()=>{
+          this.musicStorage.isPlaying = !this.musicStorage.isPlaying;
+          this.musicStorage.audio[this.musicStorage.isPlaying ? 'play' : 'pause']()
         })
         Image($r('app.media.icon_music_next')).width(size.middlIconSize).aspectRatio(1)
         Image($r('app.media.icon_music_play_menu')).width(size.middlIconSize).aspectRatio(1)
@@ -206,7 +229,7 @@ struct MusicPlayerPage {
       .justifyContent(FlexAlign.SpaceAround)
       .margin({bottom:size.pagePadding})
     }
-    .backgroundImage(HOST + this.musicItem.cover,ImageRepeat.NoRepeat)
+    .backgroundImage(HOST + this.musicStorage.musicItem.cover,ImageRepeat.NoRepeat)
     .backgroundImagePosition({x:0,y:0})
     .backgroundImageSize({width:'100%',height:'100%'})
     .backdropBlur(200)
