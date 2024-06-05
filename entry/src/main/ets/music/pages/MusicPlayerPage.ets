@@ -25,7 +25,7 @@ struct MusicPlayerPage {
     isPlaying: true,
     musicList: [],
     classifyId: -1,
-    playIndex: 0,
+    playIndex: -1,
     total: 0,
     loop: LoopMode.ORDER,
     pageNum: 1,
@@ -36,13 +36,12 @@ struct MusicPlayerPage {
     const params:any = router.getParams(); // 获取传递过来的参数对象
     const musicItem:MusicInterface = params.musicItem as MusicInterface; // 获取info属性的值
     const classifyId:number =  params.classifyId as number;
-    this.musicStorage.playIndex = params.playIndex as number;
     if(this.musicStorage.classifyId !== classifyId || this.musicStorage.musicList.length === 0){
       this.musicStorage.classifyId = classifyId;
       getMusicListByClassifyIdService(this.musicStorage.classifyId, this.musicStorage.pageNum, this.musicStorage.pageSize).then(res => {
         this.musicStorage.total = res.total;
         this.musicStorage.musicList = res.data;
-        // this.musicStorage.playIndex = res.data.findIndex((mItem)=>{musicItem.id === mItem.id});
+        this.musicStorage.playIndex = res.data.findIndex(mItem => musicItem.id === mItem.id);
         this.useUpdateStorage();
       });
     }

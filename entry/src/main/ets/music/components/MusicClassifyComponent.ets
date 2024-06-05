@@ -62,8 +62,7 @@ export default struct MusicClassifyComponent {
                   url: 'music/pages/MusicPlayerPage', // 目标url
                   params: {
                     classifyId:this.classifyId,
-                    musicItem: item,
-                    playIndex:index,
+                    musicItem: item
                   }
                 }, router.RouterMode.Standard, (err) => {
                   if (err) {
