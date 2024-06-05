@@ -7,7 +7,7 @@ import {HOST,MUSIC_STORAGE} from '../../config/constant';
 import Lyric,{LineInterface} from '../../utils/Lyric';
 import media from '@ohos.multimedia.media';
 import { formatSecond } from '../../utils/common';
-import {getMusicListByClassifyIdService} from '../service';
+import {getMusicListByClassifyIdService,getClassifyMusicByIndexService} from '../service';
 @Entry
 @Component
 struct MusicPlayerPage {
@@ -25,7 +25,7 @@ struct MusicPlayerPage {
     isPlaying: true,
     musicList: [],
     classifyId: -1,
-    playIndex: -1,
+    playIndex: 0,
     total: 0,
     loop: LoopMode.ORDER,
     pageNum: 1,
@@ -34,15 +34,16 @@ struct MusicPlayerPage {
 
   async aboutToAppear() {
     const params:any = router.getParams(); // 获取传递过来的参数对象
-    const musicItem:MusicInterface = params['musicItem'] as MusicInterface; // 获取info属性的值
+    const musicItem:MusicInterface = params.musicItem as MusicInterface; // 获取info属性的值
     const classifyId:number =  params.classifyId as number;
-    if(this.musicStorage.classifyId !== classifyId){
+    this.musicStorage.playIndex = params.playIndex as number;
+    if(this.musicStorage.classifyId !== classifyId || this.musicStorage.musicList.length === 0){
       this.musicStorage.classifyId = classifyId;
       getMusicListByClassifyIdService(this.musicStorage.classifyId, this.musicStorage.pageNum, this.musicStorage.pageSize).then(res => {
         this.musicStorage.total = res.total;
-        this.musicStorage.playIndex = res.data.findIndex((mItem)=>{musicItem.id === mItem.id});
-        AppStorage.SetOrCreate<MusicStorageInterface>(MUSIC_STORAGE,this.musicStorage);
-        PersistentStorage.PersistProp<MusicStorageInterface>(MUSIC_STORAGE, this.musicStorage);
+        this.musicStorage.musicList = res.data;
+        // this.musicStorage.playIndex = res.data.findIndex((mItem)=>{musicItem.id === mItem.id});
+        this.useUpdateStorage();
       });
     }
 
@@ -51,12 +52,24 @@ struct MusicPlayerPage {
       this.musicStorage.audio = await media.createAVPlayer();
       this.setAVPlayerCallback();
       this.musicStorage.audio.url = HOST + musicItem.localPlayUrl;
-      AppStorage.SetOrCreate<MusicStorageInterface>(MUSIC_STORAGE,this.musicStorage);
-      PersistentStorage.PersistProp<MusicStorageInterface>(MUSIC_STORAGE, this.musicStorage);
+      this.useUpdateStorage();
     }else{
       this.setAVPlayerCallback();
     }
     this.useLyric();
+  }
+
+  /**
+   * @description: 更新缓存和状态管理器
+   * @date: 2024-06-05 22:18
+   * @author wuwenqiang
+   */
+  useUpdateStorage(){
+    AppStorage.SetOrCreate<MusicStorageInterface>(MUSIC_STORAGE,this.musicStorage);
+    const musicStorage:MusicStorageInterface =  {...this.musicStorage};
+    // 列表数据不用存缓存，避免缓存过大，或者下次进来缓存没更新
+    musicStorage.musicList = [];
+    PersistentStorage.PersistProp<MusicStorageInterface>(MUSIC_STORAGE, musicStorage);
   }
 
   useLyric(){
@@ -129,6 +142,21 @@ struct MusicPlayerPage {
     this.musicStorage.audio.on('durationUpdate',(millisecond:number)=>{
       this.duration = millisecond
     });
+  }
+
+  /**
+   * @description: 切换音乐
+   * @date: 2024-06-05 23:38
+   * @author wuwenqiang
+   */
+  async useTabMusic(){
+    this.musicStorage.audio.release();
+    this.musicStorage.musicItem = this.musicStorage.musicList[this.musicStorage.playIndex];
+    this.musicStorage.audio = await media.createAVPlayer();
+    this.setAVPlayerCallback();// 先设置音乐播放器，在赋值url，两行语句不能颠倒
+    this.musicStorage.audio.url = HOST + this.musicStorage.musicItem.localPlayUrl
+    this.useLyric();
+    this.useUpdateStorage();
   }
 
   build(){
@@ -205,7 +233,24 @@ struct MusicPlayerPage {
 
       Row(){
         Image($r('app.media.icon_music_order')).width(size.middlIconSize).aspectRatio(1)
-        Image($r('app.media.icon_music_prev')).width(size.middlIconSize).aspectRatio(1)
+        Image($r('app.media.icon_music_prev'))
+          .width(size.middlIconSize)
+          .aspectRatio(1)
+          .onClick(async ()=>{
+            if(this.musicStorage.playIndex === 0){
+              if(this.musicStorage.musicList.length !== this.musicStorage.total){
+                this.musicStorage.pageNum++;
+                // 加载生效所有的分类音乐
+                await getMusicListByClassifyIdService(this.musicStorage.classifyId,this.musicStorage.pageNum,this.musicStorage.total - this.musicStorage.musicList.length).then((res)=>{
+                  this.musicStorage.musicList.push(...res.data);
+                });
+              }
+              this.musicStorage.playIndex = this.musicStorage.musicList.length - 1;
+            }else{
+              this.musicStorage.playIndex--;
+            }
+            this.useTabMusic();
+          })
         Row(){
           Image(this.musicStorage.isPlaying ? $r('app.media.icon_music_playing') : $r('app.media.icon_music_play_white')).width(size.middlIconSize).aspectRatio(1)
         }
@@ -222,7 +267,25 @@ struct MusicPlayerPage {
           this.musicStorage.isPlaying = !this.musicStorage.isPlaying;
           this.musicStorage.audio[this.musicStorage.isPlaying ? 'play' : 'pause']()
         })
-        Image($r('app.media.icon_music_next')).width(size.middlIconSize).aspectRatio(1)
+        Image($r('app.media.icon_music_next'))
+          .width(size.middlIconSize)
+          .aspectRatio(1)
+          .onClick(async ()=>{
+            if(this.musicStorage.playIndex === this.musicStorage.musicList.length - 1){
+              if(this.musicStorage.musicList.length !== this.musicStorage.total){// 加载下一批
+                this.musicStorage.pageNum++;
+                await getMusicListByClassifyIdService(this.musicStorage.classifyId,this.musicStorage.pageNum,this.musicStorage.pageSize).then((res)=>{
+                  this.musicStorage.musicList.push(...res.data);
+                });
+                this.musicStorage.playIndex++;
+              }else{
+                this.musicStorage.playIndex = 0;
+              }
+            }else{
+              this.musicStorage.playIndex++;
+            }
+            this.useTabMusic();
+          })
         Image($r('app.media.icon_music_play_menu')).width(size.middlIconSize).aspectRatio(1)
       }
       .width('100%')

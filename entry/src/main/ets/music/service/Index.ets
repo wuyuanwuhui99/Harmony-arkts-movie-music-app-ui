@@ -102,3 +102,12 @@ export const getMySingerService = (pageNum:number,pageSize:number):Promise<MyAwe
 export const getMusicRecordService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicInterface>>> => {
   return httpRequest.get<Array<types.MusicInterface>>(`${api.getMusicRecord}?pageNum=${pageNum}&pageSize=${pageSize}`);
 }
+
+/**
+ * @description: 获取播放记录
+ * @date: 2024-03-17 22:12
+ * @author wuwenqiang
+ */
+export const getClassifyMusicByIndexService = (classifyId:number,index:number):Promise<MyAwesomeData<types.MusicInterface>> => {
+  return httpRequest.get<types.MusicInterface>(`${api.getClassifyMusicByIndex}?classifyId=${classifyId}&index=${index}`);
+}
