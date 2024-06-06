@@ -40,8 +40,13 @@ struct MusicPlayerPage {
       this.musicStorage.classifyId = classifyId;
       getMusicListByClassifyIdService(this.musicStorage.classifyId, this.musicStorage.pageNum, this.musicStorage.pageSize).then(res => {
         this.musicStorage.total = res.total;
-        this.musicStorage.musicList = res.data;
-        this.musicStorage.playIndex = res.data.findIndex(mItem => musicItem.id === mItem.id);
+        res.data.forEach((item:MusicInterface,index:number)=>{
+          item.playIndex = index;
+          if(musicItem.id === item.id){
+            this.musicStorage.playIndex = index;
+          }
+          this.musicStorage.musicList.push(item);
+        });
         this.useUpdateStorage();
       });
     }
@@ -238,9 +243,8 @@ struct MusicPlayerPage {
           .onClick(async ()=>{
             if(this.musicStorage.playIndex === 0){
               if(this.musicStorage.musicList.length !== this.musicStorage.total){
-                this.musicStorage.pageNum++;
-                // 加载生效所有的分类音乐
-                await getMusicListByClassifyIdService(this.musicStorage.classifyId,this.musicStorage.pageNum,this.musicStorage.total - this.musicStorage.musicList.length).then((res)=>{
+                // 加载剩下所有的分类音乐
+                await getClassifyMusicByIndexService(this.musicStorage.classifyId,this.musicStorage.total - 1).then((res)=>{
                   this.musicStorage.musicList.push(...res.data);
                 });
               }

@@ -30,7 +30,8 @@ export interface MusicInterface  {
   label : string, // 标签
   lyrics : string, // 歌词
   isFavorite : number, // 是否喜欢
-  times : number //  听过的次数，在获取播放记录的时候才有
+  times? : number //  听过的次数，在获取播放记录的时候才有
+  playIndex?: number// 当前播放列表中的下标
 }
 
 // 歌曲分类字段
