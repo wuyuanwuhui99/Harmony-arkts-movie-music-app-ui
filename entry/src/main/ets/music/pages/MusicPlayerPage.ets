@@ -28,8 +28,7 @@ struct MusicPlayerPage {
     playIndex: -1,
     total: 0,
     loop: LoopMode.ORDER,
-    pageNum: 1,
-    pageSize: 50
+    playList: [],// 还没有播放的音乐
   };
 
   async aboutToAppear() {
@@ -38,15 +37,11 @@ struct MusicPlayerPage {
     const classifyId:number =  params.classifyId as number;
     if(this.musicStorage.classifyId !== classifyId || this.musicStorage.musicList.length === 0){
       this.musicStorage.classifyId = classifyId;
-      getMusicListByClassifyIdService(this.musicStorage.classifyId, this.musicStorage.pageNum, this.musicStorage.pageSize).then(res => {
+      getMusicListByClassifyIdService(this.musicStorage.classifyId, 1, 500).then(res => {
         this.musicStorage.total = res.total;
-        res.data.forEach((item:MusicInterface,index:number)=>{
-          item.playIndex = index;
-          if(musicItem.id === item.id){
-            this.musicStorage.playIndex = index;
-          }
-          this.musicStorage.musicList.push(item);
-        });
+        this.musicStorage.musicList = res.data;
+        this.musicStorage.playList = [...res.data];
+        this.removeMusic();
         this.useUpdateStorage();
       });
     }
@@ -64,6 +59,16 @@ struct MusicPlayerPage {
   }
 
   /**
+   * @description: 从待播放列表中移除一首歌
+   * @date: 2024-06-05 22:18
+   * @author wuwenqiang
+   */
+  removeMusic(){
+    const index = this.musicStorage.playList.findIndex(item => item.id === this.musicStorage.musicItem.id);
+    this.musicStorage.playList.splice(index,1);
+  }
+
+  /**
    * @description: 更新缓存和状态管理器
    * @date: 2024-06-05 22:18
    * @author wuwenqiang
@@ -72,7 +77,8 @@ struct MusicPlayerPage {
     AppStorage.SetOrCreate<MusicStorageInterface>(MUSIC_STORAGE,this.musicStorage);
     const musicStorage:MusicStorageInterface =  {...this.musicStorage};
     // 列表数据不用存缓存，避免缓存过大，或者下次进来缓存没更新
-    musicStorage.musicList = [];
+    musicStorage.musicList = [];// 所有音乐
+    musicStorage.playList = [];// 还没有播放的音乐
     PersistentStorage.PersistProp<MusicStorageInterface>(MUSIC_STORAGE, musicStorage);
   }
 
@@ -120,7 +126,7 @@ struct MusicPlayerPage {
           this.musicStorage.isPlaying = false;
           break;
         case 'completed': // 播放结束后触发该状态机上报
-          this.musicStorage.audio.stop(); //调用播放结束接口
+          this.useTabNextMusic();
           break;
         case 'stopped': // stop接口成功调用后触发该状态机上报
           this.musicStorage.isPlaying = false;
@@ -158,9 +164,19 @@ struct MusicPlayerPage {
     this.musicStorage.musicItem = this.musicStorage.musicList[this.musicStorage.playIndex];
     this.musicStorage.audio = await media.createAVPlayer();
     this.setAVPlayerCallback();// 先设置音乐播放器，在赋值url，两行语句不能颠倒
-    this.musicStorage.audio.url = HOST + this.musicStorage.musicItem.localPlayUrl
+    this.musicStorage.audio.url = HOST + this.musicStorage.musicItem.localPlayUrl;
+    this.removeMusic();
     this.useLyric();
     this.useUpdateStorage();
+  }
+
+  async useTabNextMusic(){
+    if(this.musicStorage.playIndex === this.musicStorage.musicList.length - 1){
+      this.musicStorage.playIndex = 0;
+    }else{
+      this.musicStorage.playIndex++;
+    }
+    this.useTabMusic();
   }
 
   build(){
@@ -242,12 +258,6 @@ struct MusicPlayerPage {
           .aspectRatio(1)
           .onClick(async ()=>{
             if(this.musicStorage.playIndex === 0){
-              if(this.musicStorage.musicList.length !== this.musicStorage.total){
-                // 加载剩下所有的分类音乐
-                await getClassifyMusicByIndexService(this.musicStorage.classifyId,this.musicStorage.total - 1).then((res)=>{
-                  this.musicStorage.musicList.push(...res.data);
-                });
-              }
               this.musicStorage.playIndex = this.musicStorage.musicList.length - 1;
             }else{
               this.musicStorage.playIndex--;
@@ -273,22 +283,7 @@ struct MusicPlayerPage {
         Image($r('app.media.icon_music_next'))
           .width(size.middlIconSize)
           .aspectRatio(1)
-          .onClick(async ()=>{
-            if(this.musicStorage.playIndex === this.musicStorage.musicList.length - 1){
-              if(this.musicStorage.musicList.length !== this.musicStorage.total){// 加载下一批
-                this.musicStorage.pageNum++;
-                await getMusicListByClassifyIdService(this.musicStorage.classifyId,this.musicStorage.pageNum,this.musicStorage.pageSize).then((res)=>{
-                  this.musicStorage.musicList.push(...res.data);
-                });
-                this.musicStorage.playIndex++;
-              }else{
-                this.musicStorage.playIndex = 0;
-              }
-            }else{
-              this.musicStorage.playIndex++;
-            }
-            this.useTabMusic();
-          })
+          .onClick(this.useTabNextMusic)
         Image($r('app.media.icon_music_play_menu')).width(size.middlIconSize).aspectRatio(1)
       }
       .width('100%')
