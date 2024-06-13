@@ -1,13 +1,11 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import router from '@ohos.router';
-import { MusicInterface,MusicStorageInterface,LoopMode} from '../interface/Index';
+import { MusicStorageInterface,LoopMode} from '../interface/Index';
 import display from '@ohos.display';
 import {HOST,MUSIC_STORAGE} from '../../config/constant';
 import Lyric,{LineInterface} from '../../utils/Lyric';
 import media from '@ohos.multimedia.media';
-import { formatSecond } from '../../utils/common';
-import {getMusicListByClassifyIdService,getClassifyMusicByIndexService} from '../service';
+import { formatSecond,useUpdateStorage } from '../../utils/common';
 @Entry
 @Component
 struct MusicPlayerPage {
@@ -25,33 +23,18 @@ struct MusicPlayerPage {
     isPlaying: true,
     musicList: [],
     classifyId: -1,
-    playIndex: -1,
     total: 0,
+    playIndex: -1,
     loop: LoopMode.ORDER,
     playList: [],// 还没有播放的音乐
   };
 
   async aboutToAppear() {
-    const params:any = router.getParams(); // 获取传递过来的参数对象
-    const musicItem:MusicInterface = params.musicItem as MusicInterface; // 获取info属性的值
-    const classifyId:number =  params.classifyId as number;
-    if(this.musicStorage.classifyId !== classifyId || this.musicStorage.musicList.length === 0){
-      this.musicStorage.classifyId = classifyId;
-      getMusicListByClassifyIdService(this.musicStorage.classifyId, 1, 500).then(res => {
-        this.musicStorage.total = res.total;
-        this.musicStorage.musicList = res.data;
-        this.musicStorage.playList = [...res.data];
-        this.removeMusic();
-        this.useUpdateStorage();
-      });
-    }
-
-    if(this.musicStorage.audio == null || this.musicStorage.musicItem.id !== musicItem.id){
-      this.musicStorage.musicItem = musicItem;
+    if(this.musicStorage.audio == null){
       this.musicStorage.audio = await media.createAVPlayer();
       this.setAVPlayerCallback();
-      this.musicStorage.audio.url = HOST + musicItem.localPlayUrl;
-      this.useUpdateStorage();
+      this.musicStorage.audio.url = HOST + this.musicStorage.musicItem.localPlayUrl;
+      useUpdateStorage(this.musicStorage);
     }else{
       this.setAVPlayerCallback();
     }
@@ -66,20 +49,6 @@ struct MusicPlayerPage {
   removeMusic(){
     const index = this.musicStorage.playList.findIndex(item => item.id === this.musicStorage.musicItem.id);
     this.musicStorage.playList.splice(index,1);
-  }
-
-  /**
-   * @description: 更新缓存和状态管理器
-   * @date: 2024-06-05 22:18
-   * @author wuwenqiang
-   */
-  useUpdateStorage(){
-    AppStorage.SetOrCreate<MusicStorageInterface>(MUSIC_STORAGE,this.musicStorage);
-    const musicStorage:MusicStorageInterface =  {...this.musicStorage};
-    // 列表数据不用存缓存，避免缓存过大，或者下次进来缓存没更新
-    musicStorage.musicList = [];// 所有音乐
-    musicStorage.playList = [];// 还没有播放的音乐
-    PersistentStorage.PersistProp<MusicStorageInterface>(MUSIC_STORAGE, musicStorage);
   }
 
   useLyric(){
@@ -167,7 +136,7 @@ struct MusicPlayerPage {
     this.musicStorage.audio.url = HOST + this.musicStorage.musicItem.localPlayUrl;
     this.removeMusic();
     this.useLyric();
-    this.useUpdateStorage();
+    useUpdateStorage(this.musicStorage);
   }
 
   async useTabNextMusic(){

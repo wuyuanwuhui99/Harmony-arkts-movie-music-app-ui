@@ -1,15 +1,27 @@
 import router from '@ohos.router';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import { MusicInterface } from '../interface';
+import { MusicInterface,MusicStorageInterface,LoopMode } from '../interface';
 import { getMusicListByClassifyIdService } from '../service/Index';
-import { HOST } from '../../config/constant';
+import { HOST,MUSIC_STORAGE } from '../../config/constant';
+import {useUpdateStorage} from '../../utils/common';
 
 @Component
 export default struct MusicClassifyComponent {
   @Prop classifyId: number;
   @Prop classifyName: string;
   @State musicList: Array<MusicInterface> = []
+  @State musicStorage: MusicStorageInterface = AppStorage.Get<MusicStorageInterface>(MUSIC_STORAGE) || {
+    musicItem: null,
+    audio: null,
+    isPlaying: true,
+    musicList: [],
+    classifyId: -1,
+    total: 0,
+    playIndex: -1,
+    loop: LoopMode.ORDER,
+    playList: [],// 还没有播放的音乐
+  };
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -58,12 +70,25 @@ export default struct MusicClassifyComponent {
               .height(size.smallIconSize)
               .margin({ left: size.pagePadding })
               .onClick(()=>{
+                if(this.musicStorage.musicItem?.id === item.id && this.musicStorage.musicList.length !== 0){
+                  this.musicStorage.audio.play();
+                  this.musicStorage.isPlaying = true;
+                }else{
+                  this.musicStorage.musicItem = item;
+                  if(this.musicStorage.classifyId !== this.classifyId || this.musicStorage.musicList.length === 0){
+                    getMusicListByClassifyIdService(this.classifyId,1,500).then((res)=>{
+                      this.musicStorage.musicList = res.data;
+                      this.musicStorage.playList = [...res.data];
+                      this.musicStorage.playList.splice(index,1);
+                      useUpdateStorage(this.musicStorage);
+                    });
+                    this.musicStorage.classifyId = this.classifyId;
+                  }
+                  useUpdateStorage(this.musicStorage);
+                }
+
                 router.pushUrl({
                   url: 'music/pages/MusicPlayerPage', // 目标url
-                  params: {
-                    classifyId:this.classifyId,
-                    musicItem: item
-                  }
                 }, router.RouterMode.Standard, (err) => {
                   if (err) {
                     console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
