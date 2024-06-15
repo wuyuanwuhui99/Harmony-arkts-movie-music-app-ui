@@ -1,6 +1,6 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import { MusicStorageInterface,LoopMode} from '../interface/Index';
+import { MusicStorageInterface,LoopMode,SwitchEnum, MusicInterface} from '../interface/Index';
 import display from '@ohos.display';
 import {HOST,MUSIC_STORAGE} from '../../config/constant';
 import Lyric,{LineInterface} from '../../utils/Lyric';
@@ -15,6 +15,8 @@ struct MusicPlayerPage {
   @State duration:number = 0;
   @State currentTime:number = 0;
   @State progress:number = 0;
+  @State showPopupLoopMode:boolean = false;
+  @State @Watch("onMusicChange") musicModel:MusicInterface | null = null;
   private scroller: Scroller = new Scroller()
   private circleSize:number = px2vp(display.getDefaultDisplaySync().width * 0.8)
   @State musicStorage: MusicStorageInterface = AppStorage.Get<MusicStorageInterface>(MUSIC_STORAGE) || {
@@ -24,22 +26,36 @@ struct MusicPlayerPage {
     musicList: [],
     classifyId: -1,
     total: 0,
+    isInitPlayer:false,
     playIndex: -1,
     loop: LoopMode.ORDER,
     playList: [],// 还没有播放的音乐
+    recordList:[],// 已经播放的歌曲
   };
+  private loopMode:object = {
+    [LoopMode.ORDER]:$r('app.media.icon_music_order'),
+    [LoopMode.REPEAT]:$r('app.media.icon_music_loop'),
+    [LoopMode.RANDOM]:$r('app.media.icon_music_random')
+  }
+  private switchMode:SwitchEnum | null = null
 
   async aboutToAppear() {
     if(this.musicStorage.audio == null){
       this.musicStorage.audio = await media.createAVPlayer();
       this.setAVPlayerCallback();
       this.musicStorage.audio.url = HOST + this.musicStorage.musicItem.localPlayUrl;
+      this.musicStorage.recordList.push(this.musicStorage.musicItem)
       useUpdateStorage(this.musicStorage);
     }else{
       this.setAVPlayerCallback();
     }
+    this.musicModel = this.musicStorage.musicItem;
+  }
+
+  onMusicChange(){
     this.useLyric();
   }
+
 
   /**
    * @description: 从待播放列表中移除一首歌
@@ -47,8 +63,14 @@ struct MusicPlayerPage {
    * @author wuwenqiang
    */
   removeMusic(){
+    if(this.switchMode === SwitchEnum.PREV)return;
     const index = this.musicStorage.playList.findIndex(item => item.id === this.musicStorage.musicItem.id);
-    this.musicStorage.playList.splice(index,1);
+    if(index !== -1)this.musicStorage.playList.splice(index,1);
+    const recordIndex =  this.musicStorage.recordList.findIndex(item => item.id === this.musicStorage.musicItem.id);
+    if(recordIndex !== -1){
+      this.musicStorage.recordList.splice(recordIndex,1);
+    }
+    this.musicStorage.recordList.push(this.musicStorage.musicItem);// 新播放的歌曲永远都置于栈底
   }
 
   useLyric(){
@@ -64,47 +86,42 @@ struct MusicPlayerPage {
   // 注册avplayer回调函数
   setAVPlayerCallback() {
     // seek操作结果回调函数
-    this.musicStorage.audio.off('seekDone');
-    this.musicStorage.audio.off('stateChange');
     this.musicStorage.audio.off('timeUpdate');
     this.musicStorage.audio.off('durationUpdate');
 
-    this.musicStorage.audio.on('seekDone', (seekDoneTime) => {
-      console.info(`AVPlayer seek succeeded, seek time is ${seekDoneTime}`);
-    })
     // 状态机变化回调函数
-    this.musicStorage.audio.on('stateChange', async (state:string) => {
-      switch (state) {
-        case 'idle': // 成功调用reset接口后触发该状态机上报
-          this.musicStorage.audio.release(); // 调用release接口销毁实例对象
-          break;
-        case 'initialized': // avplayer 设置播放源后触发该状态上报
-          this.musicStorage.audio.prepare().then(() => {
-          }, (err) => {
-            console.error(`Invoke prepare failed, code is ${err.code}, message is ${err.message}`);
-          });
-          break;
-        case 'prepared': // prepare调用成功后上报该状态机
-          this.musicStorage.audio.play(); // 调用播放接口开始播放
-          break;
-        case 'playing': // play成功调用后触发该状态机上报
-          this.musicStorage.isPlaying = true;
-          console.log('playing')
-          break
-        case 'paused': // pause成功调用后触发该状态机上报
-          this.musicStorage.isPlaying = false;
-          break;
-        case 'completed': // 播放结束后触发该状态机上报
-          this.useTabNextMusic();
-          break;
-        case 'stopped': // stop接口成功调用后触发该状态机上报
-          this.musicStorage.isPlaying = false;
-          break;
-        case 'released':
-          this.musicStorage.isPlaying = false;
-          break;
-      }
-    });
+    if(!this.musicStorage.isInitPlayer){
+      this.musicStorage.isInitPlayer = true;
+      this.musicStorage.audio.on('stateChange', async (state:string) => {
+        switch (state) {
+          case 'idle': // 成功调用reset接口后触发该状态机上报
+            this.musicStorage.audio.url = HOST + this.musicStorage.musicItem.localPlayUrl;
+            this.musicStorage.audio.prepare(); // 调用release接口销毁实例对象
+            break;
+          case 'initialized': // avplayer 设置播放源后触发该状态上报
+            this.musicStorage.audio.prepare();
+            break;
+          case 'prepared': // prepare调用成功后上报该状态机
+            this.musicStorage.audio.play(); // 调用播放接口开始播放
+            break;
+          case 'playing': // play成功调用后触发该状态机上报
+            this.musicStorage.isPlaying = true;
+            break
+          case 'paused': // pause成功调用后触发该状态机上报
+            this.musicStorage.isPlaying = false;
+            break;
+          case 'completed': // 播放结束后触发该状态机上报
+            this.useTabNextMusic();
+            break;
+          case 'stopped': // stop接口成功调用后触发该状态机上报
+            this.musicStorage.isPlaying = false;
+            break;
+          case 'released':
+            this.musicStorage.isPlaying = false;
+            break;
+        }
+      });
+    }
 
     // 当前播放时长
     this.musicStorage.audio.on('timeUpdate',(millisecond:number)=>{
@@ -129,24 +146,100 @@ struct MusicPlayerPage {
    * @author wuwenqiang
    */
   async useTabMusic(){
-    this.musicStorage.audio.release();
     this.musicStorage.musicItem = this.musicStorage.musicList[this.musicStorage.playIndex];
-    this.musicStorage.audio = await media.createAVPlayer();
-    this.setAVPlayerCallback();// 先设置音乐播放器，在赋值url，两行语句不能颠倒
-    this.musicStorage.audio.url = HOST + this.musicStorage.musicItem.localPlayUrl;
+    this.musicStorage.audio.reset();
     this.removeMusic();
-    this.useLyric();
+    this.musicModel = this.musicStorage.musicItem;
     useUpdateStorage(this.musicStorage);
   }
 
+  /**
+   * @description: 切换上一首音乐
+   * @date: 2024-06-15 16:11
+   * @author wuwenqiang
+   */
+  async useTabPrevMusic(){
+    this.switchMode = SwitchEnum.PREV;
+    if(this.musicStorage.loop === LoopMode.RANDOM && this.musicStorage.recordList.length > 1){
+      // 随机播放切换到上一曲播放的音乐
+      this.musicStorage.playIndex = this.musicStorage.musicList.findIndex(item => item.id === this.musicStorage.recordList[this.musicStorage.recordList.length - 2].id)
+      this.musicStorage.recordList.pop();
+    }else if(this.musicStorage.playIndex === 0){
+      this.musicStorage.playIndex = this.musicStorage.musicList.length - 1;
+    }else{
+      this.musicStorage.playIndex--;
+    }
+    this.useTabMusic();
+  }
+
+  /**
+   * @description: 切下一首音乐
+   * @date: 2024-06-15 16:11
+   * @author wuwenqiang
+   */
   async useTabNextMusic(){
-    if(this.musicStorage.playIndex === this.musicStorage.musicList.length - 1){
+    if(this.musicStorage.loop === LoopMode.RANDOM){
+      const randomIndex = Math.floor(Math.random() * this.musicStorage.playList.length);
+      this.musicStorage.playIndex = this.musicStorage.musicList.findIndex(item => item.id === this.musicStorage.playList[randomIndex].id);
+    } if(this.musicStorage.playIndex === this.musicStorage.musicList.length - 1){
       this.musicStorage.playIndex = 0;
     }else{
       this.musicStorage.playIndex++;
     }
     this.useTabMusic();
   }
+
+  /**
+   * @description: 切下一首音乐
+   * @date: 2024-06-15 16:11
+   * @author wuwenqiang
+   */
+  async useRandomMusic(){
+    const randomIndex = Math.floor(Math.random() * this.musicStorage.playList.length);
+    this.musicStorage.playIndex = this.musicStorage.musicList.findIndex(item => item.id === this.musicStorage.playList[randomIndex].id);
+    this.useTabMusic();
+  }
+
+  /**
+   * @description: 弹出循环模式选择
+   * @date: 2024-06-15 16:11
+   * @author wuwenqiang
+   */
+  @Builder popupBuilder(){
+    Column(){
+      Row(){
+        Image($r('app.media.icon_music_order'))
+          .width(size.smallIconSize)
+          .aspectRatio(1)
+        Text('顺序播放').margin({left:size.smallPadding}).fontColor(colors.blockColor)
+      }.padding(size.pagePadding).onClick(()=>{
+        this.showPopupLoopMode = false;
+        this.musicStorage.loop = LoopMode.ORDER;
+        useUpdateStorage(this.musicStorage);
+      })
+      Row(){
+        Image($r('app.media.icon_music_loop'))
+          .width(size.smallIconSize)
+          .aspectRatio(1)
+        Text('单曲循环').margin({left:size.smallPadding}).fontColor(colors.blockColor)
+      }.padding(size.pagePadding).onClick(()=>{
+        this.showPopupLoopMode = false;
+        this.musicStorage.loop = LoopMode.REPEAT;
+        useUpdateStorage(this.musicStorage);
+      })
+      Row(){
+        Image($r('app.media.icon_music_random'))
+          .width(size.smallIconSize)
+          .aspectRatio(1)
+        Text('随机播放').margin({left:size.smallPadding}).fontColor(colors.blockColor)
+      }.padding(size.pagePadding).onClick(()=>{
+        this.showPopupLoopMode = false;
+        this.musicStorage.loop = LoopMode.RANDOM;
+        useUpdateStorage(this.musicStorage);
+      })
+    }
+  }
+
 
   build(){
     Column({space:size.pagePadding}){
@@ -221,18 +314,27 @@ struct MusicPlayerPage {
       }.width('80%').alignItems(VerticalAlign.Center)
 
       Row(){
-        Image($r('app.media.icon_music_order')).width(size.middlIconSize).aspectRatio(1)
+        Image(this.loopMode[this.musicStorage.loop])
+          .width(size.middlIconSize)
+          .aspectRatio(1)
+          .onClick(()=>{
+            this.showPopupLoopMode = true;
+          }).bindPopup(this.showPopupLoopMode, {
+          builder: this.popupBuilder,
+          placement: Placement.Top,
+          popupColor: colors.blackBackgroundColor,
+          enableArrow: true,
+          showInSubWindow: false,
+          onStateChange: (e) => {
+            if (!e.isVisible) {
+              this.showPopupLoopMode = false
+            }
+          }
+        })
         Image($r('app.media.icon_music_prev'))
           .width(size.middlIconSize)
           .aspectRatio(1)
-          .onClick(async ()=>{
-            if(this.musicStorage.playIndex === 0){
-              this.musicStorage.playIndex = this.musicStorage.musicList.length - 1;
-            }else{
-              this.musicStorage.playIndex--;
-            }
-            this.useTabMusic();
-          })
+          .onClick(this.useTabPrevMusic.bind(this))
         Row(){
           Image(this.musicStorage.isPlaying ? $r('app.media.icon_music_playing') : $r('app.media.icon_music_play_white')).width(size.middlIconSize).aspectRatio(1)
         }
@@ -252,7 +354,7 @@ struct MusicPlayerPage {
         Image($r('app.media.icon_music_next'))
           .width(size.middlIconSize)
           .aspectRatio(1)
-          .onClick(this.useTabNextMusic)
+          .onClick(this.useTabNextMusic.bind(this))
         Image($r('app.media.icon_music_play_menu')).width(size.middlIconSize).aspectRatio(1)
       }
       .width('100%')

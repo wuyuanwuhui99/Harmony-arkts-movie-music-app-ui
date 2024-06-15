@@ -15,12 +15,14 @@ export default struct MusicClassifyComponent {
     musicItem: null,
     audio: null,
     isPlaying: true,
+    isInitPlayer:false,
     musicList: [],
     classifyId: -1,
     total: 0,
     playIndex: -1,
     loop: LoopMode.ORDER,
     playList: [],// 还没有播放的音乐
+    recordList:[]
   };
 
   @Styles blockStyle(){

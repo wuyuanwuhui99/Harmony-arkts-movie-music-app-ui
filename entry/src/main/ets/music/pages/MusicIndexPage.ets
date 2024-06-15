@@ -21,14 +21,12 @@ struct MusicIndexPage {
     // 如果在播放页面的aboutToDisappear方法中销毁监听事件，会导致当前页面的绑定的事件不生效
     this.musicStorage?.audio.off('durationUpdate');
     this.musicStorage?.audio.off('timeUpdate');
-    this.musicStorage?.audio.off('stateChange');
-    this.musicStorage?.audio.off('seekDone');
 
     // 重新绑定监听事件
     this.musicStorage?.audio.on('timeUpdate',()=>{
       this.angle += 5;
       if(this.angle === 360)this.angle = 0;
-    })
+    });
   }
 
   build() {

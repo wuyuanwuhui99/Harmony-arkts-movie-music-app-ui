@@ -48,7 +48,7 @@ export const useUpdateStorage = (musicStorage:MusicStorageInterface)=>{
   const myMusicStorage:MusicStorageInterface =  {...musicStorage};
   // 列表数据不用存缓存，避免缓存过大，或者下次进来缓存没更新
   myMusicStorage.musicList = [];// 所有音乐
-  myMusicStorage.playList = [];// 还没有播放的音乐
+  myMusicStorage.musicList = myMusicStorage.recordList = myMusicStorage.playList = [];// 还没有播放的音乐
   myMusicStorage.audio = null;
   PersistentStorage.PersistProp<MusicStorageInterface>(MUSIC_STORAGE, myMusicStorage);
 }

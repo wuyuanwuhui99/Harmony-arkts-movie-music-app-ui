@@ -151,10 +151,17 @@ export interface MusicStorageInterface {
   musicItem: MusicInterface | null,
   audio?: media.AVPlayer,
   isPlaying: boolean,
+  isInitPlayer:boolean,// 是否已经初始化播放器
   musicList: Array<MusicInterface>,
   classifyId: number,// 播放的类型
   playIndex: number,// 播放的下标
   total: number,
   loop: LoopMode// 默认顺序播放
   playList: Array<MusicInterface>,// 还没有播放的音乐
+  recordList: Array<MusicInterface>// 已经播放的歌曲
+}
+
+export const enum SwitchEnum { // 切换模式
+  NEXT,
+  PREV
 }
