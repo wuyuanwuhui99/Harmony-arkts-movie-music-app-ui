@@ -7,24 +7,24 @@ import MusicRecommendComponent from '../components/MusicRecommendComponent'
 import {MUSIC_STORAGE,HOST} from '../../config/constant'
 import { MusicStorageInterface } from '../interface/Index';
 import router from '@ohos.router';
+import { useAppStorage } from '../../utils/common';
 @Entry
 @Component
 struct MusicIndexPage {
   @State activeIndex: number = 0;
-  @State isInitPage: Array<boolean> = [true, false, false, false];
-  @State musicStorage: MusicStorageInterface | null =  null;
+  @State isInitPage: Array<boolean> = [true, false, false, false,false];
+  @StorageLink(MUSIC_STORAGE) musicStorage:  MusicStorageInterface = useAppStorage()
   @State angle:number = 0;
 
   onPageShow(){
-    this.musicStorage = AppStorage.Get<MusicStorageInterface>(MUSIC_STORAGE) || null;
     // 先销毁播放界面的监听事件,不能在播放页面销毁
     // 因为页面返回时，先执行了当前页面的onPageShow方法，再执行播放页面的aboutToDisappear方法
     // 如果在播放页面的aboutToDisappear方法中销毁监听事件，会导致当前页面的绑定的事件不生效
-    this.musicStorage?.audio.off('durationUpdate');
-    this.musicStorage?.audio.off('timeUpdate');
+    this.musicStorage.audio?.off('durationUpdate');
+    this.musicStorage.audio?.off('timeUpdate');
 
     // 重新绑定监听事件
-    this.musicStorage?.audio.on('timeUpdate',()=>{
+    this.musicStorage.audio?.on('timeUpdate',()=>{
       this.angle += 5;
       if(this.angle === 360)this.angle = 0;
     });
@@ -55,22 +55,22 @@ struct MusicIndexPage {
 
 
         TabContent() {
-          if (this.isInitPage[2]) {
+          if (this.isInitPage[3]) {
             MusicCircleComponent()
           } else {
             Column()
           }
         }
-        .tabBar(this.tabBuilder(2, '音乐圈', $r('app.media.icon_music_circle_active'), $r('app.media.icon_music_circle')))
+        .tabBar(this.tabBuilder(3, '音乐圈', $r('app.media.icon_music_circle_active'), $r('app.media.icon_music_circle')))
 
         TabContent() {
-          if (this.isInitPage[3]) {
+          if (this.isInitPage[4]) {
             MusicMyComponent()
           } else {
             Column()
           }
         }
-        .tabBar(this.tabBuilder(3, '我的', $r('app.media.icon_user_active'), $r('app.media.icon_user')))
+        .tabBar(this.tabBuilder(4, '我的', $r('app.media.icon_user_active'), $r('app.media.icon_user')))
       }
       .barHeight(size.barHeight)
       .barMode(BarMode.Fixed)
@@ -97,7 +97,7 @@ struct MusicIndexPage {
     .width('100%')
     .height('100%')
     .alignContent(Alignment.Bottom)// 设置Tab组件和凸起悬浮按钮底部对齐
-    .onClick(() => router.pushUrl({url: 'music/pages/MusicPlayerPage'}));
+    .onClick(() => this.musicStorage.musicItem && router.pushUrl({url: 'music/pages/MusicPlayerPage'}));
   }
 
   /**
