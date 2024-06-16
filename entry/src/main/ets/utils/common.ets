@@ -1,4 +1,4 @@
-import {MusicStorageInterface} from'../music/interface';
+import {LoopMode, MusicStorageInterface} from'../music/interface';
 import {MUSIC_STORAGE} from '../config/constant';
 import { MusicInterface } from '../music/interface/Index';
 import {getMusicListByClassifyIdService} from '../music/service/Index';
@@ -56,7 +56,7 @@ export const useUpdateStorage = (musicStorage:MusicStorageInterface)=>{
   PersistentStorage.PersistProp<MusicStorageInterface>(MUSIC_STORAGE, myMusicStorage);
 }
 
-export const usePlayerRouter = async (musicStorage:MusicStorageInterface,musicModel:MusicInterface,classifyId:number,index:number) => {
+export const usePlayerRouter = (musicStorage:MusicStorageInterface,musicModel:MusicInterface,classifyId:number,index:number) => {
   if(musicStorage.musicItem?.id === musicModel.id && musicStorage.musicList.length !== 0){
     musicStorage.audio.play();
     musicStorage.isPlaying = true;
@@ -64,7 +64,7 @@ export const usePlayerRouter = async (musicStorage:MusicStorageInterface,musicMo
     musicStorage.musicItem = musicModel;
     musicStorage.audio?.reset();
     if(musicStorage.classifyId !== classifyId || musicStorage.musicList.length === 0){
-      await getMusicListByClassifyIdService(classifyId,1,500).then((res)=>{
+      getMusicListByClassifyIdService(classifyId,1,500).then((res)=>{
         musicStorage.musicList = res.data;
         musicStorage.playList = [...res.data];
         musicStorage.recordList.push(...musicStorage.playList.splice(index,1));
@@ -74,4 +74,20 @@ export const usePlayerRouter = async (musicStorage:MusicStorageInterface,musicMo
     }
   }
   router.pushUrl({url: 'music/pages/MusicPlayerPage'});
+}
+
+export const useAppStorage = ():MusicStorageInterface => {
+  return AppStorage.Get<MusicStorageInterface>(MUSIC_STORAGE) || {
+    musicItem: null,
+    audio: null,
+    isPlaying: true,
+    musicList: [],
+    classifyId: -1,
+    total: 0,
+    isInitPlayer:false,
+    playIndex: -1,
+    loop: LoopMode.ORDER,
+    playList: [],// 还没有播放的音乐
+    recordList:[],// 已经播放的歌曲
+  };
 }

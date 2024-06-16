@@ -5,7 +5,7 @@ import display from '@ohos.display';
 import {HOST,MUSIC_STORAGE} from '../../config/constant';
 import Lyric,{LineInterface} from '../../utils/Lyric';
 import media from '@ohos.multimedia.media';
-import { formatSecond,useUpdateStorage } from '../../utils/common';
+import { formatSecond,useUpdateStorage, useAppStorage} from '../../utils/common';
 import { deleteMusicFavoriteService, insertMusicFavoriteService, insertMusicRecordService } from '../service/Index';
 import promptAction from '@ohos.promptAction';
 @Entry
@@ -21,19 +21,7 @@ struct MusicPlayerPage {
   @State @Watch("onMusicChange") musicModel:MusicInterface | null = null;
   private scroller: Scroller = new Scroller()
   private circleSize:number = px2vp(display.getDefaultDisplaySync().width * 0.8)
-  @State musicStorage: MusicStorageInterface = AppStorage.Get<MusicStorageInterface>(MUSIC_STORAGE) || {
-    musicItem: null,
-    audio: null,
-    isPlaying: true,
-    musicList: [],
-    classifyId: -1,
-    total: 0,
-    isInitPlayer:false,
-    playIndex: -1,
-    loop: LoopMode.ORDER,
-    playList: [],// 还没有播放的音乐
-    recordList:[],// 已经播放的歌曲
-  };
+  @StorageLink(MUSIC_STORAGE) musicStorage:  MusicStorageInterface = useAppStorage()
   private loopMode:object = {
     [LoopMode.ORDER]:$r('app.media.icon_music_order'),
     [LoopMode.REPEAT]:$r('app.media.icon_music_loop'),
@@ -250,7 +238,7 @@ struct MusicPlayerPage {
    */
   useFavorite = () => {
     if (this.loading) return;
-      this.loading = true;
+    this.loading = true;
     if (this.musicStorage.musicItem.isFavorite) {
       deleteMusicFavoriteService(this.musicStorage.musicItem.id).then((res) => {
         if (res.data > 0) {
@@ -340,7 +328,7 @@ struct MusicPlayerPage {
         Image(this.musicStorage.musicItem.isFavorite ? $r('app.media.icon_collection_active') : $r('app.media.icon_music_collect'))
           .width(size.middlIconSize)
           .aspectRatio(1)
-          .onClick(() => this.useFavorite)
+          .onClick(this.useFavorite)
         Image($r('app.media.icon_music_down')).width(size.middlIconSize).aspectRatio(1)
         Image($r('app.media.icon_music_comments')).width(size.middlIconSize).aspectRatio(1)
         Image($r('app.media.icon_music_white_menu')).width(size.middlIconSize).aspectRatio(1)

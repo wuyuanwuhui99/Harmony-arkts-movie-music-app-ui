@@ -1,29 +1,16 @@
-import router from '@ohos.router';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import { MusicInterface,MusicStorageInterface,LoopMode } from '../interface';
+import { MusicInterface,MusicStorageInterface } from '../interface';
 import { getMusicListByClassifyIdService } from '../service/Index';
 import { HOST,MUSIC_STORAGE } from '../../config/constant';
-import {usePlayerRouter, useUpdateStorage} from '../../utils/common';
+import {usePlayerRouter, useAppStorage} from '../../utils/common';
 
 @Component
 export default struct MusicClassifyComponent {
   @Prop classifyId: number;
   @Prop classifyName: string;
   @State musicList: Array<MusicInterface> = []
-  @State musicStorage: MusicStorageInterface = AppStorage.Get<MusicStorageInterface>(MUSIC_STORAGE) || {
-    musicItem: null,
-    audio: null,
-    isPlaying: true,
-    isInitPlayer:false,
-    musicList: [],
-    classifyId: -1,
-    total: 0,
-    playIndex: -1,
-    loop: LoopMode.ORDER,
-    playList: [],// 还没有播放的音乐
-    recordList:[]
-  };
+  @StorageLink(MUSIC_STORAGE) musicStorage: MusicStorageInterface = useAppStorage()
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
