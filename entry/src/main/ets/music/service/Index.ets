@@ -111,3 +111,12 @@ export const getMusicRecordService = (pageNum:number,pageSize:number):Promise<My
 export const getClassifyMusicByIndexService = (classifyId:number,index:number):Promise<MyAwesomeData<types.MusicInterface>> => {
   return httpRequest.get<types.MusicInterface>(`${api.getClassifyMusicByIndex}?classifyId=${classifyId}&index=${index}`);
 }
+
+/**
+ * @description: 插入播放记录
+ * @date: 2024-03-17 22:12
+ * @author wuwenqiang
+ */
+export const insertMusicRecordService = (musicModel:types.MusicInterface):Promise<MyAwesomeData<number>> => {
+  return httpRequest.post<number>(api.insertMusicRecord,musicModel);
+}

@@ -88,14 +88,7 @@ export default struct MusicClassifyComponent {
                   }
                   useUpdateStorage(this.musicStorage);
                 }
-
-                router.pushUrl({
-                  url: 'music/pages/MusicPlayerPage', // 目标url
-                }, router.RouterMode.Standard, (err) => {
-                  if (err) {
-                    console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
-                  }
-                });
+                router.pushUrl({url: 'music/pages/MusicPlayerPage'});
               })
             Image(item.isFavorite === 0 ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
               .width(size.smallIconSize)

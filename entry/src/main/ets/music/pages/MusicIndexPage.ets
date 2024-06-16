@@ -6,6 +6,7 @@ import MusicMyComponent from '../components/MusicMyComponent'
 import MusicRecommendComponent from '../components/MusicRecommendComponent'
 import {MUSIC_STORAGE,HOST} from '../../config/constant'
 import { MusicStorageInterface } from '../interface/Index';
+import router from '@ohos.router';
 @Entry
 @Component
 struct MusicIndexPage {
@@ -96,6 +97,7 @@ struct MusicIndexPage {
     .width('100%')
     .height('100%')
     .alignContent(Alignment.Bottom)// 设置Tab组件和凸起悬浮按钮底部对齐
+    .onClick(() => router.pushUrl({url: 'music/pages/MusicPlayerPage'}));
   }
 
   /**

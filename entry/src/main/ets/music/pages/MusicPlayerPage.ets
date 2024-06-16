@@ -6,6 +6,7 @@ import {HOST,MUSIC_STORAGE} from '../../config/constant';
 import Lyric,{LineInterface} from '../../utils/Lyric';
 import media from '@ohos.multimedia.media';
 import { formatSecond,useUpdateStorage } from '../../utils/common';
+import { insertMusicRecordService } from '../service/Index';
 @Entry
 @Component
 struct MusicPlayerPage {
@@ -102,7 +103,7 @@ struct MusicPlayerPage {
             this.musicStorage.audio.prepare();
             break;
           case 'prepared': // prepare调用成功后上报该状态机
-            this.musicStorage.audio.play(); // 调用播放接口开始播放
+            this.musicStorage.audio.play().then(() => insertMusicRecordService(this.musicStorage.musicItem)); // 调用播放接口开始播放
             break;
           case 'playing': // play成功调用后触发该状态机上报
             this.musicStorage.isPlaying = true;
