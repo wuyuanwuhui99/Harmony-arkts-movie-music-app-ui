@@ -1,5 +1,8 @@
 import {MusicStorageInterface} from'../music/interface';
 import {MUSIC_STORAGE} from '../config/constant';
+import { MusicInterface } from '../music/interface/Index';
+import {getMusicListByClassifyIdService} from '../music/service/Index';
+import router from '@ohos.router';
 
 export const zerofull=(value:number):string|number=>{
   return value < 10 ? "0" + value : value + ''
@@ -51,4 +54,24 @@ export const useUpdateStorage = (musicStorage:MusicStorageInterface)=>{
   myMusicStorage.musicList = myMusicStorage.recordList = myMusicStorage.playList = [];// 还没有播放的音乐
   myMusicStorage.audio = null;
   PersistentStorage.PersistProp<MusicStorageInterface>(MUSIC_STORAGE, myMusicStorage);
+}
+
+export const usePlayerRouter = async (musicStorage:MusicStorageInterface,musicModel:MusicInterface,classifyId:number,index:number) => {
+  if(musicStorage.musicItem?.id === musicModel.id && musicStorage.musicList.length !== 0){
+    musicStorage.audio.play();
+    musicStorage.isPlaying = true;
+  }else{
+    musicStorage.musicItem = musicModel;
+    musicStorage.audio?.reset();
+    if(musicStorage.classifyId !== classifyId || musicStorage.musicList.length === 0){
+      await getMusicListByClassifyIdService(classifyId,1,500).then((res)=>{
+        musicStorage.musicList = res.data;
+        musicStorage.playList = [...res.data];
+        musicStorage.recordList.push(...musicStorage.playList.splice(index,1));
+        useUpdateStorage(musicStorage);
+      });
+      musicStorage.classifyId = classifyId;
+    }
+  }
+  router.pushUrl({url: 'music/pages/MusicPlayerPage'});
 }

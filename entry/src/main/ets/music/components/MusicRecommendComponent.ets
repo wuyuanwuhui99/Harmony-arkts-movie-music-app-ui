@@ -1,9 +1,10 @@
 import { getMusicListByClassifyIdService } from '../service/Index';
-import { MusicInterface } from '../interface';
+import { LoopMode, MusicInterface, MusicStorageInterface } from '../interface';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import { HOST } from '../../config/constant';
+import { HOST, MUSIC_STORAGE } from '../../config/constant';
 import router from '@ohos.router';
+import { useUpdateStorage,usePlayerRouter } from '../../utils/common';
 
 // LazyForEach列表栏加载，
 // 参考文档：https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/arkts-rendering-control-lazyforeach-0000001524417213-V3
@@ -95,9 +96,22 @@ export default struct MusicRecommendComponent {
   @State musicList: MyDataSource = new MyDataSource();
   @State pageNum: number = 1;
   @State total: number = 0;
-  pageSize: number = 20;
-  scroller: Scroller = new Scroller()
-  isScrollEnd: boolean = false;
+  @State musicStorage: MusicStorageInterface = AppStorage.Get<MusicStorageInterface>(MUSIC_STORAGE) || {
+    musicItem: null,
+    audio: null,
+    isPlaying: true,
+    isInitPlayer:false,
+    musicList: [],
+    classifyId: -1,
+    total: 0,
+    playIndex: -1,
+    loop: LoopMode.ORDER,
+    playList: [],// 还没有播放的音乐
+    recordList:[]
+  };
+  private classifyId:number = 1;
+  private pageSize: number = 20;
+  private scroller: Scroller = new Scroller()
 
   aboutToAppear() {
     this.useMusicList()
@@ -109,7 +123,7 @@ export default struct MusicRecommendComponent {
    * @author wuwenqiang
    */
   useMusicList() {
-    getMusicListByClassifyIdService(1, this.pageNum, this.pageSize).then((res) => {
+    getMusicListByClassifyIdService(this.classifyId, this.pageNum, this.pageSize).then((res) => {
       this.total = res.total;
       res.data.forEach((item: MusicInterface) => {
         this.musicList.pushData(item);
@@ -157,14 +171,8 @@ export default struct MusicRecommendComponent {
               Image($r("app.media.icon_music_play"))
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)
-                .margin({ left: size.pagePadding }).onClick(()=>{
-                router.pushUrl({
-                  url: 'music/pages/MusicPlayerPage', // 目标url
-                  params: {
-                    musicItem: item
-                  }
-                }, router.RouterMode.Standard);
-              })
+                .margin({ left: size.pagePadding })
+                .onClick(() => usePlayerRouter(this.musicStorage,item,this.classifyId,index))
               Image(item.isFavorite ? $r("app.media.icon_like_active") : $r("app.media.icon_like"))
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)

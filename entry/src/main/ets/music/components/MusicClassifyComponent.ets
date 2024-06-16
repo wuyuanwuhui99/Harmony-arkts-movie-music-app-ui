@@ -4,7 +4,7 @@ import * as size from '../../theme/size';
 import { MusicInterface,MusicStorageInterface,LoopMode } from '../interface';
 import { getMusicListByClassifyIdService } from '../service/Index';
 import { HOST,MUSIC_STORAGE } from '../../config/constant';
-import {useUpdateStorage} from '../../utils/common';
+import {usePlayerRouter, useUpdateStorage} from '../../utils/common';
 
 @Component
 export default struct MusicClassifyComponent {
@@ -71,25 +71,7 @@ export default struct MusicClassifyComponent {
               .width(size.smallIconSize)
               .height(size.smallIconSize)
               .margin({ left: size.pagePadding })
-              .onClick(()=>{
-                if(this.musicStorage.musicItem?.id === item.id && this.musicStorage.musicList.length !== 0){
-                  this.musicStorage.audio.play();
-                  this.musicStorage.isPlaying = true;
-                }else{
-                  this.musicStorage.musicItem = item;
-                  if(this.musicStorage.classifyId !== this.classifyId || this.musicStorage.musicList.length === 0){
-                    getMusicListByClassifyIdService(this.classifyId,1,500).then((res)=>{
-                      this.musicStorage.musicList = res.data;
-                      this.musicStorage.playList = [...res.data];
-                      this.musicStorage.playList.splice(index,1);
-                      useUpdateStorage(this.musicStorage);
-                    });
-                    this.musicStorage.classifyId = this.classifyId;
-                  }
-                  useUpdateStorage(this.musicStorage);
-                }
-                router.pushUrl({url: 'music/pages/MusicPlayerPage'});
-              })
+              .onClick(() => usePlayerRouter(this.musicStorage,item,this.classifyId,index))
             Image(item.isFavorite === 0 ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)

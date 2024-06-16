@@ -6,7 +6,8 @@ import {HOST,MUSIC_STORAGE} from '../../config/constant';
 import Lyric,{LineInterface} from '../../utils/Lyric';
 import media from '@ohos.multimedia.media';
 import { formatSecond,useUpdateStorage } from '../../utils/common';
-import { insertMusicRecordService } from '../service/Index';
+import { deleteMusicFavoriteService, insertMusicFavoriteService, insertMusicRecordService } from '../service/Index';
+import promptAction from '@ohos.promptAction';
 @Entry
 @Component
 struct MusicPlayerPage {
@@ -39,6 +40,7 @@ struct MusicPlayerPage {
     [LoopMode.RANDOM]:$r('app.media.icon_music_random')
   }
   private switchMode:SwitchEnum | null = null
+  private loading:boolean = false;
 
   async aboutToAppear() {
     if(this.musicStorage.audio == null){
@@ -159,7 +161,7 @@ struct MusicPlayerPage {
    * @date: 2024-06-15 16:11
    * @author wuwenqiang
    */
-  async useTabPrevMusic(){
+  useTabPrevMusic = async () => {
     this.switchMode = SwitchEnum.PREV;
     if(this.musicStorage.loop === LoopMode.RANDOM && this.musicStorage.recordList.length > 1){
       // 随机播放切换到上一曲播放的音乐
@@ -178,7 +180,7 @@ struct MusicPlayerPage {
    * @date: 2024-06-15 16:11
    * @author wuwenqiang
    */
-  async useTabNextMusic(){
+  useTabNextMusic = async () => {
     if(this.musicStorage.loop === LoopMode.RANDOM){
       const randomIndex = Math.floor(Math.random() * this.musicStorage.playList.length);
       this.musicStorage.playIndex = this.musicStorage.musicList.findIndex(item => item.id === this.musicStorage.playList[randomIndex].id);
@@ -238,6 +240,40 @@ struct MusicPlayerPage {
         this.musicStorage.loop = LoopMode.RANDOM;
         useUpdateStorage(this.musicStorage);
       })
+    }
+  }
+
+  /**
+   * @description: 添加收藏或取消收藏
+   * @date: 2024-05-12 11:45
+   * @author wuwenqiang
+   */
+  useFavorite = () => {
+    if (this.loading) return;
+      this.loading = true;
+    if (this.musicStorage.musicItem.isFavorite) {
+      deleteMusicFavoriteService(this.musicStorage.musicItem.id).then((res) => {
+        if (res.data > 0) {
+          this.musicStorage.musicItem.isFavorite = 0;
+          promptAction.showToast({
+            message: "取消收藏成功",
+            duration: 2000,
+            bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+          });
+        }
+
+      }).finally(() => this.loading = false)
+    } else {
+      insertMusicFavoriteService(this.musicStorage.musicItem.id).then(res => {
+        if (res.data > 0) {
+          this.musicStorage.musicItem.isFavorite = 1;
+          promptAction.showToast({
+            message: "添加收藏成功",
+            duration: 2000,
+            bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+          });
+        }
+      }).finally(() => this.loading = false)
     }
   }
 
@@ -301,7 +337,10 @@ struct MusicPlayerPage {
 
       Text(this.musicStorage.musicItem.authorName).width('80%').fontColor(colors.blockColor)
       Row(){
-        Image($r('app.media.icon_music_collect')).width(size.middlIconSize).aspectRatio(1)
+        Image(this.musicStorage.musicItem.isFavorite ? $r('app.media.icon_collection_active') : $r('app.media.icon_music_collect'))
+          .width(size.middlIconSize)
+          .aspectRatio(1)
+          .onClick(() => this.useFavorite)
         Image($r('app.media.icon_music_down')).width(size.middlIconSize).aspectRatio(1)
         Image($r('app.media.icon_music_comments')).width(size.middlIconSize).aspectRatio(1)
         Image($r('app.media.icon_music_white_menu')).width(size.middlIconSize).aspectRatio(1)
@@ -335,7 +374,7 @@ struct MusicPlayerPage {
         Image($r('app.media.icon_music_prev'))
           .width(size.middlIconSize)
           .aspectRatio(1)
-          .onClick(this.useTabPrevMusic.bind(this))
+          .onClick(this.useTabPrevMusic)
         Row(){
           Image(this.musicStorage.isPlaying ? $r('app.media.icon_music_playing') : $r('app.media.icon_music_play_white')).width(size.middlIconSize).aspectRatio(1)
         }
@@ -355,7 +394,7 @@ struct MusicPlayerPage {
         Image($r('app.media.icon_music_next'))
           .width(size.middlIconSize)
           .aspectRatio(1)
-          .onClick(this.useTabNextMusic.bind(this))
+          .onClick(this.useTabNextMusic)
         Image($r('app.media.icon_music_play_menu')).width(size.middlIconSize).aspectRatio(1)
       }
       .width('100%')

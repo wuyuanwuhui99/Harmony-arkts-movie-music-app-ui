@@ -95,15 +95,7 @@ export default struct MyComponent {
             Image($r('app.media.icon_edit'))
               .height(size.bigIconSize)
               .width(size.bigIconSize)
-              .onClick(()=>{
-                router.pushUrl({
-                    url: 'movie/pages/MovieUserPage', // 目标url
-                  }, router.RouterMode.Standard, (err) => {
-                    if (err) {
-                      console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
-                    }
-                })
-              })
+              .onClick(() => router.pushUrl({ url: 'movie/pages/MovieUserPage'}))
           }.blockStyle().width('100%').align(Alignment.Center)
 
           Row() {
@@ -134,6 +126,7 @@ export default struct MyComponent {
               Text('观看记录').flexGrow(1)
               Image($r('app.media.icon_arrow'))
                 .arrowIconStyle()
+                .opacity(0.5)
                 .rotate({ angle: this.showPlayRecordMovieList ? 90 : 0 })
             }
             .margin({
@@ -173,6 +166,7 @@ export default struct MyComponent {
               Image($r('app.media.icon_collection')).classifyIconStyle()
               Text('我的收藏').flexGrow(1)
               Image($r('app.media.icon_arrow'))
+                .opacity(0.5)
                 .arrowIconStyle()
                 .rotate({ angle: this.showMyFavoriteList ? 90 : 0 })
             }.width('100%')
@@ -208,7 +202,7 @@ export default struct MyComponent {
             Row() {
               Image($r('app.media.icon_record')).classifyIconStyle()
               Text('我浏览过的电影').flexGrow(1)
-              Image($r('app.media.icon_arrow')).arrowIconStyle().rotate({
+              Image($r('app.media.icon_arrow')).opacity(0.5).arrowIconStyle().rotate({
                 angle: this.showMyViewList ? 90 : 0
               })
             }.width('100%')
@@ -245,7 +239,7 @@ export default struct MyComponent {
               Row() {
                 Image($r('app.media.icon_music')).classifyIconStyle()
                 Text('音乐').flexGrow(1)
-                Image($r('app.media.icon_arrow')).arrowIconStyle()
+                Image($r('app.media.icon_arrow')).opacity(0.5).arrowIconStyle()
               }.width('100%').onClick(()=>{
                 router.pushUrl({
                   url: 'music/pages/MusicIndexPage', // 目标url
@@ -261,7 +255,7 @@ export default struct MyComponent {
               Row() {
                 Image($r('app.media.icon_music_circle')).classifyIconStyle()
                 Text('电影圈').flexGrow(1)
-                Image($r('app.media.icon_arrow')).arrowIconStyle()
+                Image($r('app.media.icon_arrow')).opacity(0.5).arrowIconStyle()
               }.width('100%')
             }.margin({ top: size.pagePadding }).padding({ top: size.pagePadding }).border({
               width: {
@@ -279,7 +273,7 @@ export default struct MyComponent {
               Row() {
                 Image($r('app.media.icon_app')).classifyIconStyle()
                 Text('小程序').flexGrow(1)
-                Image($r('app.media.icon_arrow')).arrowIconStyle()
+                Image($r('app.media.icon_arrow')).opacity(0.5).arrowIconStyle()
               }.width('100%')
             }.margin({ top: size.pagePadding }).padding({ top: size.pagePadding }).border({
               width: {

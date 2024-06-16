@@ -39,7 +39,6 @@ export const getSingerListService = (category:string,pageNum:number,pageSize:num
   return httpRequest.get<Array<types.MusicSingerInterface>>(`${api.getSingerList}?${category != '' && category != null ? "category=" + category + "&" : ""}pageNum=${pageNum}&pageSize=${pageSize}`);
 }
 
-
 /**
  * @description: 获取音乐圈数据
  * @date: 2024-03-03 18:23
@@ -119,4 +118,22 @@ export const getClassifyMusicByIndexService = (classifyId:number,index:number):P
  */
 export const insertMusicRecordService = (musicModel:types.MusicInterface):Promise<MyAwesomeData<number>> => {
   return httpRequest.post<number>(api.insertMusicRecord,musicModel);
+}
+
+/**
+ * @description: 添加收藏
+ * @date: 2024-05-12 12:21
+ * @author wuwenqiang
+ */
+export const insertMusicFavoriteService = (musicId:number):Promise<MyAwesomeData<number>> => {
+  return httpRequest.post<number>(api.insertMusicFavorite + musicId);
+}
+
+/**
+ * @description: 删除收藏
+ * @date: 2024-05-12 12:21
+ * @author wuwenqiang
+ */
+export const deleteMusicFavoriteService = (musicId:number):Promise<MyAwesomeData<number>> => {
+  return httpRequest.delete<number>(api.deleteMusicFavorite + musicId);
 }
