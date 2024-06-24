@@ -1,4 +1,4 @@
-// export const HOST:string = 'http://q6aiga.natappfree.cc';// 外网映射地址
+// export const HOST:string = 'http://254a2y1767.qicp.vip';// 外网映射地址，一般只有晚上才开机，开机之后才能使用，如需调试请联系
 export const HOST: string = 'http://192.168.0.5:5001'; // 内网地址
 export const USER_DATA: string = 'USER_DATA';
 export const MUSIC_PLAYER = 'MUSIC_PLAYER';// 音乐播放器
@@ -10,4 +10,8 @@ export const enum SocialEnum { // 社交类型
   MUSIC_CIRCLE = "MUSIC_CIRCLE",
   MOVIE = "MOVIE",
   MOVIE_CIRCLE = "MOVIE_CIRCLE"
+}
+
+export const LIKE_INNER_EVENT = {// 点赞和取消点赞事件派发和监听
+  eventId: 1
 }

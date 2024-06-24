@@ -2,12 +2,14 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { MusicStorageInterface,LoopMode,SwitchEnum, MusicInterface} from '../interface/Index';
 import display from '@ohos.display';
-import {HOST,MUSIC_STORAGE} from '../../config/constant';
+import {HOST,MUSIC_STORAGE,LIKE_INNER_EVENT} from '../../config/constant';
 import Lyric,{LineInterface} from '../../utils/Lyric';
 import media from '@ohos.multimedia.media';
 import { formatSecond,useUpdateStorage, useAppStorage} from '../../utils/common';
-import { deleteMusicFavoriteService, insertMusicFavoriteService, insertMusicRecordService } from '../service/Index';
+import { deleteMusicLikeService, insertMusicLikeService, insertMusicRecordService } from '../service/Index';
 import promptAction from '@ohos.promptAction';
+import emitter from '@ohos.events.emitter'
+
 @Entry
 @Component
 struct MusicPlayerPage {
@@ -239,27 +241,34 @@ struct MusicPlayerPage {
   useFavorite = () => {
     if (this.loading) return;
     this.loading = true;
-    if (this.musicStorage.musicItem.isFavorite) {
-      deleteMusicFavoriteService(this.musicStorage.musicItem.id).then((res) => {
+    if (this.musicStorage.musicItem.isLike === 1) {
+      deleteMusicLikeService(this.musicStorage.musicItem.id).then((res) => {
         if (res.data > 0) {
-          this.musicStorage.musicItem.isFavorite = 0;
+          const {musicItem} = this.musicStorage
+          musicItem.isLike = 0;
+          this.musicStorage.musicItem.isLike = 1;
+          this.musicStorage.musicItem = {...musicItem}
           promptAction.showToast({
             message: "取消收藏成功",
             duration: 2000,
             bottom: px2vp(display.getDefaultDisplaySync().height) / 2
           });
+          emitter.emit(LIKE_INNER_EVENT,{data:musicItem})
         }
 
       }).finally(() => this.loading = false)
     } else {
-      insertMusicFavoriteService(this.musicStorage.musicItem.id).then(res => {
+      insertMusicLikeService(this.musicStorage.musicItem.id).then(res => {
         if (res.data > 0) {
-          this.musicStorage.musicItem.isFavorite = 1;
+          const {musicItem} = this.musicStorage
+          musicItem.isLike = 1;
+          this.musicStorage.musicItem = {...musicItem}
           promptAction.showToast({
             message: "添加收藏成功",
             duration: 2000,
             bottom: px2vp(display.getDefaultDisplaySync().height) / 2
           });
+          emitter.emit(LIKE_INNER_EVENT,{data:musicItem});
         }
       }).finally(() => this.loading = false)
     }
@@ -325,7 +334,7 @@ struct MusicPlayerPage {
 
       Text(this.musicStorage.musicItem.authorName).width('80%').fontColor(colors.blockColor)
       Row(){
-        Image(this.musicStorage.musicItem.isFavorite ? $r('app.media.icon_collection_active') : $r('app.media.icon_music_collect'))
+        Image(this.musicStorage.musicItem.isLike ? $r('app.media.icon_collection_active') : $r('app.media.icon_music_collect'))
           .width(size.middlIconSize)
           .aspectRatio(1)
           .onClick(this.useFavorite)

@@ -1,8 +1,9 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
+import emitter from '@ohos.events.emitter'
 import { MusicInterface,MusicStorageInterface } from '../interface';
 import { getMusicListByClassifyIdService } from '../service/Index';
-import { HOST,MUSIC_STORAGE } from '../../config/constant';
+import { HOST,MUSIC_STORAGE,LIKE_INNER_EVENT } from '../../config/constant';
 import {usePlayerRouter, useAppStorage} from '../../utils/common';
 
 @Component
@@ -24,6 +25,14 @@ export default struct MusicClassifyComponent {
     getMusicListByClassifyIdService(this.classifyId, 1, 4).then((res) => {
       this.musicList = res.data;
     })
+  }
+
+  aboutToDisappear(){
+    emitter.on(LIKE_INNER_EVENT, (data:emitter.EventData)=>{
+      const musicModel:MusicInterface = data.data as MusicInterface;
+      const musicItem = this.musicList.find(item => musicModel.id === item.id);
+      musicItem.isLike = musicModel.isLike;
+    });
   }
 
   build() {
@@ -59,7 +68,7 @@ export default struct MusicClassifyComponent {
               .height(size.smallIconSize)
               .margin({ left: size.pagePadding })
               .onClick(() => usePlayerRouter(this.musicStorage,item,this.classifyId,index))
-            Image(item.isFavorite === 0 ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
+            Image((this.musicStorage.musicItem?.id === item.id && this.musicStorage.musicItem?.isLike === 1 || item.isLike === 0) ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)
               .margin({ left: size.pagePadding })

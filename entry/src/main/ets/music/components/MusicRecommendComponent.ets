@@ -160,7 +160,7 @@ export default struct MusicRecommendComponent {
                 .height(size.smallIconSize)
                 .margin({ left: size.pagePadding })
                 .onClick(() => usePlayerRouter(this.musicStorage,item,this.classifyId,index))
-              Image(item.isFavorite ? $r("app.media.icon_like_active") : $r("app.media.icon_like"))
+              Image(item.isLike ? $r("app.media.icon_like_active") : $r("app.media.icon_like"))
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)
                 .margin({ left: size.pagePadding })

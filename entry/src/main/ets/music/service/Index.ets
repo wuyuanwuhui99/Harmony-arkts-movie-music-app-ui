@@ -125,8 +125,8 @@ export const insertMusicRecordService = (musicModel:types.MusicInterface):Promis
  * @date: 2024-05-12 12:21
  * @author wuwenqiang
  */
-export const insertMusicFavoriteService = (musicId:number):Promise<MyAwesomeData<number>> => {
-  return httpRequest.post<number>(api.insertMusicFavorite + musicId);
+export const insertMusicLikeService = (musicId:number):Promise<MyAwesomeData<number>> => {
+  return httpRequest.post<number>(api.insertMusicLike + musicId,{});
 }
 
 /**
@@ -134,6 +134,6 @@ export const insertMusicFavoriteService = (musicId:number):Promise<MyAwesomeData
  * @date: 2024-05-12 12:21
  * @author wuwenqiang
  */
-export const deleteMusicFavoriteService = (musicId:number):Promise<MyAwesomeData<number>> => {
-  return httpRequest.delete<number>(api.deleteMusicFavorite + musicId);
+export const deleteMusicLikeService = (musicId:number):Promise<MyAwesomeData<number>> => {
+  return httpRequest.delete<number>(api.deleteMusicLike + musicId);
 }
