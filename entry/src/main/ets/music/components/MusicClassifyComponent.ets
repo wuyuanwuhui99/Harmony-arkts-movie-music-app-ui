@@ -27,7 +27,7 @@ export default struct MusicClassifyComponent {
     })
   }
 
-  aboutToDisappear(){
+  aboutDisappear(){
     emitter.on(LIKE_INNER_EVENT, (data:emitter.EventData)=>{
       const musicModel:MusicInterface = data.data as MusicInterface;
       const musicItem = this.musicList.find(item => musicModel.id === item.id);
