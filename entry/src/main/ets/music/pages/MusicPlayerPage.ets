@@ -2,13 +2,15 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { MusicStorageInterface,LoopMode,SwitchEnum, MusicInterface} from '../interface/Index';
 import display from '@ohos.display';
-import {HOST,MUSIC_STORAGE,LIKE_INNER_EVENT} from '../../config/constant';
+import {HOST,MUSIC_STORAGE,LIKE_INNER_EVENT, SocialEnum} from '../../config/constant';
 import Lyric,{LineInterface} from '../../utils/Lyric';
 import media from '@ohos.multimedia.media';
 import { formatSecond,useUpdateStorage, useAppStorage} from '../../utils/common';
 import { deleteMusicLikeService, insertMusicLikeService, insertMusicRecordService } from '../service/Index';
 import promptAction from '@ohos.promptAction';
 import emitter from '@ohos.events.emitter'
+import BottomDialogComponent from '../../movie/components/BottomDialogComponent';
+import CommentComponent from '../../movie/components/CommentComponent';
 
 @Entry
 @Component
@@ -31,6 +33,7 @@ struct MusicPlayerPage {
   }
   private switchMode:SwitchEnum | null = null
   private loading:boolean = false;
+  private customDialogController: CustomDialogController;
 
   async aboutToAppear() {
     if(this.musicStorage.audio == null){
@@ -99,7 +102,7 @@ struct MusicPlayerPage {
             break;
           case 'playing': // play成功调用后触发该状态机上报
             this.musicStorage.isPlaying = true;
-            break
+            break;
           case 'paused': // pause成功调用后触发该状态机上报
             this.musicStorage.isPlaying = false;
             break;
@@ -241,39 +244,63 @@ struct MusicPlayerPage {
   useFavorite = () => {
     if (this.loading) return;
     this.loading = true;
-    if (this.musicStorage.musicItem.isLike === 1) {
+    if (this.musicModel.isLike === 1) {
       deleteMusicLikeService(this.musicStorage.musicItem.id).then((res) => {
         if (res.data > 0) {
-          const {musicItem} = this.musicStorage
-          musicItem.isLike = 0;
-          this.musicStorage.musicItem.isLike = 1;
-          this.musicStorage.musicItem = {...musicItem}
+          this.musicModel.isLike = 0;
+          useUpdateStorage(this.musicStorage);
           promptAction.showToast({
             message: "取消收藏成功",
             duration: 2000,
             bottom: px2vp(display.getDefaultDisplaySync().height) / 2
           });
-          emitter.emit(LIKE_INNER_EVENT,{data:musicItem})
+          emitter.emit(LIKE_INNER_EVENT,{data:this.musicModel})
         }
 
       }).finally(() => this.loading = false)
     } else {
       insertMusicLikeService(this.musicStorage.musicItem.id).then(res => {
         if (res.data > 0) {
-          const {musicItem} = this.musicStorage
-          musicItem.isLike = 1;
-          this.musicStorage.musicItem = {...musicItem}
+          this.musicModel.isLike = 1;
+          useUpdateStorage(this.musicStorage);
           promptAction.showToast({
             message: "添加收藏成功",
             duration: 2000,
             bottom: px2vp(display.getDefaultDisplaySync().height) / 2
           });
-          emitter.emit(LIKE_INNER_EVENT,{data:musicItem});
+          emitter.emit(LIKE_INNER_EVENT,{data:this.musicModel});
         }
       }).finally(() => this.loading = false)
     }
   }
 
+  /**
+   * @description: 评论弹窗
+   * @date: 2024-06-30 14:36
+   * @author wuwenqiang
+   */
+  useComment = () => {
+    if (!this.customDialogController) {
+      this.customDialogController = new CustomDialogController({
+        customStyle: true,
+        builder: BottomDialogComponent({
+          dialogHeight: '80%',
+          builder: this.commentBuilder.bind(this)
+        }),
+        alignment: DialogAlignment.Bottom,
+      })
+    }
+    this.customDialogController.open();
+  }
+
+  /**
+   * @author: wuwenqiang
+   * @description: 创建评论
+   * @date: 2024-05-25 16:30
+   */
+  @Builder commentBuilder() {
+    CommentComponent({commentListStr:'' ,relationId: this.musicModel.id, type: SocialEnum.MUSIC.toString() })
+  }
 
   build(){
     Column({space:size.pagePadding}){
@@ -334,12 +361,15 @@ struct MusicPlayerPage {
 
       Text(this.musicStorage.musicItem.authorName).width('80%').fontColor(colors.blockColor)
       Row(){
-        Image(this.musicStorage.musicItem.isLike ? $r('app.media.icon_collection_active') : $r('app.media.icon_music_collect'))
+        Image(this.musicModel?.isLike ? $r('app.media.icon_collection_active') : $r('app.media.icon_music_collect'))
           .width(size.middlIconSize)
           .aspectRatio(1)
           .onClick(this.useFavorite)
         Image($r('app.media.icon_music_down')).width(size.middlIconSize).aspectRatio(1)
-        Image($r('app.media.icon_music_comments')).width(size.middlIconSize).aspectRatio(1)
+        Image($r('app.media.icon_music_comments'))
+          .width(size.middlIconSize)
+          .aspectRatio(1)
+          .onClick(this.useComment)
         Image($r('app.media.icon_music_white_menu')).width(size.middlIconSize).aspectRatio(1)
       }.width('80%').justifyContent(FlexAlign.SpaceBetween)
       Row({space:size.smallPadding}){

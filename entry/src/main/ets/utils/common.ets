@@ -8,8 +8,8 @@ export const zerofull=(value:number):string|number=>{
   return value < 10 ? "0" + value : value + ''
 }
 
-export const formatTime=(value:any):string=>{
-  var date =new Date(value);
+export const formatTime=(value:string|number):string=>{
+  var date =new Date(typeof value === 'string' ? value.replace(/T/,' ') : value);
   var nowDate = new Date()
   let diff = Math.ceil((nowDate.getTime()-date.getTime())/1000);
   if(diff < 60){
