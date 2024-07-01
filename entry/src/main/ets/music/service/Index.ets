@@ -103,15 +103,6 @@ export const getMusicRecordService = (pageNum:number,pageSize:number):Promise<My
 }
 
 /**
- * @description: 获取播放记录
- * @date: 2024-03-17 22:12
- * @author wuwenqiang
- */
-export const getClassifyMusicByIndexService = (classifyId:number,index:number):Promise<MyAwesomeData<types.MusicInterface>> => {
-  return httpRequest.get<types.MusicInterface>(`${api.getClassifyMusicByIndex}?classifyId=${classifyId}&index=${index}`);
-}
-
-/**
  * @description: 插入播放记录
  * @date: 2024-03-17 22:12
  * @author wuwenqiang
@@ -136,4 +127,41 @@ export const insertMusicLikeService = (musicId:number):Promise<MyAwesomeData<num
  */
 export const deleteMusicLikeService = (musicId:number):Promise<MyAwesomeData<number>> => {
   return httpRequest.delete<number>(api.deleteMusicLike + musicId);
+}
+
+
+/**
+ * @description: 查询音乐是否已经收藏
+ * @date: 2024-06-25 22:02
+ * @author wuwenqiang
+ */
+export const isMusicFavoriteService = (musicId:number):Promise<MyAwesomeData<number>> => {
+  return httpRequest.get<number>(api.isMusicFavorite + musicId);
+}
+
+/**
+ * @description: 查询音乐是否已经收藏
+ * @date: 2024-06-25 22:02
+ * @author wuwenqiang
+ */
+export const getFavoriteDirectoryService = (musicId:number):Promise<MyAwesomeData<Array<types.FavoriteDirectoryInterface>>> => {
+  return httpRequest.get<Array<types.FavoriteDirectoryInterface>>(`${api.getFavoriteDirectory}?musicId=${musicId}`);
+}
+
+/**
+ * @description: 添加音乐收藏
+ * @date: 2024-06-29 11:26
+ * @author wuwenqiang
+ */
+export const insertMusicFavoriteService = (musicId:number,favoriteList:Array<types.FavoriteMusicInterface>):Promise<MyAwesomeData<number>> => {
+  return httpRequest.post<number>(api.insertMusicFavorite+ musicId,favoriteList);
+}
+
+/**
+ * @description: 添加音乐收藏
+ * @date: 2024-06-29 11:26
+ * @author wuwenqiang
+ */
+export const insertFavoriteDirectoryService = (favoriteDirectory:types.FavoriteMusicInterface):Promise<MyAwesomeData<types.FavoriteMusicInterface>> => {
+  return httpRequest.post<types.FavoriteMusicInterface>(api.insertFavoriteDirectory,favoriteDirectory);
 }

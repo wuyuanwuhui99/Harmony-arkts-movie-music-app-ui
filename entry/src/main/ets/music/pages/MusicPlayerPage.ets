@@ -6,11 +6,12 @@ import {HOST,MUSIC_STORAGE,LIKE_INNER_EVENT, SocialEnum} from '../../config/cons
 import Lyric,{LineInterface} from '../../utils/Lyric';
 import media from '@ohos.multimedia.media';
 import { formatSecond,useUpdateStorage, useAppStorage} from '../../utils/common';
-import { deleteMusicLikeService, insertMusicLikeService, insertMusicRecordService } from '../service/Index';
+import { deleteMusicLikeService, insertMusicLikeService, insertMusicRecordService, isMusicFavoriteService } from '../service/Index';
 import promptAction from '@ohos.promptAction';
 import emitter from '@ohos.events.emitter'
 import BottomDialogComponent from '../../movie/components/BottomDialogComponent';
 import CommentComponent from '../../movie/components/CommentComponent';
+import FavoriteComponent from '../components/FavoriteComponent';
 
 @Entry
 @Component
@@ -23,8 +24,7 @@ struct MusicPlayerPage {
   @State progress:number = 0;
   @State showPopupLoopMode:boolean = false;
   @State @Watch("onMusicChange") musicModel:MusicInterface | null = null;
-  private scroller: Scroller = new Scroller()
-  private circleSize:number = px2vp(display.getDefaultDisplaySync().width * 0.8)
+  @State isFavorite:boolean = false;
   @StorageLink(MUSIC_STORAGE) musicStorage:  MusicStorageInterface = useAppStorage()
   private loopMode:object = {
     [LoopMode.ORDER]:$r('app.media.icon_music_order'),
@@ -33,7 +33,10 @@ struct MusicPlayerPage {
   }
   private switchMode:SwitchEnum | null = null
   private loading:boolean = false;
-  private customDialogController: CustomDialogController;
+  private commentDialogController: CustomDialogController;
+  private favoriteDialogController: CustomDialogController;
+  private scroller: Scroller = new Scroller()
+  private circleSize:number = px2vp(display.getDefaultDisplaySync().width * 0.8)
 
   async aboutToAppear() {
     if(this.musicStorage.audio == null){
@@ -50,6 +53,7 @@ struct MusicPlayerPage {
 
   onMusicChange(){
     this.useLyric();
+    this.useIsMusicFavorite();
   }
 
 
@@ -237,11 +241,11 @@ struct MusicPlayerPage {
   }
 
   /**
-   * @description: 添加收藏或取消收藏
+   * @description: 添加点赞或取消点赞
    * @date: 2024-05-12 11:45
    * @author wuwenqiang
    */
-  useFavorite = () => {
+  useLike = () => {
     if (this.loading) return;
     this.loading = true;
     if (this.musicModel.isLike === 1) {
@@ -275,13 +279,41 @@ struct MusicPlayerPage {
   }
 
   /**
+   * @description: 收藏或者取消收藏
+   * @date: 2024-07-01 21:21
+   * @author wuwenqiang
+   */
+  useFavorite = () => {
+    if (!this.favoriteDialogController) {
+      this.favoriteDialogController = new CustomDialogController({
+        customStyle: true,
+        builder: BottomDialogComponent({
+          dialogHeight: '80%',
+          builder: this.favoriteBuilder.bind(this)
+        }),
+        alignment: DialogAlignment.Bottom,
+      })
+    }
+    this.favoriteDialogController.open();
+  }
+
+  /**
+   * @author: wuwenqiang
+   * @description: 收藏夹
+   * @date: 2024-07-01 21:45
+   */
+  @Builder favoriteBuilder(){
+    FavoriteComponent({musicId:this.musicModel.id})
+  }
+
+  /**
    * @description: 评论弹窗
    * @date: 2024-06-30 14:36
    * @author wuwenqiang
    */
   useComment = () => {
-    if (!this.customDialogController) {
-      this.customDialogController = new CustomDialogController({
+    if (!this.commentDialogController) {
+      this.commentDialogController = new CustomDialogController({
         customStyle: true,
         builder: BottomDialogComponent({
           dialogHeight: '80%',
@@ -290,7 +322,7 @@ struct MusicPlayerPage {
         alignment: DialogAlignment.Bottom,
       })
     }
-    this.customDialogController.open();
+    this.commentDialogController.open();
   }
 
   /**
@@ -300,6 +332,16 @@ struct MusicPlayerPage {
    */
   @Builder commentBuilder() {
     CommentComponent({commentListStr:'' ,relationId: this.musicModel.id, type: SocialEnum.MUSIC.toString() })
+  }
+
+  /**
+   * @description: 查询音乐是否收藏
+   * @date: 2024-06-25 22:08
+   * @author wuwenqiang
+   */
+  useIsMusicFavorite = () => {
+    this.isFavorite = false;
+    isMusicFavoriteService(this.musicModel.id).then(res => this.isFavorite = Boolean(res.data));
   }
 
   build(){
@@ -358,19 +400,21 @@ struct MusicPlayerPage {
         .justifyContent(FlexAlign.Center)
         .alignItems(VerticalAlign.Center)
       }
-
       Text(this.musicStorage.musicItem.authorName).width('80%').fontColor(colors.blockColor)
       Row(){
         Image(this.musicModel?.isLike ? $r('app.media.icon_collection_active') : $r('app.media.icon_music_collect'))
           .width(size.middlIconSize)
           .aspectRatio(1)
-          .onClick(this.useFavorite)
+          .onClick(this.useLike)
         Image($r('app.media.icon_music_down')).width(size.middlIconSize).aspectRatio(1)
         Image($r('app.media.icon_music_comments'))
           .width(size.middlIconSize)
           .aspectRatio(1)
           .onClick(this.useComment)
-        Image($r('app.media.icon_music_white_menu')).width(size.middlIconSize).aspectRatio(1)
+        Image(this.isFavorite ? $r('app.media.icon_full_star') : $r('app.media.icon_favorite'))
+          .width(size.middlIconSize)
+          .aspectRatio(1)
+          .onClick(this.useFavorite)
       }.width('80%').justifyContent(FlexAlign.SpaceBetween)
       Row({space:size.smallPadding}){
         Text(this.currentTime ? formatSecond(this.currentTime/1000) : '00:00').fontColor(colors.blockColor)

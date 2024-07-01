@@ -16,5 +16,8 @@ export default {
   saveLike:'/service/social-getway/saveLike',// 添加点赞
   deleteLike:'/service/social-getway/deleteLike',// 删除点赞
   insertComment:'/service/social-getway/insertComment',// 新增评论
-  getClassifyMusicByIndex: '/service/myMusic/getClassifyMusicByIndex',// 根据下标查询音乐
+  isMusicFavorite:'/service/myMusic-getway/isMusicFavorite/', // 查询音乐是否收藏
+  getFavoriteDirectory:'/service/myMusic-getway/getFavoriteDirectory',// 查询收藏夹
+  insertMusicFavorite:'/service/myMusic-getway/insertMusicFavorite/',// 查询收藏夹
+  insertFavoriteDirectory:'/service/myMusic-getway/insertFavoriteDirectory'// 创建收藏夹
 };

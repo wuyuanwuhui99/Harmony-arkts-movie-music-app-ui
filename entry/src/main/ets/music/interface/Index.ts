@@ -165,3 +165,34 @@ export const enum SwitchEnum { // 切换模式
   NEXT,
   PREV
 }
+
+export interface  MuiscPlayMenuInterface {
+  id:number,//主键
+  name:string,// 歌单名称
+  userId:string;// 用户id
+  total:number;// 歌单里面的歌曲总数
+  cover:string;// 歌单封面
+  createTime:string;// 创建时间
+  updateTime:string;// 更新时间
+}
+
+// 音乐收藏夹类型
+export interface FavoriteDirectoryInterface {
+  id:number,//主键
+  userId?:string;// 用户id
+  name:string,// 用户名称
+  checked?:number,// 当前这首歌曲是否在这个收藏夹内
+  total?:number;// 歌单里面的歌曲总数
+  createTime?:string;// 创建时间
+  updateTime?:string;// 更新时间
+  cover?:string;// 封面
+}
+
+// 音乐收藏夹音乐类型,只在提交时用到
+export interface FavoriteMusicInterface {
+  id?:number,//主键
+  favoriteId:number;// 用户id
+  musicId?:number,// 用户名称
+  createTime?:string;// 创建时间
+  updateTime?:string;// 更新时间
+}
