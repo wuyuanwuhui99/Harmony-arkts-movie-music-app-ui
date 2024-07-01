@@ -9,7 +9,7 @@ import {  getFavoriteDirectoryService } from '../service/Index';
   .justifyContent(FlexAlign.Center)
   .backgroundColor(colors.pageBackgroundColor)
   .borderRadius(size.blockBorderRaduis)
-  .width(size.bigAvaterSize)
+  .width(size.roundedSquareSize)
   .aspectRatio(1)
 }
 
@@ -61,7 +61,7 @@ export default struct FavoriteComponent {
               if(item.cover){
                 Image(HOST + item.cover)
                   .borderRadius(size.blockBorderRaduis)
-                  .width(size.bigAvaterSize)
+                  .width(size.roundedSquareSize)
                   .aspectRatio(1)
               }else{
                 Row(){

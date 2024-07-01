@@ -9,6 +9,7 @@ export const bigFontSize:number = 25;
 export const blockBorderRaduis:number = 15;
 export const smallAvaterSize:number = 30;
 export const middleAvaterSize:number = 40;
+export const roundedSquareSize:number = 60;
 export const bigAvaterSize:number = 80;
 export const swiperHeight:number = 180;
 export const lineHeight:number = 20;
