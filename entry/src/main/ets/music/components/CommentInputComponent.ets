@@ -3,7 +3,7 @@ import * as size from '../../theme/size';
 import promptAction from '@ohos.promptAction';
 
 @CustomDialog
-export default struct InputComponent {
+export default struct CommentInputComponent {
   @State text: string = '';
   placeholder: string = '评论';
   onSend: (value: string) => void

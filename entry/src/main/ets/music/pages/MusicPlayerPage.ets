@@ -254,7 +254,7 @@ struct MusicPlayerPage {
           this.musicModel.isLike = 0;
           useUpdateStorage(this.musicStorage);
           promptAction.showToast({
-            message: "取消收藏成功",
+            message: "取消点赞成功",
             duration: 2000,
             bottom: px2vp(display.getDefaultDisplaySync().height) / 2
           });
@@ -298,12 +298,22 @@ struct MusicPlayerPage {
   }
 
   /**
+   * @description: 收藏或者取消收藏
+   * @date: 2024-07-02 21:34
+   * @author wuwenqiang
+   */
+  onFavorite = (isFavorite:boolean) => {
+    this.favoriteDialogController.close();
+    this.isFavorite = isFavorite;
+  }
+
+  /**
    * @author: wuwenqiang
    * @description: 收藏夹
    * @date: 2024-07-01 21:45
    */
   @Builder favoriteBuilder(){
-    FavoriteComponent({musicId:this.musicModel.id})
+    FavoriteComponent({musicId:this.musicModel.id,isFavorite:this.isFavorite,onFavorite:this.onFavorite})
   }
 
   /**

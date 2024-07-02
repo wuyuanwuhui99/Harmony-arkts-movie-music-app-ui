@@ -1,8 +1,10 @@
 import { HOST } from '../../config/constant';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import { FavoriteDirectoryInterface } from '../interface/Index';
-import {  getFavoriteDirectoryService } from '../service/Index';
+import { FavoriteDirectoryInterface, FavoriteMusicInterface } from '../interface/Index';
+import {  getFavoriteDirectoryService, insertMusicFavoriteService } from '../service/Index';
+import promptAction from '@ohos.promptAction';
+import display from '@ohos.display';
 
 @Extend(Row) function roundedSquareStyle  () {
   .alignItems(VerticalAlign.Center)
@@ -16,21 +18,35 @@ import {  getFavoriteDirectoryService } from '../service/Index';
 @Component
 export default struct FavoriteComponent {
   @Prop musicId: number;
-  private checkboxValue:Array<number> = [];
+  @Prop isFavorite:boolean;
+  @State checkboxValue:Array<number> = [];
   @State favoriteDirectoryList:Array<FavoriteDirectoryInterface> = [];
-  private dialogController: CustomDialogController;
+  public onFavorite: (isFavorite:boolean) => void;
 
   aboutToAppear() {
     getFavoriteDirectoryService(this.musicId).then((res)=>{
       res.data.forEach(item => {
-        if(item.checked){
-          this.checkboxValue.push(item.id);
-        }
+        item.checked && this.checkboxValue.push(item.id);
         this.favoriteDirectoryList.push(item);
       })
     })
   }
 
+  useAddFavorite = () => {
+    const favoriteList:Array<FavoriteMusicInterface> = this.checkboxValue.map(item=>{
+      return {favoriteId:item} as FavoriteMusicInterface
+    });
+    insertMusicFavoriteService(this.musicId,favoriteList).then(res => {
+      if(res.data > 0){
+        promptAction.showToast({
+          message: favoriteList.length == 0 ? '取消收藏成功' :'添加收藏成功',
+          duration: 2000,
+          bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+        })
+        this.onFavorite(favoriteList.length !== 0);
+      }
+    })
+  }
 
   build() {
     Column() {
@@ -55,7 +71,7 @@ export default struct FavoriteComponent {
           }.width('100%')
           .justifyContent(FlexAlign.SpaceBetween)
           .alignItems(VerticalAlign.Center)
-          ForEach(this.favoriteDirectoryList,(item:FavoriteDirectoryInterface)=>{
+          ForEach(this.favoriteDirectoryList,(item:FavoriteDirectoryInterface,index:number)=>{
             Blank().height(size.pagePadding)
             Row(){
               if(item.cover){
@@ -75,7 +91,9 @@ export default struct FavoriteComponent {
                 .select(item.checked === 1)
                 .selectedColor(colors.lineBackgroundColor)
                 .onChange((value: boolean) => {
-                  console.info('Checkbox1 change is'+ value)
+                  item.checked = value ? 1 : 0;
+                  this.checkboxValue.length = 0;
+                  this.favoriteDirectoryList.forEach( item => item.checked && this.checkboxValue.push(item.id))
                 })
             }
             .width('100%')
@@ -89,15 +107,13 @@ export default struct FavoriteComponent {
       .align(Alignment.Top)
       .padding(size.pagePadding)
       Column(){
-        Button('添加')
+        Button(this.isFavorite && this.checkboxValue.length == 0 ? '取消收藏': `添加${this.checkboxValue.length > 0 ? `（已选${this.checkboxValue.length}个）` : ''}`)
           .width('100%')
           .padding(size.pagePadding)
           .backgroundColor(colors.warnColor)
           .fontColor(Color.White)
           .borderRadius(size.blockBorderRaduis * 2)
-          .onClick(() => {
-
-          })
+          .onClick(this.useAddFavorite)
       }.padding(size.pagePadding)
     }.width('100%').height('100%')
   }
