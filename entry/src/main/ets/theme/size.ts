@@ -6,6 +6,7 @@ export const middlIconSize:number = 30;
 export const bigIconSize:number = 40;
 export const normalFontSize:number = 15;
 export const bigFontSize:number = 25;
+export const smallBorderRaduis:number = 10;
 export const blockBorderRaduis:number = 15;
 export const smallAvaterSize:number = 30;
 export const middleAvaterSize:number = 40;

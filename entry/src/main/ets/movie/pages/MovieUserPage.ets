@@ -191,10 +191,9 @@ struct MovieUserPage {
 
       }.blockStyle().padding({ top: 0, left: size.pagePadding, right: size.pagePadding })
 
-      Text('退出登录')
+      Button('退出登录')
         .width('100%')
         .padding(size.pagePadding)
-        .textAlign(TextAlign.Center)
         .backgroundColor(colors.warnColor)
         .margin({ top: size.pagePadding })
         .fontColor(Color.White)

@@ -178,7 +178,7 @@ export interface  MuiscPlayMenuInterface {
 
 // 音乐收藏夹类型
 export interface FavoriteDirectoryInterface {
-  id:number,//主键
+  id?:number,//主键
   userId?:string;// 用户id
   name:string,// 用户名称
   checked?:number,// 当前这首歌曲是否在这个收藏夹内

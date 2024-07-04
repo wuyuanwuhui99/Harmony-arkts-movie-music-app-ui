@@ -158,10 +158,10 @@ export const insertMusicFavoriteService = (musicId:number,favoriteList:Array<typ
 }
 
 /**
- * @description: 添加音乐收藏
+ * @description: 创建音乐收藏夹
  * @date: 2024-06-29 11:26
  * @author wuwenqiang
  */
-export const insertFavoriteDirectoryService = (favoriteDirectory:types.FavoriteMusicInterface):Promise<MyAwesomeData<types.FavoriteMusicInterface>> => {
-  return httpRequest.post<types.FavoriteMusicInterface>(api.insertFavoriteDirectory,favoriteDirectory);
+export const insertFavoriteDirectoryService = (favoriteDirectory:types.FavoriteDirectoryInterface):Promise<MyAwesomeData<types.FavoriteDirectoryInterface>> => {
+  return httpRequest.post<types.FavoriteDirectoryInterface>(api.insertFavoriteDirectory,favoriteDirectory);
 }
