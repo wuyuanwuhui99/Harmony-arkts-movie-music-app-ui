@@ -24,7 +24,7 @@ export default struct CategoryComponent{
 
   build(){
     Column(){
-      TitleComponent({title:this.classifyItem.category})
+      TitleComponent({title:this.classifyItem.category,showMarginBottom:true})
       if(this.movieList.length > 0){// 必须加判断，否则后更新的数据不会触发MovieListComponent组件重新渲染
         MovieListComponent({gravity:'horizontal',movieList:$movieList})
       }

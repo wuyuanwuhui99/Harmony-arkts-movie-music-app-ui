@@ -86,7 +86,7 @@ struct MovieDetailPage {
           }.blockStyle()
 
           Column(){
-            TitleComponent({title:'剧情'})
+            TitleComponent({title:'剧情',showMarginBottom:true})
             Text(this.movieItem.plot)
               .padding({top:size.smallPadding})
               .fontSize(size.normalFontSize)
@@ -95,7 +95,7 @@ struct MovieDetailPage {
           .blockStyle()
 
           Column(){
-            TitleComponent({title:'演员'})
+            TitleComponent({title:'演员',showMarginBottom:true})
             Scroll(){
               Row(){
                 ForEach(this.starList,(item:StarInterface)=>{
@@ -117,7 +117,7 @@ struct MovieDetailPage {
           .blockStyle()
 
           Column(){
-            TitleComponent({title:'推荐'})
+            TitleComponent({title:'推荐',showMarginBottom:true})
             Scroll(){
               Row(){
                 ForEach(this.recommendMovieList,(item:MovieInterface)=>{

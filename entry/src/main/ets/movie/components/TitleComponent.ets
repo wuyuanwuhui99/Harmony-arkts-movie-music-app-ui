@@ -5,6 +5,7 @@ import * as size from '../../theme/size';
 @Component
 export default struct TitleComponent{
   @Prop title:string;
+  @Prop showMarginBottom:boolean;
 
   build(){
     Row(){
@@ -15,6 +16,6 @@ export default struct TitleComponent{
         .margin({right:size.smallPadding})
       Text(this.title).fontSize(size.normalFontSize)
     }.alignSelf(ItemAlign.Start)
-    .margin({bottom:size.pagePadding})
+    .margin({bottom:this.showMarginBottom ? size.pagePadding : 0})
   }
 }

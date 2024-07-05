@@ -114,7 +114,7 @@ struct MovieSearchPage {
         } else {
           Column() {
             Column() {
-              TitleComponent({ title: "历史搜索" })
+              TitleComponent({ title: "历史搜索",showMarginBottom:true })
               if (this.searchRecordList.length === 0) {
                 Text("暂无搜索记录")
                   .width('100%')
@@ -139,7 +139,7 @@ struct MovieSearchPage {
 
             if (this.recommendMovieList.length > 0) {
               Column() {
-                TitleComponent({ title: "推荐" })
+                TitleComponent({ title: "推荐",showMarginBottom: true })
                 MovieListComponent({ movieList: $recommendMovieList, gravity: 'vertical' })
               }.blockStyle().margin({ top: size.pagePadding, bottom: size.pagePadding })
             }

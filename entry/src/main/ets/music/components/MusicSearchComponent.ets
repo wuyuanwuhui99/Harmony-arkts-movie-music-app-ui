@@ -49,7 +49,7 @@ export default struct MusicSearchComponent {
       .flexGrow(1)
       .onClick(() => {
         router.pushUrl({
-          url: 'movie/pages/MovieSearchPage', // 目标url
+          url: 'music/pages/MusicSearchPage', // 目标url
           params: {
             musicItem: this.musicItem
           }
