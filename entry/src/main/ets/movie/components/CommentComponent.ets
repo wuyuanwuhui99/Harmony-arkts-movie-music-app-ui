@@ -232,7 +232,7 @@ export default struct CommentComponent {
         .padding(size.pagePadding)
 
         if (!this.commentListStr) {
-          Divider().height(1).color(colors.borderColor)
+          `Divider().height(1).color(colors.borderColor)`
           this.buildCommentInput()
         }
       }.width('100%').height('100%')

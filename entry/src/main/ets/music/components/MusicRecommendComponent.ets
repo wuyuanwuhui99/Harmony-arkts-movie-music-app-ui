@@ -123,7 +123,7 @@ export default struct MusicRecommendComponent {
       Scroll(this.scroller) {
         Column() {
           LazyForEach(this.musicList, (item: MusicInterface, index: number) => {
-            Row() {
+            Row({space:size.pagePadding}) {
               if (index === 0) {
                 Image($r("app.media.icon_no1"))
                   .width(size.smallIconSize)
@@ -153,21 +153,18 @@ export default struct MusicRecommendComponent {
                   .fontColor(colors.disableTextColor)
                   .margin({ top: size.smallPadding / 2 })
                   .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
-              }.layoutWeight(1).alignItems(HorizontalAlign.Start).margin({ left: size.pagePadding })
+              }.layoutWeight(1).alignItems(HorizontalAlign.Start)
 
               Image($r("app.media.icon_music_play"))
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)
-                .margin({ left: size.pagePadding })
                 .onClick(() => usePlayerRouter(this.musicStorage,item,this.classifyId,index))
               Image(item.isLike ? $r("app.media.icon_like_active") : $r("app.media.icon_like"))
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)
-                .margin({ left: size.pagePadding })
               Image($r("app.media.icon_music_menu"))
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)
-                .margin({ left: size.pagePadding })
             }.blockStyle().alignItems(VerticalAlign.Center)
           })
           Row() {

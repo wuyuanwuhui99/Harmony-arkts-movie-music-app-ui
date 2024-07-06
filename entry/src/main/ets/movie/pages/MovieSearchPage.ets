@@ -18,7 +18,6 @@ struct MovieSearchPage {
   @State searchMovieList: Array<MovieInterface> = [];
   @State loading: boolean = false;
   @State searchRecordList: Array<string> = []
-  controller: TextInputController = new TextInputController()
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -42,13 +41,36 @@ struct MovieSearchPage {
     })
   }
 
+  /**
+   * @description: 音乐搜索
+   * @date: 2024-01-10 23:01
+   * @author wuwenqiang
+   */
+  useSearch = () => {
+    if (this.loading) return;
+    this.loading = true;
+    this.searching = true;
+    if (!this.searchKeyWord) {
+      this.searchKeyWord = this.movieItem.movieName;
+    }
+    // 搜索记录写入缓存
+    preference.setMovieSeachKeyWord(this.searchKeyWord).then((res) => {
+      this.searchRecordList = res;
+    });
+    // 搜索
+    getSearchResultService(this.searchKeyWord, 20, 1).then((res) => {
+      this.searchMovieList = res.data;
+    }).finally(() => this.loading = false)
+  }
+
   build() {
     Scroll() {
       Column() {
         Row() {
-          Row() {
-            TextInput({ text: this.searchKeyWord, placeholder: this.movieItem?.movieName })
-              .height(size.middleAvaterSize)
+          Row({space:size.pagePadding}) {
+            TextInput({text: this.searchKeyWord, placeholder: this.movieItem?.movieName })
+              .height(size.inputHeight)
+              .layoutWeight(1)
               .backgroundColor(Color.Transparent)
               .onChange((value) => {
                 this.searchKeyWord = value.trim();
@@ -59,43 +81,29 @@ struct MovieSearchPage {
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)
                 .onClick(() => {
-                  this.controller
+                  this.searchKeyWord = '';
                 })
-                .margin({ left: size.pagePadding, right: size.pagePadding })
+                .margin({ right: size.pagePadding })
                 .onClick(() => {
                   this.searchKeyWord = '';
                   this.searching = false;
                 })
             }
           }
-          .borderRadius(size.middleAvaterSize)
+          .alignItems(VerticalAlign.Center)
+          .borderRadius(size.inputHeight)
           .backgroundColor(colors.pageBackgroundColor)
           .layoutWeight(1)
           Text("搜索")
-            .width('25%')
+            .width(size.btnWidth)
             .textAlign(TextAlign.Center)
             .fontSize(size.normalFontSize)
             .margin({ left: size.pagePadding })
             .backgroundColor(colors.lineBackgroundColor)
             .borderRadius(size.pagePadding * 2)
-            .height(size.middleAvaterSize)
+            .height(size.inputHeight)
             .fontColor(colors.blockColor)
-            .onClick(async () => {
-              if (this.loading) return;
-              this.loading = true;
-              this.searching = true;
-              if (!this.searchKeyWord) {
-                this.searchKeyWord = this.movieItem.movieName;
-              }
-              // 搜索记录写入缓存
-              preference.setMovieSeachKeyWord(this.searchKeyWord).then((res) => {
-                this.searchRecordList = res;
-              });
-              // 搜索
-              getSearchResultService(this.searchKeyWord, 20, 1).then((res) => {
-                this.searchMovieList = res.data;
-              }).finally(() => this.loading = false)
-            })
+            .onClick(this.useSearch)
         }.blockStyle()
 
         if (this.searching) {

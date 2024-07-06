@@ -3,6 +3,7 @@ import httpRequest from '../../utils/HttpUtil';
 import * as types from '../interface/Index'
 import { MyAwesomeData } from '../../movie/interface';
 import {SocialEnum} from '../../config/constant';
+import { MusicInterface } from '../interface/Index';
 /**
  * @description: 获取推荐的音乐
  * @date: 2024-03-02 22:44
@@ -164,4 +165,13 @@ export const insertMusicFavoriteService = (musicId:number,favoriteList:Array<typ
  */
 export const insertFavoriteDirectoryService = (favoriteDirectory:types.FavoriteDirectoryInterface):Promise<MyAwesomeData<types.FavoriteDirectoryInterface>> => {
   return httpRequest.post<types.FavoriteDirectoryInterface>(api.insertFavoriteDirectory,favoriteDirectory);
+}
+
+/**
+ * @description: 音乐搜索
+ * @date: 2024-07-06 09:01
+ * @author wuwenqiang
+ */
+export const searchMusicService = (keyword:string,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<MusicInterface>>> => {
+  return httpRequest.get<Array<MusicInterface>>(`${api.searchMusic}?keyword=${keyword}&pageNum=${pageNum}&pageSize=${pageSize}`);
 }
