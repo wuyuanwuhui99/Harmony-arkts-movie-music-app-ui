@@ -15,6 +15,11 @@ export default struct MusicSearchPage {
   @State musicItem:MusicInterface = null;
   @State searchRecordList:Array<string> = AppStorage.Get(MUSIC_SEARCH) || [];
   @State searchMusicList:Array<MusicInterface> = [];// 搜索结果
+  @State total:number = 0;
+  private pageNum:number = 1;
+  private pageSize:number = 20;
+  private loadingMore:boolean = false;
+
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
@@ -44,19 +49,29 @@ export default struct MusicSearchPage {
     const index:number = this.searchRecordList.findIndex(item => item === this.searchKeyWord);
     index != -1 && this.searchRecordList.splice(index,1);
     this.searchRecordList.unshift(this.searchKeyWord)
-
+    this.pageNum = 1;
     // 搜索记录写入缓存
     PersistentStorage.PersistProp<Array<string>>(MUSIC_SEARCH, this.searchRecordList);
     // 搜索
-    searchMusicService(encodeURIComponent(this.searchKeyWord), 20, 1).then((res) => {
+    searchMusicService(encodeURIComponent(this.searchKeyWord), this.pageNum, this.pageSize).then((res) => {
       this.searchMusicList = res.data;
-    }).catch((err)=>{
-      console.log(err);
+      this.total = res.total;
     }).finally(() => this.loading = false);
   }
 
+  useLoadMore = () => {
+    if (this.total > this.pageNum * this.pageSize) {
+      this.pageNum++;
+      if(this.loadingMore)return;
+      this.loadingMore = true;
+      searchMusicService(encodeURIComponent(this.searchKeyWord), this.pageNum, this.pageSize).then((res) => {
+        this.searchMusicList.push(...res.data);
+      }).finally(() => this.loadingMore = false);
+    }
+  }
+
   build() {
-    Column() {
+    Column({space:size.pagePadding}) {
       Row({space:size.pagePadding}){
         Row() {
           TextInput({text:this.searchKeyWord,placeholder:this.musicItem ? `${this.musicItem.authorName} - ${this.musicItem.songName}` : '请输入歌曲名或者歌手'})
@@ -128,8 +143,8 @@ export default struct MusicSearchPage {
                   }.alignItems(VerticalAlign.Center)
                   if(index !== this.searchMusicList.length - 1)Divider().height(1).color(colors.borderColor)
                 })
-              }.justifyContent(FlexAlign.Start)
-            }.blockStyle().margin({bottom:size.pagePadding}).layoutWeight(1)
+              }.blockStyle().margin({top:0,bottom:size.pagePadding}).justifyContent(FlexAlign.Start)
+            }.layoutWeight(1).onScrollEdge(this.useLoadMore)
           }
         }
       }else{
