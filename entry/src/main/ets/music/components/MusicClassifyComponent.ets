@@ -24,15 +24,25 @@ export default struct MusicClassifyComponent {
   aboutToAppear() {
     getMusicListByClassifyIdService(this.classifyId, 1, 4).then((res) => {
       this.musicList = res.data;
-    })
+    });
+   this.useLikeEmitter();
   }
 
-  aboutDisappear(){
+  /**
+   * @description: 监听音乐是否收藏
+   * @date: 2024-07-07 18:54
+   * @author wuwenqiang
+   */
+  useLikeEmitter(){
     emitter.on(LIKE_INNER_EVENT, (data:emitter.EventData)=>{
       const musicModel:MusicInterface = data.data as MusicInterface;
       const musicItem = this.musicList.find(item => musicModel.id === item.id);
       musicItem.isLike = musicModel.isLike;
     });
+  }
+
+  aboutToDisappear(){
+    emitter.off(LIKE_INNER_EVENT.eventId);
   }
 
   build() {
@@ -63,7 +73,7 @@ export default struct MusicClassifyComponent {
                 .fontColor(colors.disableTextColor)
             }.layoutWeight(1).alignItems(HorizontalAlign.Start)
 
-            Image($r("app.media.icon_music_play"))
+            Image(this.musicStorage.musicItem.id === item.id ? $r("app.media.icon_music_playing") : $r("app.media.icon_music_play"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)
               .margin({ left: size.pagePadding })

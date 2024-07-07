@@ -1,10 +1,14 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import router from '@ohos.router';
-import { MusicInterface } from '../interface';
+import { MusicInterface, MusicStorageInterface } from '../interface';
 import TitleComponent from '../../movie/components/TitleComponent';
-import { HOST, MUSIC_SEARCH } from '../../config/constant';
-import { searchMusicService } from '../service/Index';
+import { HOST, LIKE_INNER_EVENT, MUSIC_SEARCH, MUSIC_STORAGE } from '../../config/constant';
+import { deleteMusicLikeService, insertMusicLikeService, searchMusicService } from '../service/Index';
+import { useAppStorage, useUpdateStorage } from '../../utils/common';
+import promptAction from '@ohos.promptAction';
+import display from '@ohos.display';
+import emitter from '@ohos.events.emitter';
 
 @Entry
 @Component
@@ -19,6 +23,7 @@ export default struct MusicSearchPage {
   private pageNum:number = 1;
   private pageSize:number = 20;
   private loadingMore:boolean = false;
+  @StorageLink(MUSIC_STORAGE) musicStorage:  MusicStorageInterface = useAppStorage()
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -32,6 +37,15 @@ export default struct MusicSearchPage {
   aboutToAppear() {
     const params = router.getParams(); // 获取传递过来的参数对象
     this.musicItem = params['musicItem'] as MusicInterface; // 获取info属性的值
+    this.useLikeEmitter();
+  }
+
+  useLikeEmitter(){
+    emitter.on(LIKE_INNER_EVENT, (data:emitter.EventData)=>{
+      const musicModel:MusicInterface = data.data as MusicInterface;
+      const musicItem = this.searchMusicList.find(item => musicModel.id === item.id);
+      musicItem.isLike = musicModel.isLike;
+    });
   }
 
   /**
@@ -59,6 +73,11 @@ export default struct MusicSearchPage {
     }).finally(() => this.loading = false);
   }
 
+  /**
+   * @description: 加载更多
+   * @date: 2024-07-06 09:04
+   * @author wuwenqiang
+   */
   useLoadMore = () => {
     if (this.total > this.pageNum * this.pageSize) {
       this.pageNum++;
@@ -70,8 +89,71 @@ export default struct MusicSearchPage {
     }
   }
 
+  /**
+   * @description: 加载更多
+   * @date: 2024-07-07 18:14
+   * @author wuwenqiang
+   */
+  usePlay(musicModel:MusicInterface,index:number){
+    const { musicList,playIndex,recordList,playList,musicItem } = this.musicStorage;
+    if(musicList.length == 0){
+      this.musicStorage.playIndex = index;
+      musicList.push(...this.searchMusicList);
+      playList.push(...this.searchMusicList);
+      recordList.push(...playList.splice(index,1));
+      this.musicStorage.musicItem = musicModel;
+      useUpdateStorage(this.musicStorage);
+    }else if(musicModel.id !== musicItem.id){
+      musicList.splice(playIndex,0,musicModel)
+      this.musicStorage.musicItem = musicModel;
+      useUpdateStorage(this.musicStorage);
+    }
+    router.pushUrl({
+      url: 'music/pages/MusicPlayerPage', // 目标url
+    });
+  }
+
+  /**
+   * @description: 添加点赞或取消点赞
+   * @date: 2024-07-07 18:50
+   * @author wuwenqiang
+   */
+  useLike = (musicModel:MusicInterface) => {
+    if (this.loading) return;
+    this.loading = true;
+    if (musicModel.isLike === 1) {
+      deleteMusicLikeService(musicModel.id).then((res) => {
+        if (res.data > 0) {
+          musicModel.isLike = 0;
+          useUpdateStorage(this.musicStorage);
+          promptAction.showToast({
+            message: "取消点赞成功",
+            duration: 2000,
+            bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+          });
+        }
+      }).finally(() => this.loading = false)
+    } else {
+      insertMusicLikeService(musicModel.id).then(res => {
+        if (res.data > 0) {
+          musicModel.isLike = 1;
+          useUpdateStorage(this.musicStorage);
+          promptAction.showToast({
+            message: "添加收藏成功",
+            duration: 2000,
+            bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+          });
+        }
+      }).finally(() => this.loading = false)
+    }
+  }
+
+  aboutToDisappear(){
+    emitter.off(LIKE_INNER_EVENT.eventId);// 移除监听点赞事件
+  }
+
   build() {
-    Column({space:size.pagePadding}) {
+    Column() {
       Row({space:size.pagePadding}){
         Row() {
           TextInput({text:this.searchKeyWord,placeholder:this.musicItem ? `${this.musicItem.authorName} - ${this.musicItem.songName}` : '请输入歌曲名或者歌手'})
@@ -129,7 +211,7 @@ export default struct MusicSearchPage {
                       Text(item.songName)
                       Text(item.authorName).fontColor(colors.disableTextColor)
                     }.layoutWeight(1).alignItems(HorizontalAlign.Start)
-                    Image($r("app.media.icon_music_play"))
+                    Image(this.musicStorage.musicItem.id === item.id ? $r("app.media.icon_music_playing") : $r("app.media.icon_music_play"))
                       .width(size.smallIconSize)
                       .height(size.smallIconSize)
                       .onClick(() => {})
@@ -137,10 +219,13 @@ export default struct MusicSearchPage {
                       .width(size.smallIconSize)
                       .height(size.smallIconSize)
                       .margin({ left: size.pagePadding })
+                      .onClick(() => this.useLike(item))
                     Image($r("app.media.icon_music_menu"))
                       .width(size.smallIconSize)
                       .height(size.smallIconSize)
-                  }.alignItems(VerticalAlign.Center)
+                  }
+                  .alignItems(VerticalAlign.Center)
+                  .onClick(()=>this.usePlay(item,index))
                   if(index !== this.searchMusicList.length - 1)Divider().height(1).color(colors.borderColor)
                 })
               }.blockStyle().margin({top:0,bottom:size.pagePadding}).justifyContent(FlexAlign.Start)

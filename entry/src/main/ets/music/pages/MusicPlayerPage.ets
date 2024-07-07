@@ -249,7 +249,7 @@ struct MusicPlayerPage {
     if (this.loading) return;
     this.loading = true;
     if (this.musicModel.isLike === 1) {
-      deleteMusicLikeService(this.musicStorage.musicItem.id).then((res) => {
+      deleteMusicLikeService(this.musicModel.id).then((res) => {
         if (res.data > 0) {
           this.musicModel.isLike = 0;
           useUpdateStorage(this.musicStorage);
@@ -260,10 +260,9 @@ struct MusicPlayerPage {
           });
           emitter.emit(LIKE_INNER_EVENT,{data:this.musicModel})
         }
-
       }).finally(() => this.loading = false)
     } else {
-      insertMusicLikeService(this.musicStorage.musicItem.id).then(res => {
+      insertMusicLikeService(this.musicModel.id).then(res => {
         if (res.data > 0) {
           this.musicModel.isLike = 1;
           useUpdateStorage(this.musicStorage);

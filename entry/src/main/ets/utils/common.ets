@@ -91,3 +91,35 @@ export const useAppStorage = ():MusicStorageInterface => {
     recordList:[],// 已经播放的歌曲
   };
 }
+
+export const useLike = () => {
+  if (this.loading) return;
+  this.loading = true;
+  if (this.musicModel.isLike === 1) {
+    deleteMusicLikeService(this.musicModel.id).then((res) => {
+      if (res.data > 0) {
+        this.musicModel.isLike = 0;
+        useUpdateStorage(this.musicStorage);
+        promptAction.showToast({
+          message: "取消点赞成功",
+          duration: 2000,
+          bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+        });
+        emitter.emit(LIKE_INNER_EVENT,{data:this.musicModel})
+      }
+    }).finally(() => this.loading = false)
+  } else {
+    insertMusicLikeService(this.musicModel.id).then(res => {
+      if (res.data > 0) {
+        this.musicModel.isLike = 1;
+        useUpdateStorage(this.musicStorage);
+        promptAction.showToast({
+          message: "添加收藏成功",
+          duration: 2000,
+          bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+        });
+        emitter.emit(LIKE_INNER_EVENT,{data:this.musicModel});
+      }
+    }).finally(() => this.loading = false)
+  }
+}
