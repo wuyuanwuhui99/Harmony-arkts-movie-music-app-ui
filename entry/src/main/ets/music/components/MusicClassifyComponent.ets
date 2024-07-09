@@ -37,7 +37,7 @@ export default struct MusicClassifyComponent {
     emitter.on(LIKE_INNER_EVENT, (data:emitter.EventData)=>{
       const musicModel:MusicInterface = data.data as MusicInterface;
       const musicItem = this.musicList.find(item => musicModel.id === item.id);
-      musicItem.isLike = musicModel.isLike;
+      musicItem && (musicItem.isLike = musicModel.isLike);
     });
   }
 
@@ -73,7 +73,7 @@ export default struct MusicClassifyComponent {
                 .fontColor(colors.disableTextColor)
             }.layoutWeight(1).alignItems(HorizontalAlign.Start)
 
-            Image(this.musicStorage.musicItem?.id === item.id ? $r("app.media.icon_music_playing") : $r("app.media.icon_music_play"))
+            Image(this.musicStorage.musicItem?.id === item.id && this.musicStorage.isPlaying ? $r("app.media.icon_music_playing_grey") : $r("app.media.icon_music_play"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)
               .margin({ left: size.pagePadding })

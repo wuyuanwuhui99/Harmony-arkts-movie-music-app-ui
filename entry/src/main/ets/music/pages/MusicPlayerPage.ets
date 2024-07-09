@@ -358,6 +358,15 @@ struct MusicPlayerPage {
     isMusicFavoriteService(this.musicModel.id).then(res => this.isFavorite = Boolean(res.data));
   }
 
+  /**
+   * @description: 改变播放时间
+   * @date: 2024-07-09 22:49
+   * @author wuwenqiang
+   */
+  useChangeProgress(value:number){
+    this.musicStorage.audio.seek(this.duration * value / 100);
+  }
+
   build(){
     Column({space:size.pagePadding}){
       Text(this.musicStorage.musicItem.songName)
@@ -435,6 +444,7 @@ struct MusicPlayerPage {
         Slider({value:this.progress})
           .selectedColor(colors.blockColor)
           .layoutWeight(1)
+          .onChange((value:number) => this.useChangeProgress(value))
         Text(this.duration ? formatSecond(this.duration/1000) : '00:00').fontColor(colors.blockColor)
       }.width('80%').alignItems(VerticalAlign.Center)
 
