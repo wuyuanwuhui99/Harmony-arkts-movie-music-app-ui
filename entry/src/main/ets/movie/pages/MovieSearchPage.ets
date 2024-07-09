@@ -11,7 +11,7 @@ import preference from '../../utils/PreferenceModel';
 @Component
 struct MovieSearchPage {
   scroller: Scroller = new Scroller()
-  @State searchKeyWord: string = '蜀山'; // 搜索词
+  @State searchKeyWord: string = ''; // 搜索词
   @State classify: string = '';
   @State recommendMovieList: Array<MovieInterface> = []; // 推荐的电影
   @State searching: boolean = false;

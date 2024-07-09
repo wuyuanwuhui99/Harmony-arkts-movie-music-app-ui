@@ -61,7 +61,7 @@ export default struct MusicSearchPage {
       this.searchKeyWord = this.musicItem.songName;
     }
     const index:number = this.searchRecordList.findIndex(item => item === this.searchKeyWord);
-    index != -1 && this.searchRecordList.splice(index,1);
+    index !== -1 && this.searchRecordList.splice(index,1);
     this.searchRecordList.unshift(this.searchKeyWord)
     this.pageNum = 1;
     // 搜索记录写入缓存
@@ -146,6 +146,16 @@ export default struct MusicSearchPage {
         }
       }).finally(() => this.loading = false)
     }
+  }
+
+  /**
+   * @description: 点击搜索记录
+   * @date: 2024-07-09 22:05
+   * @author wuwenqiang
+   */
+  useLabelSearch(item:string){
+    this.searchKeyWord = item;
+    this.useSearch();
   }
 
   aboutToDisappear(){
@@ -243,6 +253,7 @@ export default struct MusicSearchPage {
                 .height(size.inputHeight)
                 .backgroundColor(colors.pageBackgroundColor)
                 .borderRadius(size.blockBorderRaduis * 2)
+                .onClick(() => this.useLabelSearch(item))
                 .padding({left:size.pagePadding * 2,right:size.pagePadding * 2})
             })
           }

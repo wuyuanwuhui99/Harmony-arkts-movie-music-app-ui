@@ -73,7 +73,7 @@ export default struct MusicClassifyComponent {
                 .fontColor(colors.disableTextColor)
             }.layoutWeight(1).alignItems(HorizontalAlign.Start)
 
-            Image(this.musicStorage.musicItem.id === item.id ? $r("app.media.icon_music_playing") : $r("app.media.icon_music_play"))
+            Image(this.musicStorage.musicItem?.id === item.id ? $r("app.media.icon_music_playing") : $r("app.media.icon_music_play"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)
               .margin({ left: size.pagePadding })

@@ -134,10 +134,13 @@ struct MusicPlayerPage {
       this.lyric?.seek(Math.floor(millisecond));// 歌词跳转到对应的时间线
     })
 
-    // 总时长
+    // 总时长，切换歌曲获取初始化的时候会执行
     this.musicStorage.audio.on('durationUpdate',(millisecond:number)=>{
       this.duration = millisecond
     });
+
+    // 从首页点击底部圈圈进入的时候，获取一下总时长
+    this.duration = this.musicStorage.audio.duration;
   }
 
   /**
@@ -178,10 +181,11 @@ struct MusicPlayerPage {
    * @author wuwenqiang
    */
   useTabNextMusic = async () => {
+    if(this.musicStorage.loop === LoopMode.REPEAT)return;
     if(this.musicStorage.loop === LoopMode.RANDOM){
       const randomIndex = Math.floor(Math.random() * this.musicStorage.playList.length);
       this.musicStorage.playIndex = this.musicStorage.musicList.findIndex(item => item.id === this.musicStorage.playList[randomIndex].id);
-    } if(this.musicStorage.playIndex === this.musicStorage.musicList.length - 1){
+    }else if(this.musicStorage.playIndex === this.musicStorage.musicList.length - 1){
       this.musicStorage.playIndex = 0;
     }else{
       this.musicStorage.playIndex++;
@@ -213,7 +217,7 @@ struct MusicPlayerPage {
           .aspectRatio(1)
         Text('顺序播放').margin({left:size.smallPadding}).fontColor(colors.blockColor)
       }.padding(size.pagePadding).onClick(()=>{
-        this.showPopupLoopMode = false;
+        this.musicStorage.audio.loop = this.showPopupLoopMode = false;
         this.musicStorage.loop = LoopMode.ORDER;
         useUpdateStorage(this.musicStorage);
       })
@@ -224,6 +228,7 @@ struct MusicPlayerPage {
         Text('单曲循环').margin({left:size.smallPadding}).fontColor(colors.blockColor)
       }.padding(size.pagePadding).onClick(()=>{
         this.showPopupLoopMode = false;
+        this.musicStorage.audio.loop = true;
         this.musicStorage.loop = LoopMode.REPEAT;
         useUpdateStorage(this.musicStorage);
       })
@@ -233,7 +238,7 @@ struct MusicPlayerPage {
           .aspectRatio(1)
         Text('随机播放').margin({left:size.smallPadding}).fontColor(colors.blockColor)
       }.padding(size.pagePadding).onClick(()=>{
-        this.showPopupLoopMode = false;
+        this.musicStorage.audio.loop = this.showPopupLoopMode = false;
         this.musicStorage.loop = LoopMode.RANDOM;
         useUpdateStorage(this.musicStorage);
       })
