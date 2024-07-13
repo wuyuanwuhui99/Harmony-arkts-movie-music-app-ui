@@ -7,7 +7,7 @@ import TVComponent from '../components/TVComponent'
 import httpRequest from '../../utils/HttpUtil';
 import { UserDataInterface } from '../interface/Index'
 import preference from '../../utils/PreferenceModel';
-import { USER_DATA } from '../../config/constant';
+import { USER_DATA } from '../../common/constant';
 import { getUserDataService } from '../service/Index';
 
 @Entry

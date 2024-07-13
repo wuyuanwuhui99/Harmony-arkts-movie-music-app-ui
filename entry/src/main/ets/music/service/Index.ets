@@ -2,7 +2,7 @@ import api from '../api/index';
 import httpRequest from '../../utils/HttpUtil';
 import * as types from '../interface/Index'
 import { MyAwesomeData } from '../../movie/interface';
-import {SocialEnum} from '../../config/constant';
+import { SocialEnum } from '../../common/enum';
 import { MusicInterface } from '../interface/Index';
 /**
  * @description: 获取推荐的音乐

@@ -3,14 +3,13 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import AvaterComponent from './AvaterComponent';
 import { UserDataInterface, UserMsgInterface, MovieInterface } from '../interface/Index';
-import { USER_DATA } from '../../config/constant';
+import { USER_DATA, HOST} from '../../common/constant';
 import {
   getUserMsgService,
   getPlayRecordMovieListService,
   getMyViewsMovieListService,
   getMyFavoriteMovieListService
 } from '../service/Index'
-import { HOST } from '../../config/constant';
 
 @Entry
 @Component

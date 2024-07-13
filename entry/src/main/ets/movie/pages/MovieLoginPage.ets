@@ -3,7 +3,7 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { loginService } from '../service/Index';
 import { UserDataInterface } from '../interface';
-import { USER_DATA } from '../../config/constant';
+import { USER_DATA } from '../../common/constant';
 import promptAction from '@ohos.promptAction'
 import display from '@ohos.display';
 import preference from '../../utils/PreferenceModel';

@@ -1,5 +1,5 @@
 import router from '@ohos.router';
-import { HOST } from '../../config/constant';
+import { HOST } from '../../common/constant';
 import { MovieInterface } from '../interface'
 import * as size from '../../theme/size';
 

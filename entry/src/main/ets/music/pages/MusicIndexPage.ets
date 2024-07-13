@@ -4,7 +4,7 @@ import MusicCircleComponent from '../components/MusicCircleComponent'
 import MusicHomeComponent from '../components/MusicHomeComponent'
 import MusicMyComponent from '../components/MusicMyComponent'
 import MusicRecommendComponent from '../components/MusicRecommendComponent'
-import {MUSIC_STORAGE,HOST} from '../../config/constant'
+import {MUSIC_STORAGE,HOST} from '../../common/constant'
 import { MusicStorageInterface } from '../interface/Index';
 import router from '@ohos.router';
 import { useAppStorage } from '../../utils/common';

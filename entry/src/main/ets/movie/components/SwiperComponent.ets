@@ -1,7 +1,7 @@
 import * as size from '../../theme/size';
 import { MovieInterface } from '../interface/Index';
 import {getCategoryListService} from '../service/Index';
-import {HOST} from  '../../config/constant';
+import {HOST} from '../../common/constant';
 
 @Component
 export default struct SwiperComponent{

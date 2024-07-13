@@ -5,7 +5,7 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { getMovieUrlService } from '../service/Index';
 import { getCommentCountService, isFavoriteService, saveFavoriteService, deleteFavoriteService } from '../service/Index';
-import { SocialEnum } from '../../config/constant';
+import { SocialEnum } from '../../common/enum';
 import BottomDialogComponent from '../components/BottomDialogComponent';
 import CommentComponent from '../components/CommentComponent';
 

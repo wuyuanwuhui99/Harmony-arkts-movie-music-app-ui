@@ -1,4 +1,4 @@
-import { HOST } from '../../config/constant';
+import { HOST } from '../../common/constant';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { FavoriteDirectoryInterface, FavoriteMusicInterface } from '../interface/Index';

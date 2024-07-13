@@ -1,6 +1,6 @@
 import router from '@ohos.router';
 import { UserDataInterface } from '../interface/Index'
-import { HOST,USER_DATA } from '../../config/constant';
+import { HOST,USER_DATA } from '../../common/constant';
 
 @Component
 export default struct AvaterComponent {

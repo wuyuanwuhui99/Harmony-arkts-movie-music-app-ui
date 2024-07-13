@@ -2,7 +2,7 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { getSingerListService } from '../service/Index';
 import { MusicSingerInterface } from '../interface';
-import { HOST } from '../../config/constant';
+import { HOST } from '../../common/constant';
 
 @Component
 export default struct MusicSingerComponent {

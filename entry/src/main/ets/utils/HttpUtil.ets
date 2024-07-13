@@ -1,5 +1,5 @@
 import http from '@ohos.net.http';
-import {HOST} from '../config/constant';
+import {HOST} from '../common/constant';
 import {MyAwesomeData} from '../movie/interface/Index'
 import promptAction from '@ohos.promptAction';
 import display from '@ohos.display';

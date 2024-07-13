@@ -3,7 +3,8 @@ import * as size from '../../theme/size';
 import emitter from '@ohos.events.emitter'
 import { MusicInterface,MusicStorageInterface } from '../interface';
 import { getMusicListByClassifyIdService } from '../service/Index';
-import { HOST,MUSIC_STORAGE,LIKE_INNER_EVENT } from '../../config/constant';
+import { HOST,MUSIC_STORAGE } from '../../common/constant';
+import { LIKE_INNER_EVENT } from '../../common/config';
 import {usePlayerRouter, useAppStorage} from '../../utils/common';
 
 @Component

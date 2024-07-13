@@ -3,9 +3,6 @@ import httpRequest from '../../utils/HttpUtil';
 import * as types from '../interface/Index'
 import { MyAwesomeData } from '../interface';
 import CryptoJS from '@ohos/crypto-js';
-import { SocialEnum } from '../../config/constant';
-import hilog from '@ohos.hilog';
-import { MovieInterface } from '../interface/Index';
 import { CommentInterface } from '../../music/interface/Index';
 
 /**

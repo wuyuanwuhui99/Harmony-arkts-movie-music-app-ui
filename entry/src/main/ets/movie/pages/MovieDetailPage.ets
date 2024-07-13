@@ -2,7 +2,7 @@ import router from '@ohos.router';
 import {MovieInterface,StarInterface} from "../interface";
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import {HOST} from '../../config/constant';
+import {HOST} from '../../common/constant';
 import TitleComponent from '../components/TitleComponent';
 import {getMovieStartListService,getRecommentListService,saveViewRecordService} from '../service/Index';
 @Entry

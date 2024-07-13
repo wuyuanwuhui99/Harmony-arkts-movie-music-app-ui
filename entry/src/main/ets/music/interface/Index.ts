@@ -1,5 +1,5 @@
 // 歌曲字段
-import { SocialEnum } from '../../config/constant';
+import { SocialEnum } from '../../common/enum';
 import media from '@ohos.multimedia.media';
 export interface MusicInterface  {
   id : number, //主键

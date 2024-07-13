@@ -2,7 +2,7 @@ import { getMusicListByClassifyIdService } from '../service/Index';
 import { MusicInterface, MusicStorageInterface } from '../interface';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import { HOST, MUSIC_STORAGE } from '../../config/constant';
+import { HOST, MUSIC_STORAGE } from '../../common/constant';
 import { usePlayerRouter,useAppStorage } from '../../utils/common';
 
 // LazyForEach列表栏加载，

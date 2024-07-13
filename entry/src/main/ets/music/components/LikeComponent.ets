@@ -2,7 +2,8 @@ import { LikeInterface } from '../interface/Index';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import LikeController from '../controller/LikeController';
-import { SocialEnum, USER_DATA } from '../../config/constant';
+import { USER_DATA } from '../../common/constant';
+import { SocialEnum } from '../../common/enum';
 import { UserDataInterface } from '../../movie/interface';
 import { deleteLikeService, saveLikeService } from '../service/Index';
 

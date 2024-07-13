@@ -1,7 +1,7 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { getTopCommentListService, insertCommentService } from '../service/Index';
-import { HOST } from '../../config/constant';
+import { HOST } from '../../common/constant';
 import { CommentInterface } from '../../music/interface/Index';
 import { formatTime } from '../../utils/common';
 import BottomDialogComponent from './BottomDialogComponent';

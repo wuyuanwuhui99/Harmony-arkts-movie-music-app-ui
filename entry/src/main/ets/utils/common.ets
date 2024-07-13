@@ -1,5 +1,5 @@
 import {LoopMode, MusicStorageInterface} from'../music/interface';
-import {MUSIC_STORAGE} from '../config/constant';
+import {HOST, MUSIC_STORAGE} from '../common/constant';
 import { MusicInterface } from '../music/interface/Index';
 import {getMusicListByClassifyIdService} from '../music/service/Index';
 import router from '@ohos.router';
@@ -91,3 +91,5 @@ export const useAppStorage = ():MusicStorageInterface => {
     recordList:[],// 已经播放的歌曲
   };
 }
+
+export const getMusicCover = (cover:string) => /http[s]?:\/\//.test(cover) ? cover.replace('{size}', '480') : HOST + cover
