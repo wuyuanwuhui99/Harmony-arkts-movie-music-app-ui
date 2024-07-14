@@ -6,6 +6,7 @@ import { HOST, USER_DATA } from '../../common/constant';
 import { getMySingerService, getMusicPlayMenuService, getMusicRecordService, getFavoriteDirectoryService } from '../service/Index';
 import { MusicSingerInterface, MuiscPlayMenuInterface } from '../interface';
 import { FavoriteDirectoryInterface, MusicInterface } from '../interface/Index';
+import { getMusicCover } from '../../utils/common';
 
 @Component
 export default struct MusicMyComponent {
@@ -102,26 +103,33 @@ export default struct MusicMyComponent {
           }.width('100%')
 
           if (!this.isFoldMyMusicMenu) {
-            ForEach(this.myMusicMenuList, (item: MuiscPlayMenuInterface) => {
-              Row() {
-                Image(item.cover ? HOST + item.cover : $r("app.media.default_avater"))
-                  .width(size.middleAvaterSize)
-                  .height(size.middleAvaterSize)
-                  .borderRadius(size.middleAvaterSize)
+            ForEach(this.myMusicMenuList, (item: FavoriteDirectoryInterface) => {
+              Row({space:size.pagePadding}) {
+                if(item.cover){
+                  Image(getMusicCover(item.cover))
+                    .width(size.middleAvaterSize)
+                    .height(size.middleAvaterSize)
+                    .borderRadius(size.middleAvaterSize)
+                }else {
+                  Text(item.name[0])
+                    .textAlign(TextAlign.Center)
+                    .width(size.middleAvaterSize)
+                    .height(size.middleAvaterSize)
+                    .backgroundColor(colors.pageBackgroundColor)
+                    .borderRadius(size.middleAvaterSize)
+                }
                 Column() {
                   Text(item.name)
                   Text(item.total.toString() + '首').fontColor(colors.disableTextColor)
-                }.margin({ left: size.pagePadding }).alignItems(HorizontalAlign.Start)
+                }.alignItems(HorizontalAlign.Start)
 
                 Blank()
                 Image($r("app.media.icon_music_play"))
                   .width(size.smallIconSize)
                   .height(size.smallIconSize)
-                  .margin({ left: size.pagePadding })
                 Image($r("app.media.icon_music_menu"))
                   .width(size.smallIconSize)
                   .height(size.smallIconSize)
-                  .margin({ left: size.pagePadding })
               }.width('100%').margin({ top: size.pagePadding })
             })
           }

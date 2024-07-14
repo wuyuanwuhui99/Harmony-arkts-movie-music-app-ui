@@ -5,7 +5,7 @@ import { MusicInterface,MusicStorageInterface } from '../interface';
 import { getMusicListByClassifyIdService } from '../service/Index';
 import { HOST,MUSIC_STORAGE } from '../../common/constant';
 import { LIKE_INNER_EVENT } from '../../common/config';
-import {usePlayerRouter, useAppStorage} from '../../utils/common';
+import {usePlayerRouter, useAppStorage, getMusicCover} from '../../utils/common';
 
 @Component
 export default struct MusicClassifyComponent {
@@ -59,7 +59,7 @@ export default struct MusicClassifyComponent {
       Column() {
         ForEach(this.musicList, (item: MusicInterface, index: number) => {
           Row() {
-            Image(/http[s]?:\/\//.test(item.cover) ? item.cover.replace('{size}', '480') : HOST + item.cover)
+            Image(getMusicCover(item.cover))
               .width(size.middleAvaterSize)
               .height(size.middleAvaterSize)
               .borderRadius(size.middleAvaterSize)

@@ -9,6 +9,7 @@
     "movie/pages/MovieSearchPage",
     "music/pages/MusicIndexPage",
     "music/pages/MusicPlayerPage",
-    "music/pages/MusicSearchPage"
+    "music/pages/MusicSearchPage",
+    "music/pages/MusicSharePage"
   ]
 }

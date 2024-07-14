@@ -14,6 +14,7 @@ import emitter from '@ohos.events.emitter'
 import BottomDialogComponent from '../../movie/components/BottomDialogComponent';
 import CommentComponent from '../../movie/components/CommentComponent';
 import FavoriteComponent from '../components/FavoriteComponent';
+import router from '@ohos.router';
 
 @Entry
 @Component
@@ -369,6 +370,20 @@ struct MusicPlayerPage {
     this.musicStorage.audio.seek(this.duration * value / 100);
   }
 
+  /**
+   * @description: 分享
+   * @date: 2024-07-14 06:54
+   * @author wuwenqiang
+   */
+  useShare = () => {
+    router.pushUrl({
+      url: 'music/pages/MusicSharePage', // 目标url
+      params: {
+        musicItem: this.musicStorage.musicItem
+      }
+    });
+  }
+
   build(){
     Column({space:size.pagePadding}){
       Text(this.musicStorage.musicItem.songName)
@@ -431,7 +446,10 @@ struct MusicPlayerPage {
           .width(size.middlIconSize)
           .aspectRatio(1)
           .onClick(this.useLike)
-        Image($r('app.media.icon_music_down')).width(size.middlIconSize).aspectRatio(1)
+        Image($r('app.media.icon_share_music'))
+          .width(size.middlIconSize)
+          .aspectRatio(1)
+          .onClick(this.useShare)
         Image($r('app.media.icon_music_comments'))
           .width(size.middlIconSize)
           .aspectRatio(1)

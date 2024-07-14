@@ -5,6 +5,7 @@ import { FavoriteDirectoryInterface, FavoriteMusicInterface } from '../interface
 import {  getFavoriteDirectoryService, insertMusicFavoriteService,insertFavoriteDirectoryService } from '../service/Index';
 import promptAction from '@ohos.promptAction';
 import display from '@ohos.display';
+import { getMusicCover } from '../../utils/common';
 
 @Extend(Row) function roundedSquareStyle  () {
   .alignItems(VerticalAlign.Center)
@@ -141,20 +142,21 @@ export default struct FavoriteComponent {
             }.width('100%').onClick(() => this.isCreateFavoriteDirectory = true)
             .justifyContent(FlexAlign.SpaceBetween)
             .alignItems(VerticalAlign.Center)
-            ForEach(this.favoriteDirectoryList,(item:FavoriteDirectoryInterface,index:number)=>{
+            ForEach(this.favoriteDirectoryList,(item:FavoriteDirectoryInterface)=>{
               Blank().height(size.pagePadding)
               Row(){
                 if(item.cover){
-                  Image(HOST + item.cover)
-                    .borderRadius(size.blockBorderRaduis)
-                    .width(size.roundedSquareSize)
-                    .aspectRatio(1)
-                }else{
-                  Row(){
-                    Image($r("app.media.icon_music_default_cover"))
-                      .width(size.middlIconSize)
-                      .aspectRatio(1)
-                  }.roundedSquareStyle()
+                  Image(getMusicCover(item.cover))
+                    .width(size.middleAvaterSize)
+                    .height(size.middleAvaterSize)
+                    .borderRadius(size.middleAvaterSize)
+                }else {
+                  Text(item.name[0])
+                    .textAlign(TextAlign.Center)
+                    .width(size.middleAvaterSize)
+                    .height(size.middleAvaterSize)
+                    .backgroundColor(colors.pageBackgroundColor)
+                    .borderRadius(size.middleAvaterSize)
                 }
                 Column({space:size.smallPadding}){
                   Text(item.name)

@@ -9,3 +9,4 @@ export const warnColor:string = '#f7453b';
 export const blueColor:string = '#3e7d9b';
 export const playerOuterCircleColor = 'rgba(0, 0, 0, 0.1)';
 export const blackBackgroundColor:string = 'rgba(0, 0, 0, 0.8)';
+export const textareaColor:string = '#dddddd';
