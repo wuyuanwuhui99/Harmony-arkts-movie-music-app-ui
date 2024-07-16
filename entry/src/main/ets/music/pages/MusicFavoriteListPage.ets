@@ -5,8 +5,11 @@ import { MusicInterface, MusicStorageInterface,CircleInterface, FavoriteDirector
 import { HOST, MUSIC_SEARCH, MUSIC_STORAGE } from '../../common/constant';
 import { SocialEnum } from '../../common/enum';
 import { LIKE_INNER_EVENT, PermissionValueMap } from '../../common/config';
-import { getMusicListByFavoriteIdService } from '../service/Index';
+import { deleteMusicLikeService, getMusicListByFavoriteIdService, insertMusicLikeService } from '../service/Index';
 import { getMusicCover, useAppStorage, useUpdateStorage } from '../../utils/common';
+import promptAction from '@ohos.promptAction';
+import display from '@ohos.display';
+import emitter from '@ohos.events.emitter';
 
 @Entry
 @Component
@@ -17,6 +20,7 @@ export default struct MusicFavoriteListPage {
   @State musicList:Array<MusicInterface> = [];
   @State pageNum:number = 1;
   @State total:number = 0;
+  private loading:boolean = false;
   private pageSize:number = 20;
 
   @Styles blockStyle(){
@@ -42,6 +46,42 @@ export default struct MusicFavoriteListPage {
       this.musicList.push(...res.data);
       this.total = res.total;
     })
+  }
+
+  /**
+   * @description: 添加点赞或取消点赞
+   * @date: 2024-05-12 11:45
+   * @author wuwenqiang
+   */
+  useLike(musicModel:MusicInterface,index:number){
+    if (this.loading) return;
+    this.loading = true;
+    if (musicModel.isLike === 1) {
+      deleteMusicLikeService(musicModel.id).then((res) => {
+        if (res.data > 0) {
+          musicModel.isLike = 0;
+          this.musicList.splice(index,1,{...musicModel})
+          promptAction.showToast({
+            message: "取消点赞成功",
+            duration: 2000,
+            bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+          });
+          emitter.emit(LIKE_INNER_EVENT,{data:musicModel})
+        }
+      }).finally(() => this.loading = false)
+    } else {
+      insertMusicLikeService(musicModel.id).then(res => {
+        if (res.data > 0) {
+          musicModel.isLike = 1;
+          this.musicList.splice(index,1,{...musicModel})
+          promptAction.showToast({
+            message: "添加收藏成功",
+            duration: 2000,
+            bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+          });
+        }
+      }).finally(() => this.loading = false)
+    }
   }
 
   build() {
@@ -80,7 +120,7 @@ export default struct MusicFavoriteListPage {
           }.alignItems(VerticalAlign.Top).blockStyle()
 
           Column({space:size.pagePadding}){
-            ForEach(this.musicList,(item:MusicInterface)=>{
+            ForEach(this.musicList,(item:MusicInterface,index:number)=>{
               Row({space:size.pagePadding}){
                 Image(getMusicCover(item.cover))
                   .width(size.middleAvaterSize)
@@ -93,10 +133,14 @@ export default struct MusicFavoriteListPage {
                 Image((this.musicStorage.musicItem?.id === item.id && this.musicStorage.musicItem?.isLike === 1 || item.isLike === 0) ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
                   .width(size.smallIconSize)
                   .height(size.smallIconSize)
+                  .onClick((()=>this.useLike(item,index)))
                 Image($r("app.media.icon_music_menu"))
                   .width(size.smallIconSize)
                   .height(size.smallIconSize)
               }.width('100%')
+              if(index !== this.musicList.length - 1){
+                Divider().height(1).color(colors.pageBackgroundColor)
+              }
             })
           }.blockStyle()
         }.justifyContent(FlexAlign.Start)
