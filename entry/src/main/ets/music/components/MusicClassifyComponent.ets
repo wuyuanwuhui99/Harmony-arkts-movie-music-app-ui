@@ -58,12 +58,11 @@ export default struct MusicClassifyComponent {
 
       Column() {
         ForEach(this.musicList, (item: MusicInterface, index: number) => {
-          Row() {
+          Row({space:size.pagePadding}) {
             Image(getMusicCover(item.cover))
               .width(size.middleAvaterSize)
               .height(size.middleAvaterSize)
               .borderRadius(size.middleAvaterSize)
-              .margin({ right: size.pagePadding })
             Column() {
               Text(item.songName)
                 .maxLines(1)
@@ -77,16 +76,13 @@ export default struct MusicClassifyComponent {
             Image(this.musicStorage.musicItem?.id === item.id && this.musicStorage.isPlaying ? $r("app.media.icon_music_playing_grey") : $r("app.media.icon_music_play"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)
-              .margin({ left: size.pagePadding })
               .onClick(() => usePlayerRouter(this.musicStorage,item,this.classifyId,index))
             Image((this.musicStorage.musicItem?.id === item.id && this.musicStorage.musicItem?.isLike === 1 || item.isLike === 0) ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)
-              .margin({ left: size.pagePadding })
             Image($r("app.media.icon_music_menu"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)
-              .margin({ left: size.pagePadding })
           }
           .alignItems(VerticalAlign.Center)
           .margin({ top: size.pagePadding })

@@ -424,7 +424,7 @@ struct MusicPlayerPage {
             ListItem(){
               Text(item.txt)
                 .fontColor(colors.blockColor)
-                .opacity(this.currentLineNum === index ? 1 : 0.5)
+                .opacity(this.currentLineNum === index ? 1 : size.opacity)
                 .alignSelf(ItemAlign.Center)
             }.width('100%')
           })
@@ -433,7 +433,7 @@ struct MusicPlayerPage {
         .layoutWeight(1)
       }else{
         Row(){
-          Text("暂无歌词").fontColor(colors.blockColor).opacity(0.5)
+          Text("暂无歌词").fontColor(colors.blockColor).opacity(size.opacity)
         }
         .width('100%')
         .layoutWeight(1)

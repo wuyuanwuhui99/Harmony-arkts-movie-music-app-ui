@@ -7,6 +7,7 @@ import { getMySingerService, getMusicPlayMenuService, getMusicRecordService, get
 import { MusicSingerInterface, MuiscPlayMenuInterface } from '../interface';
 import { FavoriteDirectoryInterface, MusicInterface } from '../interface/Index';
 import { getMusicCover } from '../../utils/common';
+import router from '@ohos.router';
 
 @Component
 export default struct MusicMyComponent {
@@ -31,6 +32,20 @@ export default struct MusicMyComponent {
     .padding(size.pagePadding)
     .width('100%')
     .margin({ top: size.pagePadding })
+  }
+
+  /**
+   * @description: 跳转到歌单列表页
+   * @date: 2024-07-16 22:37
+   * @author wuwenqiang
+   */
+  useMusicFavoriteList(item:FavoriteDirectoryInterface){
+    router.pushUrl({
+      url: 'music/pages/MusicFavoriteListPage', // 目标url
+      params: {
+        favoriteDirectory: item
+      }
+    });
   }
 
   aboutToAppear() {
@@ -130,7 +145,10 @@ export default struct MusicMyComponent {
                 Image($r("app.media.icon_music_menu"))
                   .width(size.smallIconSize)
                   .height(size.smallIconSize)
-              }.width('100%').margin({ top: size.pagePadding })
+              }
+              .width('100%')
+              .margin({ top: size.pagePadding })
+              .onClick(() => this.useMusicFavoriteList(item))
             })
           }
         }.blockStyle()

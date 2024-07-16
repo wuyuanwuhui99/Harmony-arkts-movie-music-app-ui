@@ -140,7 +140,7 @@ export default struct MusicSharePage {
           Text('谁可以看').layoutWeight(1)
           Text(PermissionMap[this.circlrModel.permission])
           Image($r('app.media.icon_arrow'))
-            .opacity(0.5)
+            .opacity(size.opacity)
             .width(size.smallIconSize)
             .aspectRatio(1)
         }

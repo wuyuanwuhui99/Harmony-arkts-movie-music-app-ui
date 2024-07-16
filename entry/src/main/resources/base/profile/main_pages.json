@@ -10,6 +10,7 @@
     "music/pages/MusicIndexPage",
     "music/pages/MusicPlayerPage",
     "music/pages/MusicSearchPage",
-    "music/pages/MusicSharePage"
+    "music/pages/MusicSharePage",
+    "music/pages/MusicFavoriteListPage"
   ]
 }

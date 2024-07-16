@@ -181,6 +181,15 @@ export const searchMusicService = (keyword:string,pageNum:number,pageSize:number
  * @date: 2024-07-08 23:05
  * @author wuwenqiang
  */
-export const saveCircleService = (circle:types.CircleInterface):Promise<MyAwesomeData<Array<number>>> => {
-  return httpRequest.post<Array<number>>(api.insertCircle,circle);
+export const saveCircleService = (circle:types.CircleInterface):Promise<MyAwesomeData<number>> => {
+  return httpRequest.post<number>(api.insertCircle,circle);
+}
+
+/**
+ * @description: 根据收藏夹id查询音乐列表
+ * @date: 2024-07-16 23:39
+ * @author wuwenqiang
+ */
+export const getMusicListByFavoriteIdService = (favoriteId:number,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicInterface>>> => {
+  return httpRequest.get<Array<types.MusicInterface>>(`${api.getMusicListByFavoriteId}?favoriteId=${favoriteId}&pageNum=${pageNum}&pageSize=${pageSize}`);
 }
