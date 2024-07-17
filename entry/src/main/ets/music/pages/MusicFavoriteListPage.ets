@@ -4,8 +4,8 @@ import router from '@ohos.router';
 import { MusicInterface, MusicStorageInterface, FavoriteDirectoryInterface } from '../interface';
 import { FAVORITE_MUSIC, MUSIC_STORAGE } from '../../common/constant';
 import { LIKE_INNER_EVENT } from '../../common/config';
-import { deleteMusicLikeService, getMusicListByFavoriteIdService } from '../service/Index';
-import { getMusicCover, useAppStorage, usePlayerRouter } from '../../utils/common';
+import { deleteMusicLikeService, getMusicListByFavoriteIdService, insertMusicLikeService } from '../service/Index';
+import { getMusicCover, useAppStorage, usePlayerRouter, useUpdateStorage } from '../../utils/common';
 import promptAction from '@ohos.promptAction';
 import display from '@ohos.display';
 import emitter from '@ohos.events.emitter';
@@ -34,7 +34,12 @@ export default struct MusicFavoriteListPage {
     const params = router.getParams(); // 获取传递过来的参数对象
     this.favoriteDirectory = params['favoriteDirectory'] as FavoriteDirectoryInterface; // 获取info属性的值
     this.useMusicListByFavoriteId();
-    this.classifyName = FAVORITE_MUSIC + this.favoriteDirectory.name
+    this.classifyName = FAVORITE_MUSIC + this.favoriteDirectory.name;
+    emitter.on(LIKE_INNER_EVENT, (data:emitter.EventData)=>{
+      const musicModel:MusicInterface = data.data as MusicInterface;
+      const musicItem = this.musicList.find(item => musicModel.id === item.id);
+      musicItem && (musicItem.isLike = musicModel.isLike);
+    });
   }
 
   /**
@@ -57,20 +62,35 @@ export default struct MusicFavoriteListPage {
   useLike(musicModel:MusicInterface,index:number){
     if (this.loading) return;
     this.loading = true;
-    deleteMusicLikeService(musicModel.id).then((res) => {
-      if (res.data > 0) {
-        musicModel.isLike = 0;
-        this.musicList.splice(index,1,{...musicModel})
-        promptAction.showToast({
-          message: "取消点赞成功",
-          duration: 2000,
-          bottom: px2vp(display.getDefaultDisplaySync().height) / 2
-        });
-        this.musicList.splice(index,1);
-        emitter.emit(LIKE_INNER_EVENT,{data:musicModel})
-      }
-    }).finally(() => this.loading = false)
-
+    if (musicModel.isLike === 1) {
+      deleteMusicLikeService(musicModel.id).then((res) => {
+        if (res.data > 0) {
+          musicModel.isLike = 0;
+          this.musicList.splice(index,1,{...musicModel})
+          useUpdateStorage(this.musicStorage);
+          promptAction.showToast({
+            message: "取消点赞成功",
+            duration: 2000,
+            bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+          });
+          emitter.emit(LIKE_INNER_EVENT,{data:musicModel})
+        }
+      }).finally(() => this.loading = false)
+    } else {
+      insertMusicLikeService(musicModel.id).then(res => {
+        if (res.data > 0) {
+          musicModel.isLike = 1;
+          this.musicList.splice(index,1,{...musicModel})
+          useUpdateStorage(this.musicStorage);
+          promptAction.showToast({
+            message: "添加收藏成功",
+            duration: 2000,
+            bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+          });
+          emitter.emit(LIKE_INNER_EVENT,{data:musicModel})
+        }
+      }).finally(() => this.loading = false)
+    }
   }
 
   /**
@@ -84,6 +104,10 @@ export default struct MusicFavoriteListPage {
       musicList = await getMusicListByFavoriteIdService(this.favoriteDirectory.id,1,500).then(res=>res.data)
     }
     usePlayerRouter(this.musicStorage,musicList,musicModel,this.classifyName,index)
+  }
+
+  aboutToDisappear(){
+    emitter.off(LIKE_INNER_EVENT.eventId);
   }
 
   build() {

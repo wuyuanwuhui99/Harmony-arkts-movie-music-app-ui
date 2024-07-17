@@ -119,31 +119,35 @@ export default struct MusicSearchPage {
    * @date: 2024-07-07 18:50
    * @author wuwenqiang
    */
-  useLike = (musicModel:MusicInterface) => {
+  useLike = (musicModel:MusicInterface,index:number) => {
     if (this.loading) return;
     this.loading = true;
     if (musicModel.isLike === 1) {
       deleteMusicLikeService(musicModel.id).then((res) => {
         if (res.data > 0) {
           musicModel.isLike = 0;
+          this.searchMusicList.splice(index,1,{...musicModel});
           useUpdateStorage(this.musicStorage);
           promptAction.showToast({
             message: "取消点赞成功",
             duration: 2000,
             bottom: px2vp(display.getDefaultDisplaySync().height) / 2
           });
+          emitter.emit(LIKE_INNER_EVENT,{data:musicModel})
         }
       }).finally(() => this.loading = false)
     } else {
       insertMusicLikeService(musicModel.id).then(res => {
         if (res.data > 0) {
           musicModel.isLike = 1;
+          this.searchMusicList.splice(index,1,{...musicModel});
           useUpdateStorage(this.musicStorage);
           promptAction.showToast({
             message: "添加收藏成功",
             duration: 2000,
             bottom: px2vp(display.getDefaultDisplaySync().height) / 2
           });
+          emitter.emit(LIKE_INNER_EVENT,{data:musicModel})
         }
       }).finally(() => this.loading = false)
     }
@@ -230,7 +234,7 @@ export default struct MusicSearchPage {
                       .width(size.smallIconSize)
                       .height(size.smallIconSize)
                       .margin({ left: size.pagePadding })
-                      .onClick(() => this.useLike(item))
+                      .onClick(() => this.useLike(item,index))
                     Image($r("app.media.icon_music_menu"))
                       .width(size.smallIconSize)
                       .height(size.smallIconSize)
