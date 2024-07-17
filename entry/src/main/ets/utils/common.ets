@@ -49,29 +49,24 @@ export const useUpdateStorage = (musicStorage:MusicStorageInterface)=>{
   musicStorage.playIndex = musicStorage.musicList.findIndex(mItem => mItem.id === musicStorage.musicItem.id)
   AppStorage.SetOrCreate<MusicStorageInterface>(MUSIC_STORAGE,musicStorage);
   const myMusicStorage:MusicStorageInterface =  {...musicStorage};
-  // 列表数据不用存缓存，避免缓存过大，或者下次进来缓存没更新
-  myMusicStorage.musicList = [];// 所有音乐
-  myMusicStorage.musicList = myMusicStorage.recordList = myMusicStorage.playList = [];// 还没有播放的音乐
   myMusicStorage.audio = null;
   PersistentStorage.PersistProp<MusicStorageInterface>(MUSIC_STORAGE, myMusicStorage);
 }
 
-export const usePlayerRouter = (musicStorage:MusicStorageInterface,musicModel:MusicInterface,classifyId:number,index:number) => {
-  if(musicStorage.musicItem?.id === musicModel.id && musicStorage.musicList.length !== 0){
+export const usePlayerRouter = (musicStorage:MusicStorageInterface,musicList:Array<MusicInterface>,musicModel:MusicInterface,classifyName:string,index:number) => {
+  if(musicStorage.musicItem?.id === musicModel.id && musicStorage.classifyName === classifyName){
     musicStorage.audio.play();
     musicStorage.isPlaying = true;
   }else{
     musicStorage.musicItem = musicModel;
     musicStorage.audio?.reset();
-    if(musicStorage.classifyId !== classifyId || musicStorage.musicList.length === 0){
-      getMusicListByClassifyIdService(classifyId,1,500).then((res)=>{
-        musicStorage.musicList = res.data;
-        musicStorage.playList = [...res.data];
-        musicStorage.recordList.push(...musicStorage.playList.splice(index,1));
-        useUpdateStorage(musicStorage);
-      });
-      musicStorage.classifyId = classifyId;
+    if(musicStorage.classifyName !== classifyName){
+      musicStorage.musicList = musicList;
+      musicStorage.playList = [...musicList];
+      musicStorage.recordList.push(...musicStorage.playList.splice(index,1));
+      musicStorage.classifyName !== classifyName
     }
+    useUpdateStorage(musicStorage);
   }
   router.pushUrl({url: 'music/pages/MusicPlayerPage'});
 }
@@ -82,7 +77,7 @@ export const useAppStorage = ():MusicStorageInterface => {
     audio: null,
     isPlaying: true,
     musicList: [],
-    classifyId: -1,
+    classifyName: "",
     total: 0,
     isInitPlayer:false,
     playIndex: -1,

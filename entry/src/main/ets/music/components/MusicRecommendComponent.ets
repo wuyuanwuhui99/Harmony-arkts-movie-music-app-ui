@@ -3,14 +3,13 @@ import { MusicInterface, MusicStorageInterface } from '../interface';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { HOST, MUSIC_STORAGE } from '../../common/constant';
-import { usePlayerRouter,useAppStorage } from '../../utils/common';
+import { usePlayerRouter,useAppStorage, getMusicCover } from '../../utils/common';
 
 // LazyForEach列表栏加载，
 // 参考文档：https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/arkts-rendering-control-lazyforeach-0000001524417213-V3
 class BasicDataSource implements IDataSource {
   private listeners: DataChangeListener[] = [];
   private originDataArray: Array<MusicInterface> = [];
-
   public totalCount(): number {
     return 0;
   }
@@ -97,6 +96,7 @@ export default struct MusicRecommendComponent {
   @State total: number = 0;
   @StorageLink(MUSIC_STORAGE) musicStorage: MusicStorageInterface = useAppStorage()
   private classifyId:number = 1;
+  private classifyName:string = "推荐歌曲";
   private pageSize: number = 20;
   private scroller: Scroller = new Scroller()
 
@@ -116,6 +116,19 @@ export default struct MusicRecommendComponent {
         this.musicList.pushData(item);
       })
     })
+  }
+
+  /**
+   * @description: 播放音乐分类
+   * @date: 2024-07-17 22:23
+   * @author wuwenqiang
+   */
+  async usePlayMusicList(musicModel:MusicInterface,index:number){
+    let musicList:Array<MusicInterface> = [];
+    if(this.musicStorage.classifyName !== this.classifyName){
+      musicList = await getMusicListByClassifyIdService(this.classifyId,1,500).then(res=>res.data)
+    }
+    usePlayerRouter(this.musicStorage,musicList,musicModel,this.classifyName,index)
   }
 
   build() {
@@ -142,7 +155,7 @@ export default struct MusicRecommendComponent {
                   .height(size.smallIconSize)
                   .textAlign(TextAlign.Center)
               }
-              Image(/http[s]?:\/\//.test(item.cover) ? item.cover.replace('{size}', '480') : HOST + item.cover)
+              Image(getMusicCover(item.cover))
                 .width(size.middleAvaterSize)
                 .height(size.middleAvaterSize)
                 .borderRadius(size.middleAvaterSize)
@@ -155,10 +168,10 @@ export default struct MusicRecommendComponent {
                   .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
               }.layoutWeight(1).alignItems(HorizontalAlign.Start)
 
-              Image($r("app.media.icon_music_play"))
+              Image(this.musicStorage.musicItem?.id === item.id && this.musicStorage.classifyName === this.classifyName && this.musicStorage.isPlaying ? $r("app.media.icon_music_playing_grey") : $r("app.media.icon_music_play"))
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)
-                .onClick(() => usePlayerRouter(this.musicStorage,item,this.classifyId,index))
+                .onClick(() => this.usePlayMusicList(item,index))
               Image(item.isLike ? $r("app.media.icon_like_active") : $r("app.media.icon_like"))
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)

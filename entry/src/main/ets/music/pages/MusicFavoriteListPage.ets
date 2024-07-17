@@ -1,12 +1,11 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import router from '@ohos.router';
-import { MusicInterface, MusicStorageInterface,CircleInterface, FavoriteDirectoryInterface } from '../interface';
-import { HOST, MUSIC_SEARCH, MUSIC_STORAGE } from '../../common/constant';
-import { SocialEnum } from '../../common/enum';
-import { LIKE_INNER_EVENT, PermissionValueMap } from '../../common/config';
-import { deleteMusicLikeService, getMusicListByFavoriteIdService, insertMusicLikeService } from '../service/Index';
-import { getMusicCover, useAppStorage, useUpdateStorage } from '../../utils/common';
+import { MusicInterface, MusicStorageInterface, FavoriteDirectoryInterface } from '../interface';
+import { FAVORITE_MUSIC, MUSIC_STORAGE } from '../../common/constant';
+import { LIKE_INNER_EVENT } from '../../common/config';
+import { deleteMusicLikeService, getMusicListByFavoriteIdService } from '../service/Index';
+import { getMusicCover, useAppStorage, usePlayerRouter } from '../../utils/common';
 import promptAction from '@ohos.promptAction';
 import display from '@ohos.display';
 import emitter from '@ohos.events.emitter';
@@ -22,6 +21,7 @@ export default struct MusicFavoriteListPage {
   @State total:number = 0;
   private loading:boolean = false;
   private pageSize:number = 20;
+  private classifyName:string = "";
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -34,6 +34,7 @@ export default struct MusicFavoriteListPage {
     const params = router.getParams(); // 获取传递过来的参数对象
     this.favoriteDirectory = params['favoriteDirectory'] as FavoriteDirectoryInterface; // 获取info属性的值
     this.useMusicListByFavoriteId();
+    this.classifyName = FAVORITE_MUSIC + this.favoriteDirectory.name
   }
 
   /**
@@ -56,32 +57,33 @@ export default struct MusicFavoriteListPage {
   useLike(musicModel:MusicInterface,index:number){
     if (this.loading) return;
     this.loading = true;
-    if (musicModel.isLike === 1) {
-      deleteMusicLikeService(musicModel.id).then((res) => {
-        if (res.data > 0) {
-          musicModel.isLike = 0;
-          this.musicList.splice(index,1,{...musicModel})
-          promptAction.showToast({
-            message: "取消点赞成功",
-            duration: 2000,
-            bottom: px2vp(display.getDefaultDisplaySync().height) / 2
-          });
-          emitter.emit(LIKE_INNER_EVENT,{data:musicModel})
-        }
-      }).finally(() => this.loading = false)
-    } else {
-      insertMusicLikeService(musicModel.id).then(res => {
-        if (res.data > 0) {
-          musicModel.isLike = 1;
-          this.musicList.splice(index,1,{...musicModel})
-          promptAction.showToast({
-            message: "添加收藏成功",
-            duration: 2000,
-            bottom: px2vp(display.getDefaultDisplaySync().height) / 2
-          });
-        }
-      }).finally(() => this.loading = false)
+    deleteMusicLikeService(musicModel.id).then((res) => {
+      if (res.data > 0) {
+        musicModel.isLike = 0;
+        this.musicList.splice(index,1,{...musicModel})
+        promptAction.showToast({
+          message: "取消点赞成功",
+          duration: 2000,
+          bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+        });
+        this.musicList.splice(index,1);
+        emitter.emit(LIKE_INNER_EVENT,{data:musicModel})
+      }
+    }).finally(() => this.loading = false)
+
+  }
+
+  /**
+   * @description: 播放音乐分类
+   * @date: 2024-07-17 22:23
+   * @author wuwenqiang
+   */
+  async usePlayMusicList(musicModel:MusicInterface,index:number){
+    let musicList:Array<MusicInterface> = [];
+    if(this.musicStorage.classifyName !== this.classifyName){
+      musicList = await getMusicListByFavoriteIdService(this.favoriteDirectory.id,1,500).then(res=>res.data)
     }
+    usePlayerRouter(this.musicStorage,musicList,musicModel,this.classifyName,index)
   }
 
   build() {
@@ -127,10 +129,11 @@ export default struct MusicFavoriteListPage {
                   .borderRadius(size.middleAvaterSize)
                   .aspectRatio(1)
                 Text(`${item.authorName} - ${item.songName}`).layoutWeight(1)
-                Image(this.musicStorage.musicItem?.id === item.id && this.musicStorage.isPlaying ? $r("app.media.icon_music_playing_grey") : $r("app.media.icon_music_play"))
+                Image(this.musicStorage.musicItem?.id === item.id && this.musicStorage.classifyName === this.classifyName && this.musicStorage.isPlaying ? $r("app.media.icon_music_playing_grey") : $r("app.media.icon_music_play"))
                   .width(size.smallIconSize)
                   .height(size.smallIconSize)
-                Image((this.musicStorage.musicItem?.id === item.id && this.musicStorage.musicItem?.isLike === 1 || item.isLike === 0) ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
+                  .onClick(()=>this.usePlayMusicList(item,index))
+                Image(item.isLike === 0 ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
                   .width(size.smallIconSize)
                   .height(size.smallIconSize)
                   .onClick((()=>this.useLike(item,index)))

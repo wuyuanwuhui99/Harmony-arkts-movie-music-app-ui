@@ -154,7 +154,7 @@ export interface MusicStorageInterface {
   isPlaying: boolean,
   isInitPlayer:boolean,// 是否已经初始化播放器
   musicList: Array<MusicInterface>,
-  classifyId: number,// 播放的类型
+  classifyName: string,// 播放分类的名称
   playIndex: number,// 播放的下标
   total: number,
   loop: LoopMode// 默认顺序播放
