@@ -6,6 +6,7 @@ import { getMusicListByClassifyIdService } from '../service/Index';
 import { MUSIC_STORAGE } from '../../common/constant';
 import { LIKE_INNER_EVENT } from '../../common/config';
 import {usePlayerRouter, useAppStorage, getMusicCover} from '../../utils/common';
+import router from '@ohos.router';
 
 @Component
 export default struct MusicClassifyComponent {
@@ -66,7 +67,14 @@ export default struct MusicClassifyComponent {
           .width(size.smallIconSize)
           .height(size.smallIconSize)
         Text(this.classifyName).margin({ left: size.pagePadding }).layoutWeight(1)
-        Text("更多")
+        Text("更多").onClick(()=>{
+          router.pushUrl({
+            url: 'music/pages/MusicClassifyListPage',
+            params: {
+              musicClassify: {id:this.classifyId,classifyName:this.classifyName}
+            }
+          });
+        })
       }.alignItems(VerticalAlign.Center)
 
       Column() {
@@ -112,7 +120,6 @@ export default struct MusicClassifyComponent {
             }
           })
         })
-
       }
     }.blockStyle()
   }
