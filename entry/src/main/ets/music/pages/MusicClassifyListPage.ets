@@ -9,10 +9,11 @@ import { getMusicCover, useAppStorage, usePlayerRouter, useUpdateStorage } from 
 import promptAction from '@ohos.promptAction';
 import display from '@ohos.display';
 import emitter from '@ohos.events.emitter';
+import MusicClassifyListComponent from '../components/MusicClassifyListComponent';
 
 @Entry
 @Component
-export default struct MusicFavoriteListPage {
+export default struct MusicClassifyListComponents {
 
   @StorageLink(MUSIC_STORAGE) musicStorage:  MusicStorageInterface = useAppStorage()
   @State musicList:Array<MusicInterface> = [];
@@ -97,7 +98,7 @@ export default struct MusicFavoriteListPage {
    * @date: 2024-07-17 22:23
    * @author wuwenqiang
    */
-  async usePlayMusicList(musicModel:MusicInterface,index:number){
+  usePlayMusicList = async (musicModel:MusicInterface,index:number)=>{
     let musicList:Array<MusicInterface> = [];
     if(this.musicStorage.classifyName !== this.musicClassify.classifyName){
       musicList = await getMusicListByFavoriteIdService(this.musicClassify.id,1,MAX_PAGE_SIZE).then(res=>res.data)
@@ -131,36 +132,13 @@ export default struct MusicFavoriteListPage {
       .padding(size.pagePadding)
       .backgroundColor(colors.blockColor)
       Scroll(){
-        Column({space:size.pagePadding}){
-          ForEach(this.musicList,(item:MusicInterface,index:number)=>{
-            Row({space:size.pagePadding}){
-              Image(getMusicCover(item.cover))
-                .width(size.middleAvaterSize)
-                .borderRadius(size.middleAvaterSize)
-                .aspectRatio(1)
-              Text(`${item.authorName} - ${item.songName}`).layoutWeight(1)
-              Image(this.musicStorage.musicItem?.id === item.id && this.musicStorage.classifyName === this.musicClassify.classifyName && this.musicStorage.isPlaying ? $r("app.media.icon_music_playing_grey") : $r("app.media.icon_music_play"))
-                .width(size.smallIconSize)
-                .height(size.smallIconSize)
-                .onClick(()=>this.usePlayMusicList(item,index))
-              Image(item.isLike === 0 ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
-                .width(size.smallIconSize)
-                .height(size.smallIconSize)
-                .onClick((()=>this.useLike(item,index)))
-              Image($r("app.media.icon_music_menu"))
-                .width(size.smallIconSize)
-                .height(size.smallIconSize)
-            }.width('100%')
-            if(index !== this.musicList.length - 1){
-              Divider().height(1).color(colors.pageBackgroundColor)
-            }
-          })
-        }.blockStyle()
+        MusicClassifyListComponent({musicList:$musicList,
+          onPlayMusicList:this.usePlayMusicList,classifyName:this.musicClassify.classifyName})
         Row() {
           Text(this.pageNum * PAGE_SIZE < this.total ? '正在加载更多...' : '已经到底了...')
         }.width('100%').padding({ top: size.pagePadding,bottom:size.pagePadding })
       }
-      .padding(size.pagePadding)
+      .padding({left:size.pagePadding,right:size.pagePadding,bottom:size.pagePadding})
       .align(Alignment.Top)
       .scrollable(ScrollDirection.Vertical)
       .layoutWeight(1)
