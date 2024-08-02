@@ -1,0 +1,48 @@
+import httpRequest from '../../utils/HttpUtil';
+import { UserDataInterface } from '../interface/Index'
+import preference from '../../utils/PreferenceModel';
+import { USER_DATA } from '../../common/constant';
+import { getUserDataService } from '../service/Index';
+import router from '@ohos.router';
+
+@Entry
+@Component
+struct LaunchPage {
+  @State activeIndex: number = 0;
+  @State isInitPage: Array<boolean> = [true, false, false, false];
+  @State isInitIndex: boolean = false;
+
+  build() {
+    Column() {
+      Text('欢迎使用')
+    }
+    .justifyContent(FlexAlign.Center)
+    .alignItems(HorizontalAlign.Center)
+    .width('100%')
+    .height('100%')
+  }
+
+  async aboutToAppear() {
+    const token: string = <string> await preference.getToken();
+    setTimeout(()=>{// 加载用户信息
+      if(token){
+        getUserDataService(token).then((res) => {
+          preference.setToke(res.token);
+          httpRequest.setToken(res.token);
+          AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
+          this.isInitIndex = true;
+        }).catch(()=>{
+          router.replaceUrl({
+            url: 'movie/pages/MovieLoginPage'
+          });
+        })
+      }else{
+        router.replaceUrl({
+          url: 'movie/pages/MovieLoginPages'
+        });
+      }
+
+    },1000)
+
+  }
+}

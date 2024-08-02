@@ -128,9 +128,9 @@ export const updateUserDataService = (userData:types.UserDataInterface):Promise<
  * @date: 2024-01-15 21:32
  * @author wuwenqiang
  */
-export const loginService = (userId:string,password:string):Promise<MyAwesomeData<number>>=>{
+export const loginService = (userId:string,password:string):Promise<MyAwesomeData<types.UserDataInterface>>=>{
   password = CryptoJS.MD5(password).toString();// 使用md5加密
-  return httpRequest.post<number>(api.login,{userId,password})
+  return httpRequest.post<types.UserDataInterface>(api.login,{userId,password})
 };
 
 /**
@@ -138,10 +138,10 @@ export const loginService = (userId:string,password:string):Promise<MyAwesomeDat
  * @date: 2024-01-21 14:48
  * @author wuwenqiang
  */
-export const registerService = (userData:types.UserDataInterface):Promise<MyAwesomeData<number>>=>{
+export const registerService = (userData:types.UserDataInterface):Promise<MyAwesomeData<types.UserDataInterface>>=>{
   userData = {...userData};
   userData.password = CryptoJS.MD5(userData.password).toString();// 使用md5加密
-  return httpRequest.put<number>(api.register,userData)
+  return httpRequest.put<types.UserDataInterface>(api.register,userData)
 };
 
 /**

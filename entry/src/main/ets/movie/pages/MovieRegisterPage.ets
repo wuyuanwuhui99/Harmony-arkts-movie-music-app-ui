@@ -4,10 +4,12 @@ import * as size from '../../theme/size';
 import { UserDataInterface } from '../interface';
 import promptAction from '@ohos.promptAction'
 import { registerService, verifyUserIdService } from '../service/Index';
+import httpRequest from '../../utils/HttpUtil';
 import preference from '../../utils/PreferenceModel';
 import display from '@ohos.display';
 import OptionDialogComponent from '../components/OptionDialogComponent';
 import { zerofull } from '../../utils/common';
+import { USER_DATA } from '../../common/constant';
 
 @Entry
 @Component
@@ -79,6 +81,30 @@ struct MovieRegisterPage {
       return false;
     }
     return true;
+  }
+
+  useLogin=()=>{
+    if (
+      this.verify(this.userData.userId, '账号') &&
+      this.verify(this.userData.userId, '密码') &&
+      this.verify(this.userData.userId, '确认密码') &&
+      this.verify(this.userData.userId, '昵称')
+    ) {
+      registerService(this.userData).then(async res => {
+        preference.setPassword(this.userData.userId, this.userData.password)
+        preference.setToke(res.token);
+        httpRequest.setToken(res.token);
+        AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
+        router.replaceUrl({
+          url: 'movie/pages/Index', // 目标url
+        }, router.RouterMode.Single, (err) => {
+          if (err) {
+            console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
+          }
+        });
+        router.clear()
+      })
+    }
   }
 
   build() {
@@ -267,27 +293,7 @@ struct MovieRegisterPage {
         .margin({ top: size.pagePadding })
         .fontColor(Color.White)
         .borderRadius(size.blockBorderRaduis * 2)
-        .onClick(() => {
-          if (
-            this.verify(this.userData.userId, '账号') &&
-            this.verify(this.userData.userId, '密码') &&
-            this.verify(this.userData.userId, '确认密码') &&
-            this.verify(this.userData.userId, '昵称')
-          ) {
-            registerService(this.userData).then(async res => {
-              preference.setPassword(this.userData.userId, this.userData.password)
-              await preference.setToke(res.token)
-              router.replaceUrl({
-                url: 'movie/pages/Index', // 目标url
-              }, router.RouterMode.Single, (err) => {
-                if (err) {
-                  console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
-                }
-              });
-              router.clear()
-            })
-          }
-        })
+        .onClick(this.useLogin)
     }
     .width('100%')
     .height('100%')

@@ -1,5 +1,6 @@
 {
   "src": [
+    "movie/pages/LaunchPage",
     "movie/pages/IndexPage",
     "movie/pages/MovieDetailPage",
     "movie/pages/MoviePlayPage",

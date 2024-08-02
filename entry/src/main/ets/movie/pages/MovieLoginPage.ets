@@ -7,6 +7,7 @@ import { USER_DATA } from '../../common/constant';
 import promptAction from '@ohos.promptAction'
 import display from '@ohos.display';
 import preference from '../../utils/PreferenceModel';
+import httpRequest from '../../utils/HttpUtil';
 
 @Entry
 @Component
@@ -120,12 +121,14 @@ struct MovieLoginPage {
             }
             this.loading = true;
             loginService(this.userId, this.password).then(async res => {
-              await preference.setToke(res.token);
               promptAction.showToast({
                 message: "登录成功",
                 duration: 2000,
                 bottom: px2vp(display.getDefaultDisplaySync().height) / 2
               })
+              await preference.setToke(res.token);
+              httpRequest.setToken(res.token);
+              AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
               router.replaceUrl({
                 url: 'movie/pages/Index', // 目标url
               }, router.RouterMode.Single, (err) => {

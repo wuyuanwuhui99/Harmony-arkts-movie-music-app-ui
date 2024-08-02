@@ -72,6 +72,7 @@ class HttpRequest {
             reject(result)
           }
         }).catch((err:Error)=>{
+          reject(err);
           promptAction.showToast({
             message: `请求错误，地址：${HOST + url}${options.extraData &&'，请求参数：'+ JSON.stringify(options.extraData)},错误信息： ${JSON.stringify(err)}`,
             duration: 2000,
