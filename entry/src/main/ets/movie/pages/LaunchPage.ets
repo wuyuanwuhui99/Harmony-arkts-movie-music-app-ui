@@ -30,7 +30,9 @@ struct LaunchPage {
           preference.setToke(res.token);
           httpRequest.setToken(res.token);
           AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
-          this.isInitIndex = true;
+          router.replaceUrl({
+            url: 'movie/pages/IndexPage'
+          });
         }).catch(()=>{
           router.replaceUrl({
             url: 'movie/pages/MovieLoginPage'
@@ -38,7 +40,7 @@ struct LaunchPage {
         })
       }else{
         router.replaceUrl({
-          url: 'movie/pages/MovieLoginPages'
+          url: 'movie/pages/MovieLoginPage'
         });
       }
 

@@ -18,8 +18,8 @@ struct MovieLoginPage {
   loading: boolean = false;
 
   async aboutToAppear(){
-    this.userId = this.userData.userId;
-    this.password = <string> await preference.getPassword(this.userData.userId);
+    this.userId = this.userData?.userId || '吴时吴刻';
+    this.password = <string> await preference.getPassword(this.userData?.userId) || '123456';
   }
 
   @Styles blockStyle(){
@@ -46,6 +46,44 @@ struct MovieLoginPage {
     .padding({ top: size.pagePadding, bottom: size.pagePadding })
   }
 
+  useLogin=()=>{
+    if (!this.userId) {
+      return promptAction.showToast({
+        message: "账号不能为空",
+        duration: 2000,
+        bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+      })
+    } else if (!this.password) {
+      return promptAction.showToast({
+        message: "密码不能为空",
+        duration: 2000,
+        bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+      })
+    }
+    this.loading = true;
+    loginService(this.userId, this.password).then(async res => {
+      promptAction.showToast({
+        message: "登录成功",
+        duration: 2000,
+        bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+      })
+      await preference.setToke(res.token);
+      httpRequest.setToken(res.token);
+      AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
+      router.replaceUrl({
+        url: 'movie/pages/IndexPage', // 目标url
+      });
+    }).catch((e) => {
+      promptAction.showToast({
+        message: "账号或密码错误，请重登录",
+        duration: 2000,
+        bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+      })
+    }).finally(() => {
+      this.loading = false;
+    })
+  }
+
   build() {
     Column() {
       Column() {
@@ -58,7 +96,7 @@ struct MovieLoginPage {
             .width(size.smallIconSize)
             .height(size.smallIconSize)
             .margin({ left: size.smallPadding, right: size.smallPadding })
-          TextInput({ placeholder: "请输入账号", text: this.userData.userId })
+          TextInput({ placeholder: "请输入账号", text: this.userId })
             .layoutWeight(1)
             .backgroundColor(Color.Transparent)
             .onChange((value) => {
@@ -105,47 +143,7 @@ struct MovieLoginPage {
           .margin({ top: size.pagePadding })
           .fontColor(Color.White)
           .borderRadius(size.blockBorderRaduis * 2)
-          .onClick(() => {
-            if (!this.userId) {
-              return promptAction.showToast({
-                message: "账号不能为空",
-                duration: 2000,
-                bottom: px2vp(display.getDefaultDisplaySync().height) / 2
-              })
-            } else if (!this.password) {
-              return promptAction.showToast({
-                message: "密码不能为空",
-                duration: 2000,
-                bottom: px2vp(display.getDefaultDisplaySync().height) / 2
-              })
-            }
-            this.loading = true;
-            loginService(this.userId, this.password).then(async res => {
-              promptAction.showToast({
-                message: "登录成功",
-                duration: 2000,
-                bottom: px2vp(display.getDefaultDisplaySync().height) / 2
-              })
-              await preference.setToke(res.token);
-              httpRequest.setToken(res.token);
-              AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
-              router.replaceUrl({
-                url: 'movie/pages/Index', // 目标url
-              }, router.RouterMode.Single, (err) => {
-                if (err) {
-                  console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
-                }
-              });
-            }).catch((e) => {
-              promptAction.showToast({
-                message: "账号或密码错误，请重登录",
-                duration: 2000,
-                bottom: px2vp(display.getDefaultDisplaySync().height) / 2
-              })
-            }).finally(() => {
-              this.loading = false;
-            })
-          })
+          .onClick(this.useLogin)
 
         Text('注册')
           .padding(size.smallPadding)

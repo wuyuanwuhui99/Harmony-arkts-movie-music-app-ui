@@ -101,7 +101,7 @@ export default struct MusicClassifyListComponents {
   usePlayMusicList = async (musicModel:MusicInterface,index:number)=>{
     let musicList:Array<MusicInterface> = [];
     if(this.musicStorage.classifyName !== this.musicClassify.classifyName){
-      musicList = await getMusicListByFavoriteIdService(this.musicClassify.id,1,MAX_PAGE_SIZE).then(res=>res.data)
+      musicList = await getMusicListByClassifyIdService(this.musicClassify.id,1,MAX_PAGE_SIZE).then(res=>res.data)
     }
     usePlayerRouter(this.musicStorage,musicList,musicModel,this.musicClassify.classifyName,index)
   }

@@ -83,7 +83,7 @@ struct MovieRegisterPage {
     return true;
   }
 
-  useLogin=()=>{
+  useRegister=()=>{
     if (
       this.verify(this.userData.userId, '账号') &&
       this.verify(this.userData.userId, '密码') &&
@@ -293,7 +293,7 @@ struct MovieRegisterPage {
         .margin({ top: size.pagePadding })
         .fontColor(Color.White)
         .borderRadius(size.blockBorderRaduis * 2)
-        .onClick(this.useLogin)
+        .onClick(this.useRegister)
     }
     .width('100%')
     .height('100%')
