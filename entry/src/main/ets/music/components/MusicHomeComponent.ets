@@ -5,7 +5,7 @@ import {MusicClassifyInterface} from '../interface';
 import {getMusicClassifyService} from '../service/Index';
 import MusicClassifyComponent from './MusicClassifyComponent';
 import MusicCategoryComponent from './MusicCategoryComponent';
-import MusicSingerComponent from './MusicSingerComponent';
+import MusicAuthorComponent from './MusicAuthorComponent';
 
 @Component
 export default struct MusicCircleComponent{
@@ -37,7 +37,7 @@ export default struct MusicCircleComponent{
           MusicCategoryComponent()
           ForEach(this.allClassifyList.slice(0,this.pageNum),(item:MusicClassifyInterface)=>{
             if(item.classifyName === '推荐歌手'){
-              MusicSingerComponent()
+              MusicAuthorComponent()
             }else{
               MusicClassifyComponent({classifyId:item.id,classifyName:item.classifyName})
             }

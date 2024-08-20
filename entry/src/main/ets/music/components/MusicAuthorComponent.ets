@@ -1,11 +1,12 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import { getSingerListService } from '../service/Index';
-import { MusicSingerInterface } from '../interface';
+import { getMusicAuthorListService } from '../service/Index';
+import { MusicAuthorInterface } from '../interface';
 import { HOST } from '../../common/constant';
+import router from '@ohos.router';
 
 @Component
-export default struct MusicSingerComponent {
+export default struct MusicAuthorComponent {
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
@@ -14,7 +15,7 @@ export default struct MusicSingerComponent {
     .margin({ top: size.pagePadding })
   }
 
-  @State singerList: Array<MusicSingerInterface> = [];
+  @State singerList: Array<MusicAuthorInterface> = [];
 
   aboutToAppear() {
 
@@ -23,7 +24,7 @@ export default struct MusicSingerComponent {
      * @date: 2024-03-05 22:40
      * @author wuwenqiang
      */
-    getSingerListService(null, 1, 4).then((res) => {
+    getMusicAuthorListService(0, 1, 4).then((res) => {
       this.singerList = res.data;
     })
   }
@@ -35,11 +36,15 @@ export default struct MusicSingerComponent {
           .width(size.smallIconSize)
           .height(size.smallIconSize)
         Text("推荐歌手").margin({ left: size.pagePadding }).layoutWeight(1)
-        Text("更多")
+        Text("更多").onClick(()=>{
+          router.pushUrl({
+            url: 'music/pages/MusicAuthorPage', // 目标url
+          })
+        })
       }.alignItems(VerticalAlign.Center).margin({ bottom: size.pagePadding })
 
       Row() {
-        ForEach(this.singerList, (item: MusicSingerInterface) => {
+        ForEach(this.singerList, (item: MusicAuthorInterface) => {
           Column() {
             Image(item.avatar ? (/http[s]?:\/\//.test(item.avatar) ? item.avatar.replace('{size}', '480') : HOST + item.avatar) : $r("app.media.default_avater"))
               .width(size.middleAvaterSize * 1.5)

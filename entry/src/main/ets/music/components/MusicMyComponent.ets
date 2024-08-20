@@ -3,8 +3,8 @@ import * as size from '../../theme/size';
 import AvaterComponent from '../../movie/components/AvaterComponent';
 import { UserDataInterface } from '../../movie/interface/Index'
 import { HOST, USER_DATA } from '../../common/constant';
-import { getMySingerService, getMusicPlayMenuService, getMusicRecordService, getFavoriteDirectoryService } from '../service/Index';
-import { MusicSingerInterface, MuiscPlayMenuInterface } from '../interface';
+import { getMyLikeMusicAuthorService, getMusicPlayMenuService, getMusicRecordService, getFavoriteDirectoryService } from '../service/Index';
+import { MusicAuthorInterface, MuiscPlayMenuInterface } from '../interface';
 import { FavoriteDirectoryInterface, MusicInterface } from '../interface/Index';
 import { getMusicCover } from '../../utils/common';
 import router from '@ohos.router';
@@ -15,7 +15,7 @@ export default struct MusicMyComponent {
   @StorageLink(USER_DATA) userData: UserDataInterface = null;
   @State dimensions: number = size.middleAvaterSize; // 导入的值不能直接传给组件
   @State myMusicMenuList: Array<FavoriteDirectoryInterface> = []; // 我的歌单
-  @State mySingerList: Array<MusicSingerInterface> = []; // 我关注的歌手列表
+  @State mySingerList: Array<MusicAuthorInterface> = []; // 我关注的歌手列表
   @State myRecordMusicList: Array<MusicInterface> = []; // 我听过的歌曲
   @State myCreateMusicList: Array<MusicInterface> = []; // 我创作的歌曲
   @State isFoldMyMusicMenu: boolean = false; // 是否折叠我的歌单
@@ -49,7 +49,7 @@ export default struct MusicMyComponent {
   }
 
   aboutToAppear() {
-    getMySingerService(1, 5).then((res) => {
+    getMyLikeMusicAuthorService(1, 5).then((res) => {
       this.mySingerList = res.data;
     });
     getFavoriteDirectoryService(0).then(res => this.myMusicMenuList = res.data);
@@ -161,7 +161,7 @@ export default struct MusicMyComponent {
               .onClick(() => {
                 this.isFoldMySinger = !this.isFoldMySinger;
                 if (!this.isFoldMySinger) {
-                  getMySingerService(1, 5).then((res) => {
+                  getMyLikeMusicAuthorService(1, 5).then((res) => {
                     this.mySingerTotal = res.total;
                     this.mySingerList = res.data;
                   });
@@ -175,7 +175,7 @@ export default struct MusicMyComponent {
           }.width('100%')
 
           if (!this.isFoldMySinger) {
-            ForEach(this.mySingerList, (item: MusicSingerInterface) => {
+            ForEach(this.mySingerList, (item: MusicAuthorInterface) => {
               Row() {
                 Image(item.avatar ? (/http[s]?:\/\//.test(item.avatar) ? item.avatar.replace('{size}', '480') : HOST + item.avatar) : $r("app.media.default_avater"))
                   .width(size.middleAvaterSize)

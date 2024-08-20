@@ -1,16 +1,16 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import router from '@ohos.router';
-import { MusicInterface, MusicStorageInterface, FavoriteDirectoryInterface, MusicClassifyInterface } from '../interface';
-import { FAVORITE_MUSIC, MAX_PAGE_SIZE, MUSIC_STORAGE, PAGE_SIZE } from '../../common/constant';
+import { MusicInterface, MusicStorageInterface, MusicClassifyInterface } from '../interface';
+import { MAX_PAGE_SIZE, MUSIC_STORAGE, PAGE_SIZE } from '../../common/constant';
 import { LIKE_INNER_EVENT } from '../../common/config';
-import { deleteMusicLikeService, getMusicListByClassifyIdService, getMusicListByFavoriteIdService, insertMusicLikeService } from '../service/Index';
-import { getMusicCover, useAppStorage, usePlayerRouter, useUpdateStorage } from '../../utils/common';
+import { deleteMusicLikeService, getMusicListByClassifyIdService, insertMusicLikeService } from '../service/Index';
+import { useAppStorage, usePlayerRouter, useUpdateStorage } from '../../utils/common';
 import promptAction from '@ohos.promptAction';
 import display from '@ohos.display';
 import emitter from '@ohos.events.emitter';
 import MusicClassifyListComponent from '../components/MusicClassifyListComponent';
-
+import NavigatorTitleComponent from '../components/NavigatorTitleComponent';
 @Entry
 @Component
 export default struct MusicClassifyListComponents {
@@ -112,25 +112,7 @@ export default struct MusicClassifyListComponents {
 
   build() {
     Column() {
-      Row(){
-        Image($r('app.media.icon_back'))
-          .width(size.smallIconSize)
-          .height(size.smallIconSize)
-          .opacity(size.opacity)
-          .onClick(()=>{
-            router.back()
-          })
-        Text(this.musicClassify?.classifyName)
-          .layoutWeight(1)
-          .textAlign(TextAlign.Center)
-        Image($r('app.media.icon_back'))
-          .width(size.smallIconSize)
-          .height(size.smallIconSize)
-          .visibility(Visibility.Hidden)
-      }
-      .width('100%')
-      .padding(size.pagePadding)
-      .backgroundColor(colors.blockColor)
+      NavigatorTitleComponent({title:this.musicClassify?.classifyName || ''})
       Scroll(){
         MusicClassifyListComponent({musicList:$musicList,
           onPlayMusicList:this.usePlayMusicList,classifyName:this.musicClassify.classifyName})

@@ -36,8 +36,8 @@ export const getMusicListByClassifyIdService = (classifyId:number,pageNum:number
  * @date: 2024-03-03 18:23
  * @author wuwenqiang
  */
-export const getSingerListService = (category:string,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicSingerInterface>>> => {
-  return httpRequest.get<Array<types.MusicSingerInterface>>(`${api.getSingerList}?${category != '' && category != null ? "category=" + category + "&" : ""}pageNum=${pageNum}&pageSize=${pageSize}`);
+export const getMusicAuthorListService = (categoryId:number,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicAuthorInterface>>> => {
+  return httpRequest.get<Array<types.MusicAuthorInterface>>(`${api.getMusicAuthorList}?categoryId=${categoryId}&pageNum=${pageNum}&pageSize=${pageSize}`);
 }
 
 /**
@@ -90,8 +90,8 @@ export const getMusicPlayMenuService = ():Promise<MyAwesomeData<Array<types.Muis
  * @date: 2024-03-17 22:12
  * @author wuwenqiang
  */
-export const getMySingerService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicSingerInterface>>> => {
-  return httpRequest.get<Array<types.MusicSingerInterface>>(`${api.getMySinger}?pageNum=${pageNum}&pageSize=${pageSize}`);
+export const getMyLikeMusicAuthorService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicAuthorInterface>>> => {
+  return httpRequest.get<Array<types.MusicAuthorInterface>>(`${api.getMyLikeMusicAuthor}?pageNum=${pageNum}&pageSize=${pageSize}`);
 }
 
 /**
@@ -192,4 +192,13 @@ export const saveCircleService = (circle:types.CircleInterface):Promise<MyAwesom
  */
 export const getMusicListByFavoriteIdService = (favoriteId:number,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicInterface>>> => {
   return httpRequest.get<Array<types.MusicInterface>>(`${api.getMusicListByFavoriteId}?favoriteId=${favoriteId}&pageNum=${pageNum}&pageSize=${pageSize}`);
+}
+
+/**
+ * @description: 获取歌手分类
+ * @date: 2024-08-19 23:17
+ * @author wuwenqiang
+ */
+export const getMusicAuthorCategoryService = ():Promise<MyAwesomeData<Array<types.SingerCategoryInterface>>> => {
+  return httpRequest.get<Array<types.SingerCategoryInterface>>(api.getMusicAuthorCategory);
 }

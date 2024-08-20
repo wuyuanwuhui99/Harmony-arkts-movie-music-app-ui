@@ -10,6 +10,7 @@ import promptAction from '@ohos.promptAction';
 import display from '@ohos.display';
 import emitter from '@ohos.events.emitter';
 import MusicClassifyListComponent from '../components/MusicClassifyListComponent';
+import NavigatorTitleComponent from '../components/NavigatorTitleComponent';
 
 @Entry
 @Component
@@ -115,25 +116,7 @@ export default struct MusicFavoriteListPage {
 
   build() {
     Column() {
-      Row(){
-        Image($r('app.media.icon_back'))
-          .width(size.smallIconSize)
-          .height(size.smallIconSize)
-          .opacity(size.opacity)
-          .onClick(()=>{
-            router.back()
-          })
-        Text(this.favoriteDirectory?.name)
-          .layoutWeight(1)
-          .textAlign(TextAlign.Center)
-        Image($r('app.media.icon_back'))
-          .width(size.smallIconSize)
-          .height(size.smallIconSize)
-          .visibility(Visibility.Hidden)
-      }
-      .width('100%')
-      .padding(size.pagePadding)
-      .backgroundColor(colors.blockColor)
+      NavigatorTitleComponent({title:this.favoriteDirectory?.name || ''})
       Scroll(){
         Column(){
           Row({space:size.pagePadding}){

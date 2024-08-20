@@ -13,6 +13,7 @@
     "music/pages/MusicSearchPage",
     "music/pages/MusicSharePage",
     "music/pages/MusicFavoriteListPage",
-    "music/pages/MusicClassifyListPage"
+    "music/pages/MusicClassifyListPage",
+    "music/pages/MusicAuthorPage"
   ]
 }

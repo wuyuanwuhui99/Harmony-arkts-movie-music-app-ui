@@ -46,7 +46,7 @@ export interface MusicClassifyInterface {
 }
 
 // 歌手字段
-export interface MusicSingerInterface {
+export interface MusicAuthorInterface {
   id : number,//主键
   authorId : number,// 歌手id
   authorName: string,// 歌手名称
@@ -61,6 +61,7 @@ export interface MusicSingerInterface {
   createTime: string,// 创建时间
   updateTime: string,// 更新时间
   total: string// 歌曲总数
+  isLike:number
 }
 
 // 点赞字段
@@ -196,4 +197,14 @@ export interface FavoriteMusicInterface {
   musicId?:number,// 用户名称
   createTime?:string;// 创建时间
   updateTime?:string;// 更新时间
+}
+
+// 音乐分类
+export interface SingerCategoryInterface{
+  id:number,// 分类id
+  categoryName:string,// 歌手分类名称
+  rank:number,// 排名
+  disabled:number,// 是否禁用
+  createTime:string;// 创建时间
+  updateTime:string;// 更新时间
 }
