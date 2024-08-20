@@ -14,11 +14,11 @@ export default struct MusicSingerPage {
   @StorageLink(MUSIC_STORAGE) musicStorage:  MusicStorageInterface = useAppStorage()
   @State favoriteDirectory:FavoriteDirectoryInterface = null;
   @State categoryList:Array<Array<SingerCategoryInterface>> = [];
-  @State singerList:Array<MusicAuthorInterface> = [];
+  @State musicAuthorList:Array<MusicAuthorInterface> = [];
   @State activeCategoryItem:SingerCategoryInterface = null;
   @State pageNum:number = 1;
   @State total:number = 0;
-  private loading:boolean = false;
+  @State loading:boolean = false;
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -47,8 +47,7 @@ export default struct MusicSingerPage {
         }
         this.categoryList.push(items);
       }
-      this.activeCategoryItem = this.categoryList[0][0];
-      this.useSingerList();
+      this.useMusicAuthorList();
     });
   }
 
@@ -57,12 +56,12 @@ export default struct MusicSingerPage {
    * @date: 2024-08-20 00:15
    * @author wuwenqiang
    */
-  useSingerList(){
+  useMusicAuthorList(){
     if(this.loading)return;
     this.loading = true;
-    getMusicAuthorListService(this.activeCategoryItem.id,this.pageNum,PAGE_SIZE).then((res)=>{
+    getMusicAuthorListService(this.activeCategoryItem?.id || 0,this.pageNum,PAGE_SIZE).then((res)=>{
       this.total = res.total;
-      this.singerList.push(...res.data);
+      this.musicAuthorList.push(...res.data);
     }).finally(()=>{
       this.loading = false;
     });
@@ -70,7 +69,7 @@ export default struct MusicSingerPage {
 
   build() {
     Column() {
-      NavigatorTitleComponent({title:this.favoriteDirectory?.name || ''})
+      NavigatorTitleComponent({title:'歌手分类'})
       Scroll(){
         Column(){
           Column({space:size.smallPadding}){
@@ -80,9 +79,20 @@ export default struct MusicSingerPage {
                   Text(item.categoryName)
                     .border({
                       width: 1,
-                      color: colors.borderColor,
+                      color: this.activeCategoryItem?.id === item.id ? colors.tabSelectedColor :colors.borderColor,
                       style: BorderStyle.Solid
                     })
+                    .onClick(()=>{
+                      if(this.activeCategoryItem?.id === item.id){
+                        this.activeCategoryItem = null;
+                      }else{
+                        this.activeCategoryItem = item;
+                      }
+                      this.musicAuthorList = [];
+                      this.total = 0;
+                      this.useMusicAuthorList();
+                    })
+                    .fontColor(this.activeCategoryItem?.id === item.id ? colors.tabSelectedColor :colors.blackBackgroundColor)
                     .visibility(item.categoryName ? Visibility.Visible : Visibility.Hidden)
                     .layoutWeight(item.categoryName.length === 2 ? 1 : 2)
                     .textAlign(TextAlign.Center)
@@ -94,7 +104,7 @@ export default struct MusicSingerPage {
           }
           .blockStyle()
           Column({space:size.pagePadding}){
-            ForEach(this.singerList,(item:MusicAuthorInterface)=>{
+            ForEach(this.musicAuthorList,(item:MusicAuthorInterface,index:number)=>{
               Row({space:size.pagePadding}){
                 if(item.avatar){
                   Image(getMusicCover(item.avatar))
@@ -120,18 +130,24 @@ export default struct MusicSingerPage {
                   .width(size.smallIconSize)
                   .height(size.smallIconSize)
               }
-
+              if(index !== this.musicAuthorList.length - 1)Divider().height(1).color(colors.borderColor)
             })
           }
           .blockStyle()
           .margin({top:size.pagePadding,bottom:size.pagePadding})
 
           Row() {
-            Text(this.pageNum * PAGE_SIZE < this.total ? '正在加载更多...' : '已经到底了...')
+            Text(this.pageNum * PAGE_SIZE < this.total || this.loading ? '正在加载更多...' : '已经到底了...')
           }.width('100%').justifyContent(FlexAlign.Center).padding({ top: size.pagePadding,bottom:size.pagePadding })
-        }.justifyContent(FlexAlign.Start)
-
+        }
+        .justifyContent(FlexAlign.Start)
       }
+      .onScrollEdge((side: Edge) => {
+        if (this.pageNum * PAGE_SIZE < this.total) {
+          this.pageNum++;
+          this.useMusicAuthorList()
+        }
+      })
       .padding({left:size.pagePadding,right:size.pagePadding})
       .align(Alignment.Top)
       .scrollable(ScrollDirection.Vertical)
