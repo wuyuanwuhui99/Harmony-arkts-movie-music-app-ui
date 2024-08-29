@@ -82,20 +82,22 @@ export default struct MusicClassifyListComponent {
               .textOverflow({ overflow: TextOverflow.Ellipsis })
               .fontColor(colors.disableTextColor)
           }.layoutWeight(1).alignItems(HorizontalAlign.Start)
-
           Image(this.musicStorage.musicItem?.id === item.id && this.musicStorage.classifyName === this.classifyName && this.musicStorage.isPlaying ? $r("app.media.icon_music_playing_grey") : $r("app.media.icon_music_play"))
             .width(size.smallIconSize)
             .height(size.smallIconSize)
-            .onClick(() => this.onPlayMusicList(item,index))
           Image((this.musicStorage.musicItem?.id === item.id && this.musicStorage.musicItem?.isLike === 1 || item.isLike === 0) ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
             .width(size.smallIconSize)
             .height(size.smallIconSize)
+            .onClick(()=>{
+              this.useLike(item,index);
+            })
           Image($r("app.media.icon_music_menu"))
             .width(size.smallIconSize)
             .height(size.smallIconSize)
         }
+        .onClick(() => this.onPlayMusicList(item,index))
         .alignItems(VerticalAlign.Center)
-        .margin({ top: size.pagePadding })
+        .margin({ top: index === 0 ? 0 : size.pagePadding })
         .padding({ bottom: index === this.musicList.length - 1 ? 0 : size.pagePadding })
         .border({
           width: {

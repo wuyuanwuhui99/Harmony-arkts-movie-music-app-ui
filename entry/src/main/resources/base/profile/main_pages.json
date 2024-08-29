@@ -14,6 +14,7 @@
     "music/pages/MusicSharePage",
     "music/pages/MusicFavoriteListPage",
     "music/pages/MusicClassifyListPage",
-    "music/pages/MusicAuthorPage"
+    "music/pages/MusicAuthorCategoryPage",
+    "music/pages/MusicAuthorMusicListPage"
   ]
 }

@@ -115,7 +115,8 @@ export default struct MusicClassifyListComponents {
       NavigatorTitleComponent({title:this.musicClassify?.classifyName || ''})
       Scroll(){
         MusicClassifyListComponent({musicList:$musicList,
-          onPlayMusicList:this.usePlayMusicList,classifyName:this.musicClassify.classifyName})
+          // 使用toString防止把@State装饰的响应式变量传递到组件中，避免编辑器抛出警告
+          onPlayMusicList:this.usePlayMusicList,classifyName:this.musicClassify.classifyName.toString()})
         Row() {
           Text(this.pageNum * PAGE_SIZE < this.total ? '正在加载更多...' : '已经到底了...')
         }.width('100%').padding({ top: size.pagePadding,bottom:size.pagePadding })

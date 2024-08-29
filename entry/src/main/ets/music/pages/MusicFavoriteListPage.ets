@@ -57,47 +57,6 @@ export default struct MusicFavoriteListPage {
   }
 
   /**
-   * @description: 添加点赞或取消点赞
-   * @date: 2024-05-12 11:45
-   * @author wuwenqiang
-   */
-  useLike(musicModel:MusicInterface,index:number){
-    if (this.loading) return;
-    this.loading = true;
-    if (musicModel.isLike === 1) {
-      deleteMusicLikeService(musicModel.id).then((res) => {
-        if (res.data > 0) {
-          musicModel.isLike = 0;// 取消点赞标志
-          // 对象解构之后，形成新的内存地址，相当于对象的浅拷贝,再把旧的对象替换掉
-          this.musicList.splice(index,1,{...musicModel})
-          useUpdateStorage(this.musicStorage);
-          promptAction.showToast({
-            message: "取消点赞成功",
-            duration: 2000,
-            bottom: px2vp(display.getDefaultDisplaySync().height) / 2
-          });
-          emitter.emit(LIKE_INNER_EVENT,{data:musicModel})
-        }
-      }).finally(() => this.loading = false)
-    } else {
-      insertMusicLikeService(musicModel.id).then(res => {
-        if (res.data > 0) {
-          musicModel.isLike = 1;// 添加点赞标志
-          // 对象解构之后，形成新的内存地址，相当于对象的浅拷贝，再把旧的对象替换掉
-          this.musicList.splice(index,1,{...musicModel})
-          useUpdateStorage(this.musicStorage);
-          promptAction.showToast({
-            message: "添加收藏成功",
-            duration: 2000,
-            bottom: px2vp(display.getDefaultDisplaySync().height) / 2
-          });
-          emitter.emit(LIKE_INNER_EVENT,{data:musicModel})
-        }
-      }).finally(() => this.loading = false)
-    }
-  }
-
-  /**
    * @description: 播放音乐分类
    * @date: 2024-07-17 22:23
    * @author wuwenqiang
@@ -133,7 +92,8 @@ export default struct MusicFavoriteListPage {
 
           MusicClassifyListComponent({musicList:$musicList,
             onPlayMusicList:this.usePlayMusicList,
-          classifyName:this.classifyName})
+            classifyName:this.classifyName.toString()// 使用toString防止把@State装饰的响应式变量传递到组件中，避免编辑器抛出警告
+          })
         }.justifyContent(FlexAlign.Start)
 
       }

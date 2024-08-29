@@ -200,7 +200,7 @@ export interface FavoriteMusicInterface {
 }
 
 // 音乐分类
-export interface SingerCategoryInterface{
+export interface MusicAuthorCategoryInterface{
   id:number,// 分类id
   categoryName:string,// 歌手分类名称
   rank:number,// 排名

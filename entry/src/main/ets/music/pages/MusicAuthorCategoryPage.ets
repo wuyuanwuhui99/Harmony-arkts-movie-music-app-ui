@@ -2,20 +2,21 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { MusicStorageInterface, FavoriteDirectoryInterface } from '../interface';
 import { MUSIC_STORAGE, PAGE_SIZE } from '../../common/constant';
-import { getMusicAuthorCategoryService, getMusicAuthorListService } from '../service/Index';
+import { getMusicAuthorCategoryService, getMusicAuthorListByCategoryIdService } from '../service/Index';
 import { getMusicCover, useAppStorage } from '../../utils/common';
-import { MusicAuthorInterface, SingerCategoryInterface } from '../interface/Index';
+import { MusicAuthorInterface, MusicAuthorCategoryInterface } from '../interface/Index';
 import NavigatorTitleComponent from '../components/NavigatorTitleComponent';
+import router from '@ohos.router';
 
 @Entry
 @Component
-export default struct MusicSingerPage {
+export default struct MusicAuthorCategoryPage {
 
   @StorageLink(MUSIC_STORAGE) musicStorage:  MusicStorageInterface = useAppStorage()
   @State favoriteDirectory:FavoriteDirectoryInterface = null;
-  @State categoryList:Array<Array<SingerCategoryInterface>> = [];
+  @State categoryList:Array<Array<MusicAuthorCategoryInterface>> = [];
   @State musicAuthorList:Array<MusicAuthorInterface> = [];
-  @State activeCategoryItem:SingerCategoryInterface = null;
+  @State activeCategoryItem:MusicAuthorCategoryInterface = null;
   @State pageNum:number = 1;
   @State total:number = 0;
   @State loading:boolean = false;
@@ -31,8 +32,9 @@ export default struct MusicSingerPage {
   aboutToAppear(){
     getMusicAuthorCategoryService().then((res)=>{
       for(let i = 0; i < Math.ceil(res.data.length / 4); i++){
-        const items:Array<SingerCategoryInterface> = res.data.slice(i*4,(i+1) * 4)
+        const items:Array<MusicAuthorCategoryInterface> = res.data.slice(i*4,(i+1) * 4)
         const length = items.length;
+        if(this.activeCategoryItem === null)this.activeCategoryItem =  res.data[i];
         if(length < 4){
           for(let j = 0; j < 4 - length; j++){
             items.push({
@@ -59,7 +61,7 @@ export default struct MusicSingerPage {
   useMusicAuthorList(){
     if(this.loading)return;
     this.loading = true;
-    getMusicAuthorListService(this.activeCategoryItem?.id || 0,this.pageNum,PAGE_SIZE).then((res)=>{
+    getMusicAuthorListByCategoryIdService(this.activeCategoryItem?.id || 0,this.pageNum,PAGE_SIZE).then((res)=>{
       this.total = res.total;
       this.musicAuthorList.push(...res.data);
     }).finally(()=>{
@@ -73,7 +75,7 @@ export default struct MusicSingerPage {
       Scroll(){
         Column(){
           Column({space:size.smallPadding}){
-            ForEach(this.categoryList, (items: Array<SingerCategoryInterface>) => {
+            ForEach(this.categoryList, (items: Array<MusicAuthorCategoryInterface>) => {
               Row({space:size.smallPadding}){
                 ForEach(items,(item)=>{
                   Text(item.categoryName)
@@ -83,11 +85,8 @@ export default struct MusicSingerPage {
                       style: BorderStyle.Solid
                     })
                     .onClick(()=>{
-                      if(this.activeCategoryItem?.id === item.id){
-                        this.activeCategoryItem = null;
-                      }else{
-                        this.activeCategoryItem = item;
-                      }
+                      if(this.activeCategoryItem?.id === item.id)return;
+                      this.activeCategoryItem = item;
                       this.musicAuthorList = [];
                       this.total = 0;
                       this.useMusicAuthorList();
@@ -129,7 +128,14 @@ export default struct MusicSingerPage {
                 Image($r("app.media.icon_music_menu"))
                   .width(size.smallIconSize)
                   .height(size.smallIconSize)
-              }
+              }.onClick(()=>{
+                router.pushUrl({
+                  url: 'music/pages/MusicAuthorMusicListPage',
+                  params: {
+                    musicAuthor: item
+                  }
+                });
+              })
               if(index !== this.musicAuthorList.length - 1)Divider().height(1).color(colors.borderColor)
             })
           }

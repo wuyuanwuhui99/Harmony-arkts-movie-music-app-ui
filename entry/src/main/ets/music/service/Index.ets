@@ -36,8 +36,8 @@ export const getMusicListByClassifyIdService = (classifyId:number,pageNum:number
  * @date: 2024-03-03 18:23
  * @author wuwenqiang
  */
-export const getMusicAuthorListService = (categoryId:number,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicAuthorInterface>>> => {
-  return httpRequest.get<Array<types.MusicAuthorInterface>>(`${api.getMusicAuthorList}?categoryId=${categoryId}&pageNum=${pageNum}&pageSize=${pageSize}`);
+export const getMusicAuthorListByCategoryIdService = (categoryId:number,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicAuthorInterface>>> => {
+  return httpRequest.get<Array<types.MusicAuthorInterface>>(`${api.getMusicAuthorListByCategoryId}?categoryId=${categoryId}&pageNum=${pageNum}&pageSize=${pageSize}`);
 }
 
 /**
@@ -199,6 +199,15 @@ export const getMusicListByFavoriteIdService = (favoriteId:number,pageNum:number
  * @date: 2024-08-19 23:17
  * @author wuwenqiang
  */
-export const getMusicAuthorCategoryService = ():Promise<MyAwesomeData<Array<types.SingerCategoryInterface>>> => {
-  return httpRequest.get<Array<types.SingerCategoryInterface>>(api.getMusicAuthorCategory);
+export const getMusicAuthorCategoryService = ():Promise<MyAwesomeData<Array<types.MusicAuthorCategoryInterface>>> => {
+  return httpRequest.get<Array<types.MusicAuthorCategoryInterface>>(api.getMusicAuthorCategory);
+}
+
+/**
+ * @description: 根据歌手id获取歌曲列表
+ * @date: 2024-08-29 21:45
+ * @author wuwenqiang
+ */
+export const getMusicListByAuthorIdService = (authorId:number,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicInterface>>> => {
+  return httpRequest.get<Array<types.MusicInterface>>(`${api.getMusicListByAuthorId}?authorId=${authorId}&pageNum=${pageNum}&pageSize=${pageSize}`);
 }
