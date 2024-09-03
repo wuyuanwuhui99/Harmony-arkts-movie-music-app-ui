@@ -5,8 +5,9 @@ import { MusicInterface,MusicStorageInterface } from '../interface';
 import { getMusicListByClassifyIdService } from '../service/Index';
 import { MUSIC_STORAGE } from '../../common/constant';
 import { LIKE_INNER_EVENT } from '../../common/config';
-import {usePlayerRouter, useAppStorage, getMusicCover} from '../../utils/common';
+import {usePlayerRouter, useAppStorage} from '../../utils/common';
 import router from '@ohos.router';
+import MusicAvaterComponent from './MusicAvaterComponent';
 
 @Component
 export default struct MusicClassifyComponent {
@@ -80,10 +81,7 @@ export default struct MusicClassifyComponent {
       Column() {
         ForEach(this.musicList, (item: MusicInterface, index: number) => {
           Row({space:size.pagePadding}) {
-            Image(getMusicCover(item.cover))
-              .width(size.middleAvaterSize)
-              .height(size.middleAvaterSize)
-              .borderRadius(size.middleAvaterSize)
+            MusicAvaterComponent({avater:item.cover?.toString(),title:item.songName.toString(),dimension:Number(size.middleAvaterSize),type:'music'})
             Column() {
               Text(item.songName)
                 .maxLines(1)

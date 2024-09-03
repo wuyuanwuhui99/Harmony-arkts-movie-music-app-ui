@@ -1,11 +1,10 @@
-import { HOST } from '../../common/constant';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import { FavoriteDirectoryInterface, FavoriteMusicInterface } from '../interface/Index';
 import {  getFavoriteDirectoryService, insertMusicFavoriteService,insertFavoriteDirectoryService } from '../service/Index';
 import promptAction from '@ohos.promptAction';
 import display from '@ohos.display';
-import { getMusicCover } from '../../utils/common';
+import MusicAvaterComponent from '../components/MusicAvaterComponent';
 
 @Extend(Row) function roundedSquareStyle  () {
   .alignItems(VerticalAlign.Center)
@@ -145,19 +144,7 @@ export default struct FavoriteComponent {
             ForEach(this.favoriteDirectoryList,(item:FavoriteDirectoryInterface)=>{
               Blank().height(size.pagePadding)
               Row(){
-                if(item.cover){
-                  Image(getMusicCover(item.cover))
-                    .width(size.middleAvaterSize)
-                    .height(size.middleAvaterSize)
-                    .borderRadius(size.middleAvaterSize)
-                }else {
-                  Text(item.name[0])
-                    .textAlign(TextAlign.Center)
-                    .width(size.middleAvaterSize)
-                    .height(size.middleAvaterSize)
-                    .backgroundColor(colors.pageBackgroundColor)
-                    .borderRadius(size.middleAvaterSize)
-                }
+                MusicAvaterComponent({avater:item.cover?.toString(),title:item.name[0],dimension:Number(size.middleAvaterSize),type:'music'})
                 Column({space:size.smallPadding}){
                   Text(item.name)
                   Text(`${item.total}首`).fontColor(colors.disableTextColor)

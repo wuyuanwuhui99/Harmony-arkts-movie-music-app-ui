@@ -2,12 +2,13 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import emitter from '@ohos.events.emitter'
 import { MusicInterface,MusicStorageInterface } from '../interface';
-import { deleteMusicLikeService, getMusicListByClassifyIdService, insertMusicLikeService } from '../service/Index';
+import { deleteMusicLikeService, insertMusicLikeService } from '../service/Index';
 import { MUSIC_STORAGE } from '../../common/constant';
 import { LIKE_INNER_EVENT } from '../../common/config';
-import {useAppStorage, getMusicCover, useUpdateStorage} from '../../utils/common';
+import {useAppStorage, useUpdateStorage} from '../../utils/common';
 import promptAction from '@ohos.promptAction';
 import display from '@ohos.display';
+import MusicAvaterComponent from './MusicAvaterComponent';
 
 @Component
 export default struct MusicClassifyListComponent {
@@ -69,10 +70,7 @@ export default struct MusicClassifyListComponent {
     Column() {
       ForEach(this.musicList, (item: MusicInterface, index: number) => {
         Row({space:size.pagePadding}) {
-          Image(getMusicCover(item.cover))
-            .width(size.middleAvaterSize)
-            .height(size.middleAvaterSize)
-            .borderRadius(size.middleAvaterSize)
+          MusicAvaterComponent({avater:item.cover?.toString(),title:item.songName[0],dimension:Number(size.middleAvaterSize),type:'music'})
           Column() {
             Text(item.songName)
               .maxLines(1)

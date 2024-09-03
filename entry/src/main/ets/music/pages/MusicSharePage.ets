@@ -2,17 +2,16 @@ import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
 import router from '@ohos.router';
 import { MusicInterface, MusicStorageInterface,CircleInterface } from '../interface';
-import TitleComponent from '../../movie/components/TitleComponent';
-import { HOST, MUSIC_SEARCH, MUSIC_STORAGE } from '../../common/constant';
+import { MUSIC_SEARCH, MUSIC_STORAGE } from '../../common/constant';
 import { SocialEnum } from '../../common/enum';
-import { LIKE_INNER_EVENT, PermissionValueMap } from '../../common/config';
-import { deleteMusicLikeService, insertMusicLikeService, saveCircleService, searchMusicService } from '../service/Index';
-import { getMusicCover, useAppStorage, useUpdateStorage } from '../../utils/common';
+import { PermissionValueMap } from '../../common/config';
+import { saveCircleService } from '../service/Index';
+import { useAppStorage } from '../../utils/common';
 import { PermissionMap } from '../../common/config';
 import promptAction from '@ohos.promptAction';
 import display from '@ohos.display';
-import emitter from '@ohos.events.emitter';
 import OptionDialogComponent from '../../movie/components/OptionDialogComponent';
+import MusicAvaterComponent from '../components/MusicAvaterComponent';
 
 @Entry
 @Component
@@ -126,10 +125,7 @@ export default struct MusicSharePage {
           .borderRadius(size.smallBorderRaduis)
           .onChange((value:string) => this.circlrModel.content = value)
         Row({space:size.pagePadding}){
-          Image(getMusicCover(this.musicItem?.cover))
-            .width(size.middleAvaterSize)
-            .aspectRatio(1)
-            .borderRadius(size.middleAvaterSize)
+          MusicAvaterComponent({avater:this.musicItem?.cover,title:this.musicItem?.songName,dimension:Number(size.middleAvaterSize),type:'music'})
           Text(`${this.musicItem?.authorName} - ${this.musicItem.songName}`).layoutWeight(1)
         }
         .blockStyle()

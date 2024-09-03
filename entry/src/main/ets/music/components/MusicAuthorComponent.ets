@@ -4,6 +4,7 @@ import { getMusicAuthorListByCategoryIdService } from '../service/Index';
 import { MusicAuthorInterface } from '../interface';
 import { HOST } from '../../common/constant';
 import router from '@ohos.router';
+import MusicAvaterComponent from './MusicAvaterComponent';
 
 @Component
 export default struct MusicAuthorComponent {
@@ -46,10 +47,7 @@ export default struct MusicAuthorComponent {
       Row() {
         ForEach(this.authorList, (item: MusicAuthorInterface) => {
           Column() {
-            Image(item.avatar ? (/http[s]?:\/\//.test(item.avatar) ? item.avatar.replace('{size}', '480') : HOST + item.avatar) : $r("app.media.default_avater"))
-              .width(size.middleAvaterSize * 1.5)
-              .height(size.middleAvaterSize * 1.5)
-              .borderRadius(size.middleAvaterSize * 1.5)
+            MusicAvaterComponent({avater:item.avatar?.toString(),title:item.authorName[0],dimension:Number(size.middleAvaterSize * 1.5),type:'author'})
             Text(item.authorName).margin({ top: size.smallPadding })
           }.width('25%').alignItems(HorizontalAlign.Center)
         })

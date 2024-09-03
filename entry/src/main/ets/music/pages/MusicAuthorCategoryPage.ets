@@ -3,10 +3,11 @@ import * as size from '../../theme/size';
 import { MusicStorageInterface, FavoriteDirectoryInterface } from '../interface';
 import { MUSIC_STORAGE, PAGE_SIZE } from '../../common/constant';
 import { getMusicAuthorCategoryService, getMusicAuthorListByCategoryIdService } from '../service/Index';
-import { getMusicCover, useAppStorage } from '../../utils/common';
+import { useAppStorage } from '../../utils/common';
 import { MusicAuthorInterface, MusicAuthorCategoryInterface } from '../interface/Index';
 import NavigatorTitleComponent from '../components/NavigatorTitleComponent';
 import router from '@ohos.router';
+import MusicAvaterComponent from '../components/MusicAvaterComponent';
 
 @Entry
 @Component
@@ -105,19 +106,7 @@ export default struct MusicAuthorCategoryPage {
           Column({space:size.pagePadding}){
             ForEach(this.musicAuthorList,(item:MusicAuthorInterface,index:number)=>{
               Row({space:size.pagePadding}){
-                if(item.avatar){
-                  Image(getMusicCover(item.avatar))
-                    .width(size.middleAvaterSize)
-                    .height(size.middleAvaterSize)
-                    .borderRadius(size.middleAvaterSize)
-                }else{
-                  Text(item.authorName[0])
-                    .textAlign(TextAlign.Center)
-                    .width(size.middleAvaterSize)
-                    .height(size.middleAvaterSize)
-                    .backgroundColor(colors.pageBackgroundColor)
-                    .borderRadius(size.middleAvaterSize)
-                }
+                MusicAvaterComponent({avater:item.avatar?.toString(),title:item.authorName[0],dimension:Number(size.middleAvaterSize),type:'author'})
                 Text(item.authorName).layoutWeight(1)
                 Image($r("app.media.icon_music_play"))
                   .width(size.smallIconSize)

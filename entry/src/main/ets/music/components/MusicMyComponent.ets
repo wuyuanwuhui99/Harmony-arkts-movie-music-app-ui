@@ -4,10 +4,10 @@ import AvaterComponent from '../../movie/components/AvaterComponent';
 import { UserDataInterface } from '../../movie/interface/Index'
 import { HOST, USER_DATA } from '../../common/constant';
 import { getMyLikeMusicAuthorService, getMusicPlayMenuService, getMusicRecordService, getFavoriteDirectoryService } from '../service/Index';
-import { MusicAuthorInterface, MuiscPlayMenuInterface } from '../interface';
+import { MusicAuthorInterface } from '../interface';
 import { FavoriteDirectoryInterface, MusicInterface } from '../interface/Index';
-import { getMusicCover } from '../../utils/common';
 import router from '@ohos.router';
+import MusicAvaterComponent from './MusicAvaterComponent';
 
 @Component
 export default struct MusicMyComponent {
@@ -120,19 +120,7 @@ export default struct MusicMyComponent {
           if (!this.isFoldMyMusicMenu) {
             ForEach(this.myMusicMenuList, (item: FavoriteDirectoryInterface) => {
               Row({space:size.pagePadding}) {
-                if(item.cover){
-                  Image(getMusicCover(item.cover))
-                    .width(size.middleAvaterSize)
-                    .height(size.middleAvaterSize)
-                    .borderRadius(size.middleAvaterSize)
-                }else {
-                  Text(item.name[0])
-                    .textAlign(TextAlign.Center)
-                    .width(size.middleAvaterSize)
-                    .height(size.middleAvaterSize)
-                    .backgroundColor(colors.pageBackgroundColor)
-                    .borderRadius(size.middleAvaterSize)
-                }
+                MusicAvaterComponent({avater:item.cover?.toString(),title:item.name[0],dimension:Number(size.middleAvaterSize),type:'music'})
                 Column() {
                   Text(item.name)
                   Text(item.total.toString() + '首').fontColor(colors.disableTextColor)

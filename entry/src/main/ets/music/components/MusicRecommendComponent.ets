@@ -2,8 +2,9 @@ import { getMusicListByClassifyIdService } from '../service/Index';
 import { MusicInterface, MusicStorageInterface } from '../interface';
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
-import { HOST, MUSIC_STORAGE } from '../../common/constant';
-import { usePlayerRouter,useAppStorage, getMusicCover } from '../../utils/common';
+import { MUSIC_STORAGE } from '../../common/constant';
+import { usePlayerRouter,useAppStorage } from '../../utils/common';
+import MusicAvaterComponent from './MusicAvaterComponent';
 
 // LazyForEach列表栏加载，
 // 参考文档：https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/arkts-rendering-control-lazyforeach-0000001524417213-V3
@@ -155,11 +156,7 @@ export default struct MusicRecommendComponent {
                   .height(size.smallIconSize)
                   .textAlign(TextAlign.Center)
               }
-              Image(getMusicCover(item.cover))
-                .width(size.middleAvaterSize)
-                .height(size.middleAvaterSize)
-                .borderRadius(size.middleAvaterSize)
-                .margin({ left: size.pagePadding })
+              MusicAvaterComponent({avater:item.cover?.toString(),title:item.songName[0],dimension:Number(size.middleAvaterSize),type:'music'})
               Column() {
                 Text(item.songName).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
                 Text(item.authorName)
