@@ -105,7 +105,7 @@ struct MusicPlayerPage {
             this.musicStorage.audio.prepare();
             break;
           case 'prepared': // prepare调用成功后上报该状态机
-            this.musicStorage.audio.play().then(() => insertMusicRecordService(this.musicStorage.musicItem)); // 调用播放接口开始播放
+            this.musicStorage.audio.play().then(() => insertMusicRecordService(this.musicStorage.musicItem.id)); // 调用播放接口开始播放
             break;
           case 'playing': // play成功调用后触发该状态机上报
             this.musicStorage.isPlaying = true;

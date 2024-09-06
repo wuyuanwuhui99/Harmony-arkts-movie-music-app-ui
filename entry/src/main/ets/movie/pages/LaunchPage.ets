@@ -1,7 +1,9 @@
 import httpRequest from '../../utils/HttpUtil';
-import { UserDataInterface } from '../interface/Index'
+import deviceInfo from '@ohos.deviceInfo'; //设备信息
+// import { deviceInfo } from '@kit.BasicServicesKit';
+import { DeviceInterface, UserDataInterface } from '../interface/Index'
 import preference from '../../utils/PreferenceModel';
-import { USER_DATA } from '../../common/constant';
+import { DEVICE_INFO, USER_DATA } from '../../common/constant';
 import { getUserDataService } from '../service/Index';
 import router from '@ohos.router';
 
@@ -23,6 +25,8 @@ struct LaunchPage {
   }
 
   async aboutToAppear() {
+    const {marketName,productModel,sdkApiVersion} = deviceInfo
+    AppStorage.SetOrCreate<DeviceInterface>(DEVICE_INFO, {device:productModel,platform:marketName,version:sdkApiVersion.toString()})
     const token: string = <string> await preference.getToken();
     setTimeout(()=>{// 加载用户信息
       if(token){

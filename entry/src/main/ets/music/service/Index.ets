@@ -4,6 +4,8 @@ import * as types from '../interface/Index'
 import { MyAwesomeData } from '../../movie/interface';
 import { SocialEnum } from '../../common/enum';
 import { MusicInterface } from '../interface/Index';
+import { DeviceInterface } from '../../movie/interface/Index';
+import { DEVICE_INFO } from '../../common/constant';
 /**
  * @description: 获取推荐的音乐
  * @date: 2024-03-02 22:44
@@ -108,8 +110,9 @@ export const getMusicRecordService = (pageNum:number,pageSize:number):Promise<My
  * @date: 2024-03-17 22:12
  * @author wuwenqiang
  */
-export const insertMusicRecordService = (musicModel:types.MusicInterface):Promise<MyAwesomeData<number>> => {
-  return httpRequest.post<number>(api.insertMusicRecord,musicModel);
+export const insertMusicRecordService = (musicId):Promise<MyAwesomeData<number>> => {
+  const deviceInterface:DeviceInterface = AppStorage.Get<DeviceInterface>(DEVICE_INFO)
+  return httpRequest.post<number>(api.insertMusicRecord,{musicId,...deviceInterface});
 }
 
 /**

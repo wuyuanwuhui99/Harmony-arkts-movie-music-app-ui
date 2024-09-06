@@ -6,6 +6,11 @@ export interface MyAwesomeData<T> {
   total:number
 }
 
+export interface DeviceInterface{
+  version:string,
+  platform:string,
+  device:string
+}
 
 export interface UserDataInterface {
   userId:     string;
