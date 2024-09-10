@@ -43,7 +43,7 @@
 ![app首页](实际效果预览.png)
 ![app首页](音乐收藏列表.png)
 ![app首页](音乐列表页.png)
-
+[app首页](分类歌曲.png)
 =============================界面预览（如果无法预览，请查看项目根目录png文件）==========================
 
 使用arkts api9搭建的电影音乐项目，有flutter、react-native、java、微信小程序、uniapp多个版本
@@ -52,46 +52,46 @@
 
 后端接口项目和sql语句：   
 https://github.com/wuyuanwuhui99/springboot-app-service   
-https://gitee.com/wuyuanwuhui99/springboot-app-service
+https://gitee.com/wuyuanwuhui99/springboot-app-service   
 
 flutter版本参见：   
-https://github.com/wuyuanwuhui99/flutter-movie-app-ui   
-https://gitee.com/wuyuanwuhui99/flutter-movie-app-ui
+https://github.com/wuyuanwuhui99/flutter-movie-app-ui    
+https://gitee.com/wuyuanwuhui99/flutter-movie-app-ui   
 
 react native版本参见：    
-https://github.com/wuyuanwuhui99/react-native-app-ui
-https://gitee.com/wuyuanwuhui99/react-native-app-ui
+https://github.com/wuyuanwuhui99/react-native-app-ui   
+https://gitee.com/wuyuanwuhui99/react-native-app-ui   
 
 在线音乐和电影后端接口项目和sql语句：   
-https://github.com/wuyuanwuhui99/springboot-app-service
-https://gitee.com/wuyuanwuhui99/springboot-app-service
+https://github.com/wuyuanwuhui99/springboot-app-service   
+https://gitee.com/wuyuanwuhui99/springboot-app-service   
 
 harmony鸿蒙java版本参见：   
-https://github.com/wuyuanwuhui99/Harmony_movie_app_ui
-https://gitee.com/wuyuanwuhui99/Harmony_movie_app_ui
+https://github.com/wuyuanwuhui99/Harmony_movie_app_ui   
+https://gitee.com/wuyuanwuhui99/Harmony_movie_app_ui   
 
 harmony鸿蒙arkts版本参见：   
-https://github.com/wuyuanwuhui99/Harmony-arkts-movie-music-app-ui
-https://gitee.com/wuyuanwuhui99/Harmony-arkts-movie-music-app-ui
+https://github.com/wuyuanwuhui99/Harmony-arkts-movie-music-app-ui   
+https://gitee.com/wuyuanwuhui99/Harmony-arkts-movie-music-app-ui   
 
 java安卓原生版本参见：   
-https://github.com/wuyuanwuhui99/android-java-movie-app-ui
+https://github.com/wuyuanwuhui99/android-java-movie-app-ui   
 
 kotlin安卓原生版本参见：   
-https://github.com/wuyuanwuhui99/android-kotlin-jetpack-movie-app
+https://github.com/wuyuanwuhui99/android-kotlin-jetpack-movie-app   
 
 微信小程序版本参见：   
-https://github.com/wuyuanwuhui99/weixin-movie-app-ui
+https://github.com/wuyuanwuhui99/weixin-movie-app-ui   
 
 uniapp版本参见：   
-https://github.com/wuyuanwuhui99/uniapp-vite-vue3-ts-movie-app-ui
-https://gitee.com/wuyuanwuhui99/uniapp-vite-vue3-ts-movie-app-ui
+https://github.com/wuyuanwuhui99/uniapp-vite-vue3-ts-movie-app-ui   
+https://gitee.com/wuyuanwuhui99/uniapp-vite-vue3-ts-movie-app-ui   
 
 vue2在线音乐项目：
-https://github.com/wuyuanwuhui99/vue-music-app-ui
+https://github.com/wuyuanwuhui99/vue-music-app-ui   
 
 在线音乐后端项目：   
-https://github.com/wuyuanwuhui99/koa2-music-app-service
+https://github.com/wuyuanwuhui99/koa2-music-app-service   
 https://gitee.com/wuyuanwuhui99/koa2-music-app-service
 
 vue3+ts明日头条项目：https://github.com/wuyuanwuhui99/vue3-ts-toutiao-app-ui   

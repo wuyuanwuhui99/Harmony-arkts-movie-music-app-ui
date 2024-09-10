@@ -8,7 +8,7 @@ import MusicCategoryComponent from './MusicCategoryComponent';
 import MusicAuthorComponent from './MusicAuthorComponent';
 
 @Component
-export default struct MusicCircleComponent{
+export default struct MusicHomeComponent{
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -39,7 +39,7 @@ export default struct MusicCircleComponent{
             if(item.classifyName === '推荐歌手'){
               MusicAuthorComponent()
             }else{
-              MusicClassifyComponent({classifyId:item.id,classifyName:item.classifyName})
+              MusicClassifyComponent({classifyId:Number(item.id),classifyName:item.classifyName.toString()})
             }
           })
           Row() {

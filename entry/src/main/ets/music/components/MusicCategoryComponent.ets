@@ -1,5 +1,6 @@
 import * as colors from '../../theme/color';
 import * as size from '../../theme/size';
+import router from '@ohos.router';
 
 @Component
 export default struct MusicCategoryComponent{
@@ -22,11 +23,23 @@ export default struct MusicCategoryComponent{
       Column(){
         Image($r('app.media.icon_music_singer')).categoryImgStyle()
         Text("歌手")
-      }.width('25%').alignItems(HorizontalAlign.Center)
+      }.width('25%')
+      .alignItems(HorizontalAlign.Center)
+      .onClick(()=>{
+        router.pushUrl({
+          url: 'music/pages/MusicAuthorCategoryPage', // 目标url
+        });
+      })
       Column(){
         Image($r('app.media.icon_music_classify')).categoryImgStyle()
         Text("分类歌曲")
-      }.width('25%').alignItems(HorizontalAlign.Center)
+      }.width('25%')
+      .alignItems(HorizontalAlign.Center)
+      .onClick(()=>{
+        router.pushUrl({
+          url: 'music/pages/MusicCategoryPage', // 目标url
+        });
+      })
       Column(){
         Image($r('app.media.icon_music_classics')).categoryImgStyle()
         Text("经典老歌")
