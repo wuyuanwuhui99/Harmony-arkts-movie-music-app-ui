@@ -177,32 +177,29 @@ struct MoviePlayPage {
           Column() {
             ForEach(this.movieUrlGroup, (items: Array<MovieUrlInterface>, index: number) => {
               Text((/^\d$/.test(items[0].playGroup) ? '分组' : '') + items[0].playGroup)
-              Column({space:size.pagePadding}){
-                ForEach(this.getGroup(items),(aItem,aIndex)=>{
-                  Row({space:size.pagePadding}){
-                    ForEach(aItem,(bItem,bIndex)=>{
-                      if(bItem){
-                        Text(bItem.label)
-                          .border({
-                            width: 1,
-                            color: this.currentUrl == bItem.url ? Color.Orange : Color.Black,
-                            style: BorderStyle.Solid
-                          })
-                          .padding(size.smallPadding)
-                          .fontColor(this.currentUrl == bItem.url ? Color.Orange : Color.Black)
-                          .width('100%')
-                          .textAlign(TextAlign.Center)
-                          .layoutWeight(1)
-                          .borderRadius(size.blockBorderRaduis)
-                      }else {
-                        Blank().layoutWeight(1)
-                      }
-                    })
-                  }.width('100%').justifyContent(FlexAlign.Start)
+              ForEach(this.getGroup(items),(aItem,aIndex)=>{
+                Row({space:size.pagePadding}){
+                  ForEach(aItem,(bItem)=>{
+                    if(bItem){
+                      Text(bItem.label)
+                        .border({
+                          width: 1,
+                          color: this.currentUrl == bItem.url ? Color.Orange : Color.Black,
+                          style: BorderStyle.Solid
+                        })
+                        .padding(size.smallPadding)
+                        .fontColor(this.currentUrl == bItem.url ? Color.Orange : Color.Black)
+                        .textAlign(TextAlign.Center)
+                        .layoutWeight(1)
+                        .borderRadius(size.blockBorderRaduis)
+                    }else {
+                      Blank().layoutWeight(1)
+                    }
+                  })
+                }.width('100%').justifyContent(FlexAlign.Start).margin({
+                  top: size.pagePadding
                 })
-
-              }.margin({top:size.pagePadding})
-
+              })
               if( index !== this.movieUrlGroup.length - 1){
                 Blank().height(size.pagePadding)
                 Divider().height(1).color(colors.borderColor)
@@ -210,7 +207,6 @@ struct MoviePlayPage {
               }
             })
           }.blockStyle().alignItems(HorizontalAlign.Start)
-          Blank().height(size.pagePadding)
         }.justifyContent(FlexAlign.Start)
         .backgroundColor(colors.pageBackgroundColor)
         .padding({ left: size.pagePadding, right: size.pagePadding, bottom: size.pagePadding })
