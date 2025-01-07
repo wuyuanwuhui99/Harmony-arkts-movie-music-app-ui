@@ -7,6 +7,7 @@ import { DEVICE_INFO, USER_DATA } from '../../common/constant';
 import { getUserDataService } from '../service/Index';
 import router from '@ohos.router';
 
+@Preview
 @Entry
 @Component
 struct LaunchPage {

@@ -1,5 +1,5 @@
 // export const HOST:string = 'http://254a2y1767.qicp.vip';// 外网映射地址，一般只有晚上才开机，开机之后才能使用，如需调试请联系
-export const HOST: string = 'http://192.168.0.103:5001'; // 内网地址
+export const HOST: string = 'http://169.254.174.23:5001'; // 内网地址
 export const USER_DATA: string = 'USER_DATA';//用户信息
 export const DEVICE_INFO: string = 'DEVICE_INFO';// 设备信息
 export const MUSIC_PLAYER: string = 'MUSIC_PLAYER';// 音乐播放器

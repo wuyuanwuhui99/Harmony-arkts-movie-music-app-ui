@@ -81,126 +81,140 @@ struct MoviePlayPage {
     CommentComponent({commentListStr:'' ,relationId: this.movieItem.id, type: SocialEnum.MOVIE.toString() })
   }
 
+  /**
+   * @author: wuwenqiang
+   * @description: 电影播放地址分组
+   * @date: 2025-01-7 23:49
+   */
+  getGroup(movieUrlList:Array<MovieUrlInterface>):Array<Array<MovieUrlInterface|null>>{
+    const movieUrlGroup:Array<Array<MovieUrlInterface>> = [];
+    let myMovieUrlList:Array<MovieUrlInterface|null>
+    movieUrlList.forEach((item:MovieUrlInterface,index:number)=>{
+      if(movieUrlGroup.length === 0 || movieUrlGroup[movieUrlGroup.length - 1].length === 4){
+        myMovieUrlList = [];
+        movieUrlGroup.push(myMovieUrlList)
+      }else{
+        myMovieUrlList = movieUrlGroup[movieUrlGroup.length - 1]
+      }
+      myMovieUrlList.push(item)
+    })
+    if(movieUrlGroup[movieUrlGroup.length - 1].length < 4){
+      for(let i = 0; i < 4 - movieUrlGroup[movieUrlGroup.length - 1].length; i++){
+        movieUrlGroup[movieUrlGroup.length - 1].push(null)
+      }
+    }
+    return movieUrlGroup
+  }
+
   build() {
     Column() {
+      if (this.currentUrl) {
+        Web({ src: this.currentUrl, controller: this.controller })
+          .width('100%')
+          .aspectRatio(16 / 9)
+          .backgroundColor(Color.Black)
+      } else {
+        Row().height(size.webviewHeight).width('100%').backgroundColor(Color.Black)
+      }
       Scroll() {
         Column() {
-          if (this.currentUrl) {
-            Web({ src: this.currentUrl, controller: this.controller })
-              .width('100%')
-              .aspectRatio(16 / 9)
-              .backgroundColor(Color.Black)
-          } else {
-            Row().height(size.webviewHeight).width('100%').backgroundColor(Color.Black)
-          }
-
-          Column() {
-            Row() {
-              Image($r('app.media.icon_comment'))
-                .height(size.middlIconSize)
-                .width(size.middlIconSize)
-                .margin({ right: size.pagePadding }).onClick(() => {
-                if (!this.customDialogController) {
-                  this.customDialogController = new CustomDialogController({
-                    customStyle: true,
-                    builder: BottomDialogComponent({
-                      dialogHeight: '80%',
-                      builder: this.commentBuilder.bind(this)
-                    }),
-                    alignment: DialogAlignment.Bottom,
-                  })
-                }
-                this.customDialogController.open();
-              })
-              Text(this.commentTotal.toString())
-              Blank()
-              Image(this.isFavorite ? $r('app.media.icon_collection_active') : $r('app.media.icon_collection'))
-                .height(size.middlIconSize)
-                .width(size.middlIconSize)
-                .margin({ right: size.pagePadding }).onClick(() => {
-                if (this.loading) return;
-                this.loading = false;
-                if (this.isFavorite) {
-                  deleteFavoriteService(this.movieItem.id)
-                    .then(res => this.isFavorite = !(res.data > 0))
-                    .finally(() => this.loading = false)
-                } else {
-                  saveFavoriteService(this.movieItem.id)
-                    .then(res => this.isFavorite = res.data > 0)
-                    .finally(() => this.loading = false)
-                }
-              })
-              Image($r('app.media.icon_share'))
-                .height(size.middlIconSize)
-                .width(size.middlIconSize)
-            }.blockStyle()
-
-            Column() {
-              Text(this.movieItem.movieName)
-                .fontWeight(FontWeight.Bolder)
-                .fontSize(size.bigFontSize)
-                .padding({ bottom: size.smallPadding })
-              Text(this.movieItem.star).fontSize(size.normalFontSize)
-              if (this.movieItem.score) {
-                Row() {
-                  Rating().stars(this.movieItem.score).stepSize(0.1)
-                  Text(this.movieItem.score.toString())
-                    .padding({ left: size.smallPadding })
-                    .fontColor(Color.Red)
-                    .fontSize(size.normalFontSize)
-                    .fontWeight(FontWeight.Bolder)
-                }.justifyContent(FlexAlign.Start).margin({ top: size.smallPadding })
-              }
-            }.blockStyle().alignItems(HorizontalAlign.Start)
-
-            Column() {
-              Scroll() {
-                Row() {
-                  ForEach(this.movieUrlGroup, (item: Array<MovieUrlInterface>, index: number) => {
-                    Text((/^\d$/.test(item[0].playGroup) ? '分组' : '') + item[0].playGroup).border({
-                      width: {
-                        top: this.currentUrlGroup == index ? 1 : 0,
-                        bottom: this.currentUrlGroup == index ? 0 : 1,
-                        left: this.currentUrlGroup == index ? 1 : 0,
-                        right: this.currentUrlGroup == index ? 1 : 0
-                      },
-                      color: colors.pageBackgroundColor,
-                      style: BorderStyle.Solid
-                    }).padding(size.smallPadding)
-                      .fontColor(this.currentUrlGroup == index ? Color.Orange : Color.Black)
-                      .onClick(() => {
-                        this.currentUrlGroup = index;
-                      })
-                  })
-                }
-              }.width('100%').scrollable(ScrollDirection.Horizontal)
-
-              Grid() {
-                ForEach(this.movieUrlGroup[this.currentUrlGroup], (item: MovieUrlInterface) => {
-                  GridItem() {
-                    Text(item.label)
-                      .border({
-                        width: 1,
-                        color: this.currentUrl == item.url ? Color.Orange : Color.Black,
-                        style: BorderStyle.Solid
-                      })
-                      .padding(size.smallPadding)
-                      .fontColor(this.currentUrl == item.url ? Color.Orange : Color.Black)
-                      .width('100%')
-                      .textAlign(TextAlign.Center)
-                      .borderRadius(size.blockBorderRaduis)
-                  }
+          Row() {
+            Image($r('app.media.icon_comment'))
+              .height(size.middlIconSize)
+              .width(size.middlIconSize)
+              .margin({ right: size.pagePadding }).onClick(() => {
+              if (!this.customDialogController) {
+                this.customDialogController = new CustomDialogController({
+                  customStyle: true,
+                  builder: BottomDialogComponent({
+                    dialogHeight: '80%',
+                    builder: this.commentBuilder.bind(this)
+                  }),
+                  alignment: DialogAlignment.Bottom,
                 })
               }
-              .columnsTemplate('1fr 1fr 1fr 1fr')
-              .columnsGap(size.smallPadding)
-              .rowsGap(size.smallPadding).margin({ top: size.smallPadding })
-            }.blockStyle().alignItems(HorizontalAlign.Start)
-          }
-          .backgroundColor(colors.pageBackgroundColor)
-          .padding({ left: size.pagePadding, right: size.pagePadding, bottom: size.pagePadding })
+              this.customDialogController.open();
+            })
+            Text(this.commentTotal.toString())
+            Blank()
+            Image(this.isFavorite ? $r('app.media.icon_collection_active') : $r('app.media.icon_collection'))
+              .height(size.middlIconSize)
+              .width(size.middlIconSize)
+              .margin({ right: size.pagePadding }).onClick(() => {
+              if (this.loading) return;
+              this.loading = false;
+              if (this.isFavorite) {
+                deleteFavoriteService(this.movieItem.id)
+                  .then(res => this.isFavorite = !(res.data > 0))
+                  .finally(() => this.loading = false)
+              } else {
+                saveFavoriteService(this.movieItem.id)
+                  .then(res => this.isFavorite = res.data > 0)
+                  .finally(() => this.loading = false)
+              }
+            })
+            Image($r('app.media.icon_share'))
+              .height(size.middlIconSize)
+              .width(size.middlIconSize)
+          }.blockStyle()
+          Column() {
+            Text(this.movieItem.movieName)
+              .fontWeight(FontWeight.Bolder)
+              .fontSize(size.bigFontSize)
+              .padding({ bottom: size.smallPadding })
+            Text(this.movieItem.star).fontSize(size.normalFontSize)
+            if (this.movieItem.score) {
+              Row() {
+                Rating().stars(this.movieItem.score).stepSize(0.1)
+                Text(this.movieItem.score.toString())
+                  .padding({ left: size.smallPadding })
+                  .fontColor(Color.Red)
+                  .fontSize(size.normalFontSize)
+                  .fontWeight(FontWeight.Bolder)
+              }.justifyContent(FlexAlign.Start).margin({ top: size.smallPadding })
+            }
+          }.blockStyle().alignItems(HorizontalAlign.Start)
+          Column() {
+            ForEach(this.movieUrlGroup, (items: Array<MovieUrlInterface>, index: number) => {
+              Text((/^\d$/.test(items[0].playGroup) ? '分组' : '') + items[0].playGroup)
+              Column({space:size.pagePadding}){
+                ForEach(this.getGroup(items),(aItem,aIndex)=>{
+                  Row({space:size.pagePadding}){
+                    ForEach(aItem,(bItem,bIndex)=>{
+                      if(bItem){
+                        Text(bItem.label)
+                          .border({
+                            width: 1,
+                            color: this.currentUrl == bItem.url ? Color.Orange : Color.Black,
+                            style: BorderStyle.Solid
+                          })
+                          .padding(size.smallPadding)
+                          .fontColor(this.currentUrl == bItem.url ? Color.Orange : Color.Black)
+                          .width('100%')
+                          .textAlign(TextAlign.Center)
+                          .layoutWeight(1)
+                          .borderRadius(size.blockBorderRaduis)
+                      }else {
+                        Blank().layoutWeight(1)
+                      }
+                    })
+                  }.width('100%').justifyContent(FlexAlign.Start)
+                })
+
+              }.margin({top:size.pagePadding})
+
+              if( index !== this.movieUrlGroup.length - 1){
+                Blank().height(size.pagePadding)
+                Divider().height(1).color(colors.borderColor)
+                Blank().height(size.pagePadding)
+              }
+            })
+          }.blockStyle().alignItems(HorizontalAlign.Start)
+          Blank().height(size.pagePadding)
         }.justifyContent(FlexAlign.Start)
-      }
+        .backgroundColor(colors.pageBackgroundColor)
+        .padding({ left: size.pagePadding, right: size.pagePadding, bottom: size.pagePadding })
+      }.layoutWeight(1)
     }.width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Start)
