@@ -1,7 +1,4 @@
-import {LoopMode, MusicStorageInterface} from'../music/interface';
-import {HOST, MUSIC_STORAGE} from '../common/constant';
-import { MusicInterface } from '../music/interface/Index';
-import {getMusicListByClassifyIdService} from '../music/service/Index';
+import {HOST} from '../common/constant';
 import router from '@ohos.router';
 
 export const zerofull=(value:number):string|number=>{
@@ -39,52 +36,5 @@ export const formatSecond=(value:number,showHour:boolean = false):string => {
     return `${zerofull(Math.floor(value / 60))}:${zerofull(Math.floor(value % 60))}`
   }
 };
-
-/**
- * @description: 更新缓存和状态管理器
- * @date: 2024-06-05 22:18
- * @author wuwenqiang
- */
-export const useUpdateStorage = (musicStorage:MusicStorageInterface)=>{
-  musicStorage.playIndex = musicStorage.musicList.findIndex(mItem => mItem.id === musicStorage.musicItem.id)
-  AppStorage.SetOrCreate<MusicStorageInterface>(MUSIC_STORAGE,musicStorage);
-  const myMusicStorage:MusicStorageInterface =  {...musicStorage};
-  myMusicStorage.audio = null;
-  PersistentStorage.PersistProp<MusicStorageInterface>(MUSIC_STORAGE, myMusicStorage);
-}
-
-export const usePlayerRouter = (musicStorage:MusicStorageInterface,musicList:Array<MusicInterface>,musicModel:MusicInterface,classifyName:string,index:number) => {
-  if(musicStorage.musicItem?.id === musicModel.id && musicStorage.classifyName === classifyName){
-    musicStorage.audio.play();
-    musicStorage.isPlaying = true;
-  }else{
-    musicStorage.musicItem = musicModel;
-    musicStorage.audio?.reset();
-    if(musicStorage.classifyName !== classifyName){
-      musicStorage.musicList = musicList;
-      musicStorage.playList = [...musicList];
-      musicStorage.recordList.push(...musicStorage.playList.splice(index,1));
-      musicStorage.classifyName !== classifyName
-    }
-    useUpdateStorage(musicStorage);
-  }
-  router.pushUrl({url: 'music/pages/MusicPlayerPage'});
-}
-
-export const useAppStorage = ():MusicStorageInterface => {
-  return AppStorage.Get<MusicStorageInterface>(MUSIC_STORAGE) || {
-    musicItem: null,
-    audio: null,
-    isPlaying: true,
-    musicList: [],
-    classifyName: "",
-    total: 0,
-    isInitPlayer:false,
-    playIndex: -1,
-    loop: LoopMode.ORDER,
-    playList: [],// 还没有播放的音乐
-    recordList:[],// 已经播放的歌曲
-  };
-}
 
 export const getMusicCover = (cover:string) => /http[s]?:\/\//.test(cover) ? cover.replace('{size}', '480') : HOST + cover

@@ -1,21 +1,16 @@
 {
   "src": [
-    "movie/pages/LaunchPage",
-    "movie/pages/IndexPage",
-    "movie/pages/MovieDetailPage",
-    "movie/pages/MoviePlayPage",
-    "movie/pages/MovieUserPage",
-    "movie/pages/MovieLoginPage",
-    "movie/pages/MovieRegisterPage",
-    "movie/pages/MovieSearchPage",
-    "music/pages/MusicIndexPage",
-    "music/pages/MusicPlayerPage",
-    "music/pages/MusicSearchPage",
-    "music/pages/MusicSharePage",
-    "music/pages/MusicFavoriteListPage",
-    "music/pages/MusicClassifyListPage",
-    "music/pages/MusicAuthorCategoryPage",
-    "music/pages/MusicAuthorMusicListPage",
-    "music/pages/MusicCategoryPage"
+    "pages/LaunchPage",
+    "pages/UserPage",
+    "pages/LoginPage",
+    "pages/RegisterPage",
+    "pages/ForgetPasswordPage",
+    "pages/ResetPasswordPage",
+    "pages/UpdatePasswordPage",
+    "pages/IndexPage",
+    "pages/MovieDetailPage",
+    "pages/MoviePlayPage",
+    "pages/MovieUserPage",
+    "pages/MovieSearchPage"
   ]
 }
