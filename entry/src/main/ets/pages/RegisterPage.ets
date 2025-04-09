@@ -15,7 +15,7 @@ import NavigatorTitleComponent from '../components/NavigatorTitleComponent';
 @Component
 struct RegisterPage {
   @State userData: UserDataInterface = {
-    userId: '',
+    userAccount: '',
     username: '',
     telephone: '',
     email: '',
@@ -85,7 +85,7 @@ struct RegisterPage {
 
   useRegister=async ()=>{
     if (
-      this.verify(this.userData.userId, '账号') &&
+      this.verify(this.userData.userAccount, '账号') &&
       this.verify(this.userData.password, '密码') &&
       this.verify(this.comfirmPassword, '确认密码') &&
       this.verify(this.userData.username, '昵称') &&
@@ -93,7 +93,7 @@ struct RegisterPage {
     ) {
       if(this.loading)return;
       this.loading = true;
-      const {data,msg} = await verifyUserService(this.userData.userId,this.userData.email)
+      const {data,msg} = await verifyUserService(this.userData.userAccount,this.userData.email)
       if(data > 0){
         promptAction.showToast({
           message: msg,
@@ -103,7 +103,7 @@ struct RegisterPage {
         return this.loading = false;
       }
       registerService(this.userData).then(async res => {
-        preference.setPassword(this.userData.userId, this.userData.password)
+        preference.setPassword(this.userData.userAccount, this.userData.password)
         preference.setToke(res.token);
         httpRequest.setToken(res.token);
         AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
@@ -133,16 +133,16 @@ struct RegisterPage {
                 Text("账号:")
               }.width('20%')
 
-              TextInput({ placeholder: "请输入6-18位数的账号", text: this.userData.userId })
+              TextInput({ placeholder: "请输入6-18位数的账号", text: this.userData.userAccount })
                 .inputStyle()
                 .maxLength(18)
                 .onChange((value) => {
-                  this.userData.userId = value;
+                  this.userData.userAccount = value;
                 }).onBlur(() => {
-                if (this.verify(this.userData.userId, '账号')) {
+                if (this.verify(this.userData.userAccount, '账号')) {
                   if (this.loading) return;
                   this.loading = true;
-                  verifyUserService(this.userData.userId,undefined).then((res) => {
+                  verifyUserService(this.userData.userAccount,undefined).then((res) => {
                     if (res.data > 0) {
                       promptAction.showToast({
                         message: '该账号已经存在',

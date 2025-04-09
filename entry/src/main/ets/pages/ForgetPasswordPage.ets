@@ -1,6 +1,6 @@
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
-import { getBackPasswordService } from '../service/Index';
+import { sendEmailVertifyCodeService } from '../service/Index';
 import { UserDataInterface } from '../interface/Index';
 import { USER_DATA } from '../common/constant';
 import promptAction from '@ohos.promptAction'
@@ -8,6 +8,8 @@ import display from '@ohos.display';
 import NavigatorTitleComponent from '../components/NavigatorTitleComponent';
 import prompt from '@system.prompt'
 import router from '@ohos.router';
+import LoadingController from '../controller/LoadingController';
+import GlobalLoading from '../components/GlobalLoading';
 
 @Entry
 @Component
@@ -15,6 +17,7 @@ struct LoginPage {
   @StorageLink(USER_DATA) userData: UserDataInterface = null;
   email: string = '';
   loading:boolean = false;
+  private loadingController:LoadingController = new LoadingController()
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -49,14 +52,9 @@ struct LoginPage {
         bottom: px2vp(display.getDefaultDisplaySync().height) / 2
       })
     } else {
-      // prompt.showLoading({
-      //   message: '',
-      //   loadingColor: 'blue',
-      //   mask: true
-      // })
+      this.loadingController.showLoading();
       this.loading = true;
-      getBackPasswordService(this.email).then((res)=>{
-        // prompt.hideLoading()
+      sendEmailVertifyCodeService(this.email).then((res)=>{
         promptAction.showToast({
           message: res.msg,
           duration: 2000,
@@ -73,7 +71,7 @@ struct LoginPage {
           }
         });
       }).finally(()=>{
-        // prompt.hideLoading()
+        this.loadingController.showLoading();
         this.loading = false;
       })
     }
@@ -81,36 +79,41 @@ struct LoginPage {
   }
 
   build() {
-    Column() {
-      NavigatorTitleComponent({ title: "忘记密码" })
+    Column(){
+      GlobalLoading({controller:this.loadingController})
       Column() {
-        Row() {
-          Text("*").fontColor(colors.warnColor)
-          TextInput({ placeholder: "请输入邮箱" })
-            .layoutWeight(1)
-            .backgroundColor(Color.Transparent)
-            .onChange((value) => {
-              this.email = value;
-            })
+        NavigatorTitleComponent({ title: "忘记密码" })
+        Column() {
+          Row() {
+            Text("*").fontColor(colors.warnColor)
+            TextInput({ placeholder: "请输入邮箱" })
+              .layoutWeight(1)
+              .backgroundColor(Color.Transparent)
+              .onChange((value) => {
+                this.email = value;
+              })
+          }
+          .alignItems(VerticalAlign.Center)
+          .blockStyle()
+
+          Text('提交')
+            .width('100%')
+            .padding(size.pagePadding)
+            .textAlign(TextAlign.Center)
+            .backgroundColor(colors.warnColor)
+            .margin({ top: size.pagePadding })
+            .fontColor(Color.White)
+            .borderRadius(size.blockBorderRaduis * 2)
+            .onClick(this.useSumbit)
+
         }
-        .alignItems(VerticalAlign.Center)
-        .blockStyle()
-
-        Text('提交')
-          .width('100%')
-          .padding(size.pagePadding)
-          .textAlign(TextAlign.Center)
-          .backgroundColor(colors.warnColor)
-          .margin({ top: size.pagePadding })
-          .fontColor(Color.White)
-          .borderRadius(size.blockBorderRaduis * 2)
-          .onClick(this.useSumbit)
-
+        .padding({left:size.pagePadding,right:size.pagePadding})
+        .backgroundColor(colors.pageBackgroundColor)
       }
       .width('100%')
       .height('100%')
-      .padding({left:size.pagePadding,right:size.pagePadding})
-      .backgroundColor(colors.pageBackgroundColor)
     }
+    .width('100%')
+    .height('100%')
   }
 }

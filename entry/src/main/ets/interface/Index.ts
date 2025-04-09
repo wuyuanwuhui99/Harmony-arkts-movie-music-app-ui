@@ -13,7 +13,7 @@ export interface DeviceInterface{
 }
 
 export interface UserDataInterface {
-  userId:     string;
+  userAccount:     string;
   createDate?: string;
   updateDate?: string;
   username:   string;

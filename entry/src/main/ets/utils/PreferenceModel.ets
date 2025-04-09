@@ -80,14 +80,14 @@ class PreferenceModel {
   }
 
   //获取date日期对应的浏览历史
-  async getPassword(userId:string) {
-    let token = <string> await this.getPreference(userId)
+  async getPassword(userAccount:string) {
+    let token = <string> await this.getPreference(userAccount)
     return token ?? null
   }
 
   //写入date日期对应的浏览历史
-  setPassword(userId:string,password:string) {
-    this.putPreference(userId,password);
+  setPassword(userAccount:string,password:string) {
+    this.putPreference(userAccount,password);
   }
 
   //获取date日期对应的浏览历史

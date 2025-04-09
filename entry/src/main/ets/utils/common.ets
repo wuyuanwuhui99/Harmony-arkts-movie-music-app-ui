@@ -38,3 +38,5 @@ export const formatSecond=(value:number,showHour:boolean = false):string => {
 };
 
 export const getMusicCover = (cover:string) => /http[s]?:\/\//.test(cover) ? cover.replace('{size}', '480') : HOST + cover
+
+export const strictEmailRegex = /^[a-zA-Z0-9]+([._%+-][a-zA-Z0-9]+)*@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}$/;

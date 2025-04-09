@@ -10,9 +10,9 @@ import { CommentInterface } from '../interface/Index';
  * @date: 2024-01-15 21:32
  * @author wuwenqiang
  */
-export const loginService = (userId:string,password:string):Promise<MyAwesomeData<types.UserDataInterface>>=>{
+export const loginService = (userAccount:string,password:string):Promise<MyAwesomeData<types.UserDataInterface>>=>{
   password = CryptoJS.MD5(password).toString();// 使用md5加密
-  return httpRequest.post<types.UserDataInterface>(api.login,{userId,password})
+  return httpRequest.post<types.UserDataInterface>(api.login,{userAccount,password})
 };
 
 /**
@@ -41,8 +41,8 @@ export const registerService = (userData:types.UserDataInterface):Promise<MyAwes
  * @date: 2024-01-21 14:48
  * @author wuwenqiang
  */
-export const verifyUserService = (userId:string|undefined,email:string|undefined):Promise<MyAwesomeData<number>>=>{
-  return httpRequest.post<number>(api.vertifyUser,{userId,email})
+export const verifyUserService = (userAccount:string|undefined,email:string|undefined):Promise<MyAwesomeData<number>>=>{
+  return httpRequest.post<number>(api.vertifyUser,{userAccount,email})
 };
 
 /**
@@ -54,16 +54,23 @@ export const updateUserDataService = (userData:types.UserDataInterface):Promise<
   return httpRequest.put<number>(api.updateUser,userData)
 };
 
-
 /**
  * @description: 找回密码
  * @date: 2025-01-19 22:59
  * @author wuwenqiang
  */
-export const getBackPasswordService = (email:string):Promise<MyAwesomeData<String>>=>{
-  return httpRequest.post<string>(api.getBackPasswordByEmail,{email})
+export const sendEmailVertifyCodeService = (email:string):Promise<MyAwesomeData<number>>=>{
+  return httpRequest.post<number>(api.sendEmailVertifyCode,{email})
 };
 
+/**
+ * @description: 邮箱验证码登录
+ * @date: 2025-01-28 14:22
+ * @author wuwenqiang
+ */
+export const loginByEmailService = (email:string,code:string):Promise<MyAwesomeData<types.UserDataInterface>>=>{
+  return httpRequest.post<types.UserDataInterface>(api.loginByEmail,{email,code})
+};
 
 /**
  * @description: 重置密码
